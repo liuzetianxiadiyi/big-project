@@ -18,23 +18,26 @@ private:
 	Vec2 position;
 	bool dead;
 	Vec2 destination;
+	bool Selected;
 
-	ValueVector data;
+	//ValueVector data;
 
 public:
-	void attack(Sprite*);
+	void attack(Military*);
 	void sethp(int damage);
-	void move();
 	void setDestination(Vec2 v);
 	void setdead();
-	static Military* create(string & filename);
+	void setSelected(bool b);
+
+	void init(string _name, int _health_point, int _power, int _speed, int _delay, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination);
+	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);
 	static Military* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
 	static Military* createWithSpritFrame(SpriteFrame* pSpriteFrame);
-	static Military* createWithSpriteFrameName(const std::string & spriteFrameName);
+	static Military* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-	virtual ValueVector& getValueVector() = 0;
+	//virtual ValueVector& getValueVector() = 0;
 };
 
 #endif
