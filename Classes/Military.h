@@ -28,6 +28,7 @@ public:
 	void setDestination(Vec2 v);
 	void setdead();
 	void setSelected(bool b);
+	int getPoint()const;
 
 	void init(string _name, int _health_point, int _power, int _speed, int _delay, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination);
 	/*static Military* create(string & filename);
