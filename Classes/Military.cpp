@@ -37,3 +37,8 @@ void Military::attack(Military* sprite)
 {
 	sprite->sethp(power);
 }
+
+int Military::getPoint()const
+{
+	return health_point;
+}
