@@ -87,17 +87,17 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
-	
-		Vector<SpriteFrame*> allf;
+	//无限循环动画
+		Vector<SpriteFrame*> animation;
 	
 	for (int i = 1;i<12; i++) 
 	{
 		auto sf = SpriteFrame::create(StringUtils::format("filename%d.jpg", i), Rect(0, 0, 1000, 1500));
-		//图片大小图片个数还需待设定，
-		allf.pushBack(sf);
+		//图片大小,个数,格式还需设定，
+		animation.pushBack(sf);
 	}
 
-	auto an = Animation::createWithSpriteFrames(allf);
+	auto an = Animation::createWithSpriteFrames(animation);
 	an->setDelayPerUnit(0.06f);//间隔时间
 	auto Ani = Animate::create(an);
 	auto Sp = Sprite::create();
