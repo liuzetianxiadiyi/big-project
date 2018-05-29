@@ -25,6 +25,9 @@ public:
 
 	void roomDataThread();
 
+	//Slider滑动事件回调函数
+	void onChangedSlider(Ref* pSender, Slider::EventType type);
+
 	CREATE_FUNC(WaitingScene);
 };
 #endif // !WaitingScene
