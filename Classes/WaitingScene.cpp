@@ -46,29 +46,21 @@ bool WaitingScene::init()
 	);
 	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//美工了解一下
 	
-	//create a slider
-	auto slider = Slider::create();
-	slider->loadBarTexture("Slider_Back.png"); // what the slider looks like
-	slider->loadSlidBallTextures("SliderNode_Normal.png", "SliderNode_Press.png", "SliderNode_Disable.png");
-	slider->loadProgressBarTexture("Slider_Back.png");
+																							//创建滑块控件
+	Slider* slider = Slider::create();
+	//加载滑杆纹理
+	slider->loadBarTexture("sliderTrack.png");
+	//加载滑块按钮纹理
+	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
+	//加载滑块进度栏纹理
+	slider->loadProgressBarTexture("sliderProgress.png");
+	//The max percent of Slider.
+	slider->setMaxPercent(100);
+	slider->setRotation(90);
 
-	slider->setPosition(ccp(getContentSize().width / 2, getContentSize().height / 2));//我自己了解一下
-	slider->setRotation(90);//不能实现竖条，只能旋转实现
-
-	//slider->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type) {
-	//	switch (type)
-	//	{
-	//	case ui::Widget::TouchEventType::BEGAN:
-	//		break;
-	//	case ui::Widget::TouchEventType::ENDED:
-	//		std::cout << "slider moved" << std::endl;
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//});//貌似是个监听函数，但是我看不懂意思
-
-	this->addChild(slider);
+	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
+	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	this->addChild(slider, 1);
 
 	auto createRoomItem = MenuItemImage::create(
 		"createRoomNormal.png",
@@ -88,11 +80,25 @@ bool WaitingScene::init()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto sprite = Sprite::create(".png");
+	auto sprite = Sprite::create(".png");//background
 	sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	this->addChild(sprite, 0);
 
 	return true;
+}
+
+void WaitingScene::onChangedSlider(Ref* pSender, Slider::EventType type)
+{
+	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
+	{
+		Slider* slider = dynamic_cast<Slider*>(pSender);
+		float percent = slider->getPercent() * 2.5;
+		for (int i = 0; i < room_nums; ++i)
+		{
+			auto roomButton = getChildByTag(i);
+			roomButton->runAction(MoveTo::create(0.5, Vec2(500, 500 - 30 * i - china->getContentSize().height * i + percent)));
+		}
+	}
 }
 
 void WaitingScene::roomDataThread()
