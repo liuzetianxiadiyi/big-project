@@ -21,14 +21,14 @@ private:
 	int country;
 
 public:
-	void sethp(int damage)
+	void setHp(int damage)
 	{
 		health_point -= damage;
 	}
 
-	void setDestroy()
+	void setDestroy(bool b)
 	{
-		destroy = false;
+		destroy = b;
 	}
 
 	void setSelected(bool b)
