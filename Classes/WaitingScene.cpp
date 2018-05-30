@@ -46,20 +46,7 @@ bool WaitingScene::init()
 	);
 	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//美工了解一下
 	
-	Slider* slider = Slider::create();
-	//加载滑杆纹理
-	slider->loadBarTexture("sliderTrack.png");
-	//加载滑块按钮纹理
-	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
-	//加载滑块进度栏纹理
-	slider->loadProgressBarTexture("sliderProgress.png");
-	//The max percent of Slider.
-	slider->setMaxPercent(100);
-	slider->setRotation(90);
-
-	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
-	this->addChild(slider, 1);
+	
 
 	auto createRoomItem = MenuItemImage::create(
 		"createRoomNormal.png",
@@ -133,6 +120,20 @@ void WaitingScene::roomDataThread()
 					roomButton->setTag(i);
 					this->addChild(roomButton, 2);
 				}
+				Slider* slider = Slider::create();
+	//加载滑杆纹理
+	slider->loadBarTexture("sliderTrack.png");
+	//加载滑块按钮纹理
+	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
+	//加载滑块进度栏纹理
+	slider->loadProgressBarTexture("sliderProgress.png");
+	//The max percent of Slider.
+	slider->setMaxPercent(100);
+	slider->setRotation(90);
+
+	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
+	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	this->addChild(slider, 1);
 			}
 
 			rmtx.unlock();
@@ -233,4 +234,21 @@ void WaitingScene::clickRoomcallback(Ref* pSender)
 		SelectedRoomTag = SelectedRoom->getTag();
 	}
 	
+}
+//Slider滑动事件回调函数
+void  WaitingScene::onChangedSlider(Ref* pSender, Slider::EventType type)
+{
+	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
+	{
+		Slider* slider = dynamic_cast<Slider*>(pSender);
+		float percent = slider->getPercent() * 2.5;
+		for(int i=0;i<room_nums;++i)
+		{
+			auto roomButton=getChildByTag(i);
+			roomButton->setPosition(Vec2(visibleSize.width - 100, 50+percent- roomButton->getContentSize().height*i));
+		}
+		
+
+	}
+
 }
