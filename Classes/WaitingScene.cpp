@@ -5,13 +5,14 @@
 #include "Client.h"
 #include "JsonParser.h"
 #include "enJsonParser.h"
+#include "Information.h"
 
 #include <string>
 
 #define ROOMBUTTONWIDTH 60
 
 extern Information information;
-//待完善
+//������
 int WaitingScene::room_nums = 0;
 int WaitingScene::SelectedRoomTag = -1;
 bool WaitingScene::replace = false;
@@ -44,31 +45,7 @@ bool WaitingScene::init()
 		"EnterSelected.png",
 		CC_CALLBACK_1(WaitingScene::menuEnterCallback, this)
 	);
-	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//美工了解一下
-	
-	//create a slider
-	auto slider = Slider::create();
-	slider->loadBarTexture("Slider_Back.png"); // what the slider looks like
-	slider->loadSlidBallTextures("SliderNode_Normal.png", "SliderNode_Press.png", "SliderNode_Disable.png");
-	slider->loadProgressBarTexture("Slider_Back.png");
-
-	slider->setPosition(ccp(getContentSize().width / 2, getContentSize().height / 2));//我自己了解一下
-	slider->setRotation(90);//不能实现竖条，只能旋转实现
-
-	//slider->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type) {
-	//	switch (type)
-	//	{
-	//	case ui::Widget::TouchEventType::BEGAN:
-	//		break;
-	//	case ui::Widget::TouchEventType::ENDED:
-	//		std::cout << "slider moved" << std::endl;
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//});//貌似是个监听函数，但是我看不懂意思
-
-	this->addChild(slider);
+	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//�����˽�һ��
 
 	auto createRoomItem = MenuItemImage::create(
 		"createRoomNormal.png",
@@ -105,12 +82,12 @@ void WaitingScene::roomDataThread()
 		{
 			rmtx.lock();
 
-			JsonParser json(information.getRecvBuf().c_str());
-			json.decode();
-			ValueMap DataMap = json.getList().at(0).asValueMap();		//0 is default position
-			if (DataMap.find(WAITINGSCENEDATA) != DataMap.end())
+			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
+			json->decode();
+			ValueMap DataMap = json->getList().at(0).asValueMap();		//0 is default position
+			if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
 			{
-				ValueMap Data = DataMap[WAITINGSCENEDATA].asValueMap();
+				ValueMap Data = DataMap[SWAITINGSCENEDATA].asValueMap();
 
 				room_nums = Data[ADDROOM].asInt();
 
@@ -130,7 +107,7 @@ void WaitingScene::roomDataThread()
 				for (int i = 0; i < room_nums; ++i)
 				{
 					auto roomButton = Button::create("room.png", "roomHighlight.png");
-					//美工
+					//����
 					roomButton->setScale9Enabled(true);
 					roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
 					roomButton->setTitleFontSize(35);
@@ -163,9 +140,9 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		replace = true;
 
 		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-		enJson->encode(information, ENTERROOMDATA);
+		string sendbuf = enJson->encode_WaitingRoomData();
 		Client* client = Client::getInstance();
-		client->send_Cli();
+		client->send_Cli(sendbuf);
 
 		rmtx.unlock();
 		//Scene changes
@@ -193,10 +170,10 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 	ValueVector plistdata = GameData::WaitingData(true, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
 	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-	enJson->encode(information, ENTERROOMDATA);
+	string sendbuf = enJson->encode_WaitingRoomData();
 
 	Client* client = Client::getInstance();
-	client->send_Cli();
+	client->send_Cli(sendbuf);
 
 	rmtx.unlock();
 
@@ -241,5 +218,5 @@ void WaitingScene::clickRoomcallback(Ref* pSender)
 		SelectedRoom->setHighlighted(true);
 		SelectedRoomTag = SelectedRoom->getTag();
 	}
-	
+
 }

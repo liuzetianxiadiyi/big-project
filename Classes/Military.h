@@ -7,18 +7,29 @@
 USING_NS_CC;
 using std::string;
 
+enum 
+{
+	//´ýÍêÉÆ
+};
+
 class Military : public Sprite
 {
 private:
-	string name;
 	int health_point;
-	int power;
-	int speed;
-	int delay;
 	Vec2 position;
 	bool dead;
-	Vec2 destination;
+	float destinationX;
+	float destinationY;
 	bool Selected;
+	string status;
+	int country;
+
+	static int power;
+	static string name;
+	static int speed;
+	static int delay;
+	static Action* move;
+	static int money;
 
 	//ValueVector data;
 
@@ -28,9 +39,44 @@ public:
 	void setDestination(Vec2 v);
 	void setdead();
 	void setSelected(bool b);
-	int getPoint()const;
+	int gethp()const;
+	Action* getMoveAction()
+	{
+		return move;
+	}
+	float getSpeed()
+	{
+		return speed;
+	}
+	float getDestinationX()
+	{
+		return destinationX;
+	}
+	float getDestinationY()
+	{
+		return destinationY;
+	}
+	Vec2 getPosition()
+	{
+		return position;
+	}
+	void setStatus(const char* str)
+	{
+		status = str;
+	}
+	string getStatus()
+	{
+		return status;
+	}
 
-	void init(string _name, int _health_point, int _power, int _speed, int _delay, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination);
+	int getCountry()
+	{
+		return country;
+	}
+
+	static Military* create(string& filename);
+
+	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position ,float _destinationX,float _destinationY,Action* _move);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);

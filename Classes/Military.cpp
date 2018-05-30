@@ -1,16 +1,31 @@
 #include "Military.h"
 
-void Military::init(string _name, int _health_point, int _power, int _speed, int _delay,bool _dead,bool _Selected,Vec2 _position,Vec2 _destination)
+Military* Military::create(string& filename)
+{
+	Military* sprite = new Military();
+
+	if (sprite->initWithFile(filename))
+	{
+		sprite->autorelease();
+		sprite->create = Sprite::create("filename");
+
+		return sprite;
+	}
+
+	CC_SAFE_DELETE(sprite);
+	return nullptr;
+};
+
+void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX,float _destinationY, Action* _move)
 {
 	name = _name;
 	health_point = _health_point;
-	power = _power;
-	speed = _speed;
-	delay = _delay;
 	dead = _dead;
 	Selected = _Selected;
 	position = _position;
-	destination = _destination;
+	destinationX = _destinationX;
+	destinationY = _destinationY;
+	move = _move;
 }
 
 void Military::sethp(int damage)
@@ -38,7 +53,7 @@ void Military::attack(Military* sprite)
 	sprite->sethp(power);
 }
 
-int Military::getPoint()const
+int Military::gethp()const
 {
 	return health_point;
 }

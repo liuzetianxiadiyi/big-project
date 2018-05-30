@@ -24,7 +24,9 @@ public:
 
 	bool initWithArray(ValueVector pListData);
 
-	void encode(string& sendBuf, string order);
+	string encode_WaitingData();
+	string encode_MilitaryData();
+	string encode_ConstructionData();
 };
 
 #endif

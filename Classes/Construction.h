@@ -18,6 +18,7 @@ private:
 	bool Selected;
 	int sLevel;
 	int delay;
+	int country;
 
 public:
 	void sethp(int damage)
@@ -43,6 +44,16 @@ public:
 	void setsLevel(int i)
 	{
 		sLevel = i;
+	}
+
+	int gethp()
+	{
+		return health_point;
+	}
+
+	int getCountry()
+	{
+		return country;
 	}
 
 	virtual void None() = 0;

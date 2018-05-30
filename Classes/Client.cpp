@@ -64,12 +64,12 @@ BOOL Client::recv_Cli()
 	return TRUE;
 }
 
-BOOL Client::send_Cli()
+BOOL Client::send_Cli(string sendBuf)
 {
 	clock_t start = clock();
 	while (true)
 	{
-		if (SOCKET_ERROR == send(sHost, const_cast<char *>(information.getSendBuf().c_str()), information.getSendBuf().length(), 0))
+		if (SOCKET_ERROR == send(sHost, const_cast<char *>(sendBuf.c_str()), information.getSendBuf().length(), 0))
 		{
 			//closesocket(sHost);
 			//WSACleanup();
@@ -81,12 +81,11 @@ BOOL Client::send_Cli()
 			Sleep(WAITTIME);
 			continue;
 		}
-		information.clearSendBuf();
+		//information.clearSendBuf();
 		break;
 	}
 	return TRUE;
 }
-
 
 Client::Client()
 {

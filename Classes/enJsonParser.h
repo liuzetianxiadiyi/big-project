@@ -18,10 +18,12 @@ private:
 public:
 
 	static enJsonParser * createWithArray(ValueVector pListData);
-
 	bool initWithArray(ValueVector pListData);
 
-	void encode(Information information,string order);
+	//void encode(Information information,string order);
+	string encode_WaitingRoomData();
+	string encode_MilitaryData();
+	string encode_ConstructionData();
 };
 
 #endif
