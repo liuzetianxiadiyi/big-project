@@ -23,6 +23,9 @@ public:
 
 	void clickRoomcallback(cocos2d::Ref* pSende);
 
+	//Slider-return back func
+	void onChangedSlider(Ref* pSender, Slider::EventType type);
+
 	void roomDataThread();
 
 	CREATE_FUNC(WaitingScene);
