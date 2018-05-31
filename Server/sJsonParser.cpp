@@ -44,9 +44,9 @@ void sJsonParser::decode_WaitingData()
 		//取一条记录对象
 		const rapidjson::Value &record = records[i];
 
-		if (record.HasMember(SWAITINGSCENEDATA))		//for server
+		if (record.HasMember(WAITINGSCENEDATA))		//for server
 		{
-			const rapidjson::Value &temp = record[SWAITINGSCENEDATA];
+			const rapidjson::Value &temp = record[WAITINGSCENEDATA];
 
 			const rapidjson::Value &val_add = temp[ADDROOM];
 			row[ADDROOM] = Value(val_add.GetBool());
@@ -59,6 +59,45 @@ void sJsonParser::decode_WaitingData()
 		}
 
 		list.push_back(Value(row));
+	}
+}
+
+bool sJsonParser::decode_RoomData()
+{
+	rapidjson::Document document;
+	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
+
+	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
+	log("Parsing to document succeeded");
+	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+
+	const rapidjson::Value& records = document["Record"];
+
+	CC_ASSERT(records.IsArray());
+
+	for (unsigned int i = 0; i < records.Size(); ++i)
+	{
+		row = ValueMap();
+
+		//取一条记录对象
+		const rapidjson::Value &record = records[i];
+
+		if (record.HasMember(ROOMSCENEDATA))		//for server
+		{
+			const rapidjson::Value &temp = record[ROOMSCENEDATA];
+
+			const rapidjson::Value &val_own = temp[ISSTART];
+			if (val_own.GetBool())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		//list.push_back(Value(row));
 	}
 }
 

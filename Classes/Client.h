@@ -44,7 +44,7 @@ public:
 	BOOL recv_Cli();
 	BOOL send_Cli(string sendBuf);
 
-	void SendThread();		//建立子进程
+	void SendThread(string sendBuf);		//建立子进程
 	void RecvThread();
 
 	void StartClient();

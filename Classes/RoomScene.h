@@ -5,7 +5,7 @@
 
 USING_NS_CC;
 
-class RoomScene
+class RoomScene:public cocos2d::Layer
 {
 public:
 	static Scene* createScene();

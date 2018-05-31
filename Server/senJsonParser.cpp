@@ -33,7 +33,7 @@ string senJsonParser::encode_WaitingData()		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ
 		ValueMap temp = v.asValueMap();
 
 		rapidjson::Value object(rapidjson::kObjectType);
-		ValueMap row = temp[ROOMMATE].asValueMap();
+		ValueMap row = temp[SWAITINGSCENEDATA].asValueMap();
 		rapidjson::Value v_map(rapidjson::kObjectType);
 
 		rapidjson::Value v_add;
@@ -42,9 +42,9 @@ string senJsonParser::encode_WaitingData()		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ
 
 		rapidjson::Value v_rTag(rapidjson::kArrayType);
 		ValueVector TagVector = row[ROOMLABEL].asValueVector;
-		for (auto& v : TagVector)
+		for (auto& tv : TagVector)
 		{
-			v_rTag.PushBack(v.asInt(),allocator);
+			v_rTag.PushBack(tv.asInt(),allocator);
 		}
 		//v_rTag.SetInt(row[ROOMLABEL].asInt());
 		v_map.AddMember(ROOMLABEL, v_rTag, allocator);
@@ -57,9 +57,9 @@ string senJsonParser::encode_WaitingData()		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ
 		{
 			rapidjson::Value v_dTag(rapidjson::kArrayType);
 			ValueVector dTagVector = row[DELETEDROOM].asValueVector;
-			for (auto& v : dTagVector)
+			for (auto& dv : dTagVector)
 			{
-				v_dTag.PushBack(v.asInt(), allocator);
+				v_dTag.PushBack(dv.asInt(), allocator);
 			}
 			v_map.AddMember(DELETEDROOM, v_dTag, allocator);
 		}
@@ -80,6 +80,92 @@ string senJsonParser::encode_WaitingData()		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ
 	string sendBuf = buffer.GetString();
 	return sendBuf;
 	//log("out: %s", out);
+}
+
+string senJsonParser::encode_RoomData()		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ¿informationÔì³ÉÎ´ÖªµÄbug
+{
+	rapidjson::Document document;
+	document.SetObject();		//³õÊ¼»¯document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
+
+	rapidjson::Value array(rapidjson::kArrayType);
+
+	for (auto& v : listData)
+	{
+		ValueMap temp = v.asValueMap();
+
+		rapidjson::Value object(rapidjson::kObjectType);
+		ValueMap row = temp[SROOMSCENEDATA].asValueMap();
+		rapidjson::Value v_map(rapidjson::kObjectType);
+
+		rapidjson::Value v_own;
+		v_own.SetString(row[OWNER].asString().c_str(), allocator);
+		v_map.AddMember(OWNER, v_own, allocator);
+
+		rapidjson::Value aname(rapidjson::kArrayType);
+		ValueVector names = row[MEMBER].asValueVector();
+		for (auto &nv : names)
+		{
+			rapidjson::Value ntemp;
+			ntemp.SetString(nv.asString().c_str(), allocator);
+			aname.PushBack(ntemp, allocator);
+		}
+		v_map.AddMember(MEMBER, aname, allocator);
+
+		object.AddMember(SROOMSCENEDATA, v_map, allocator);
+
+		array.PushBack(object, allocator);
+	}
+
+	//document.AddMember("change", true, allocator);
+	document.AddMember("Record", array, allocator);
+
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+
+	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+
+	string sendBuf = buffer.GetString();
+	return sendBuf;
+	//log("out: %s", out);
+}
+
+
+string senJsonParser::encode_EnterData()
+{
+	rapidjson::Document document;
+	document.SetObject();		//³õÊ¼»¯document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
+
+	rapidjson::Value array(rapidjson::kArrayType);
+
+	for (auto& v : listData)
+	{
+		ValueMap temp = v.asValueMap();				//ÕâÀïµÄv¾ÍÊÇmap£¬ValueÊÇÒ»ÖÖ°ü×°Àà£¬¿ÉÒÔ°ÑºÜ¶àÊı¾İÀàĞÍ°ü×°³ÉÀà
+
+		rapidjson::Value object(rapidjson::kObjectType);
+		ValueMap row = temp[SROOMSCENEDATA].asValueMap();
+		rapidjson::Value v_map(rapidjson::kObjectType);
+
+		rapidjson::Value v_sta;
+		v_sta.SetBool(row[ISSTART].asBool());
+		v_map.AddMember(ISSTART, v_sta, allocator);
+
+		object.AddMember(SROOMSCENEDATA, v_map, allocator);
+
+		array.PushBack(object, allocator);
+	}
+	}
+
+	//document.AddMember("change", true, allocator);
+	document.AddMember("Record", array, allocator);
+
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+
+	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+
+	return string(buffer.GetString());
 }
 
 string senJsonParser::encode_MilitaryData()

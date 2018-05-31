@@ -1,6 +1,6 @@
 #ifndef __ENJSON_PARSER_SCENE_H_
 #define __ENJSON_PARSER_SCENE_H_
-
+//±àÂë
 #include "cocos2d.h"
 
 #include "document.h"
@@ -25,6 +25,8 @@ public:
 	bool initWithArray(ValueVector pListData);
 
 	string encode_WaitingData();
+	string encode_RoomData();
+	string encode_EnterData();
 	string encode_MilitaryData();
 	string encode_ConstructionData();
 };

@@ -83,7 +83,7 @@ void WaitingScene::roomDataThread()
 			rmtx.lock();
 
 			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
-			json->decode();
+			json->decode_WaitingData();
 			ValueMap DataMap = json->getList().at(0).asValueMap();		//0 is default position
 			if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
 			{
@@ -133,6 +133,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 	if (SelectedRoomTag != -1)
 	{
 		UserDefault* defaults = UserDefault::getInstance();
+		defaults->setBoolForKey(OWNER, false);
 		//send room_tag and player of this room message
 		ValueVector plistdata = GameData::WaitingData(false, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
@@ -165,6 +166,7 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 	rmtx.unlock();
 
 	UserDefault* defaults = UserDefault::getInstance();
+	defaults->setBoolForKey(OWNER, true);
 	//send room_tag and player of this room message
 
 	ValueVector plistdata = GameData::WaitingData(true, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
