@@ -9,7 +9,7 @@ Barracks* Barracks::create(string & filename)
 	
 	if (sprite->initWithFile(filename))
 	{
-		//´ýÓÅ»¯
+		//å¾…ä¼˜åŒ–
 		sprite->autorelease();
 		sprite->createdog = Sprite::create("filename");
 		sprite->createsolder = Sprite::create("filename");
@@ -24,49 +24,55 @@ Barracks* Barracks::create(string & filename)
 	return nullptr;
 }
 
-void CreateDogCallback(Ref* pSender)
+void Barracks::CreateDogCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Dog::delay);
 	auto seq = Sequence::create(delay, CreateDog,nullptr);
+	this->runAction(seq);
 }
 
-void CreateSoldierCallback(Ref* pSender)
+void Barracks::CreateSoldierCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Soldier::delay);
 	auto seq = Sequence::create(delay, CreateDog, nullptr);
+	this->runAction(seq);
 }
 
-void CreateEngineerCallback(Ref* pSender)
+void Barracks::CreateEngineerCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Engineer::delay);
 	auto seq = Sequence::create(delay, CreateDog, nullptr);
+	this->runAction(seq);
 }
 
 
-//´úÂëÖØÓÃ
-void CreateDog()
+//ä»£ç é‡ç”¨
+void Barracks::CreateDog()
 {
 	string filename = "filename";
 	Dog* dog = Dog::create(filename);
 	dog->init("Dog", 100, 50, 30, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(dog->getSpeed(), dog->getDestination()), 300);
 	dog->setPosition();
-	this->addChild(dog, 2);
+	auto target=  Director::getInstance()->getRunningScene();
+	target->addChild(dog, 2);
 }
 
-void CreateSoldier()
+void Barracks::CreateSoldier()
 {
 	string filename = "filename";
 	Soldier* soldier = Solider::create(filename);
 	soldier->init();
 	soldier->setPosition();
-	this->addChild(soldier, 2);
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(soldier, 2);
 }
 
-void CreateEngineer()
+void Barracks::CreateEngineer()
 {
 	string filename = "filename";
 	Engineer* engineer = Engineer::create(filename);
 	engineer->init();
 	engineer->setPosition();
-	this->addChild(engineer, 2);
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(engineer, 2);
 }
