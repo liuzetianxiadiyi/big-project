@@ -37,7 +37,7 @@ bool HelloWorld::init()
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
-	// ÕâÀïµÄÈı¸öÑ¡ÏîËùĞèÒªµÄÍ¼Æ¬¿ÉÒÔÏÈÍµÀÁÖ»¸øÒ»¸ö£¬°ÑÍ¼Æ¬Ãû×Ö¸Ä³ÉÒ»ÑùµÄ¾ÍĞĞÁË£¬Íê³ÉÏîÄ¿ºóÔÙ½øĞĞ²¹³ä
+	// è¿™é‡Œçš„ä¸‰ä¸ªé€‰é¡¹æ‰€éœ€è¦çš„å›¾ç‰‡å¯ä»¥å…ˆå·æ‡’åªç»™ä¸€ä¸ªï¼ŒæŠŠå›¾ç‰‡åå­—æ”¹æˆä¸€æ ·çš„å°±è¡Œäº†ï¼Œå®Œæˆé¡¹ç›®åå†è¿›è¡Œè¡¥å……
 	auto StartItem = MenuItemImage::create(
 		"StartNormal.png",
 		"StartSelected.png",
@@ -87,9 +87,28 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
+	//æ— é™å¾ªç¯åŠ¨ç”»
+		Vector<SpriteFrame*> animation;
+	
+	for (int i = 1;i<12; i++) 
+	{
+		auto sf = SpriteFrame::create(StringUtils::format("filename%d.jpg", i), Rect(0, 0, 1000, 1500));
+		//å›¾ç‰‡å¤§å°,ä¸ªæ•°,æ ¼å¼è¿˜éœ€è®¾å®šï¼Œ
+		animation.pushBack(sf);
+	}
+
+	auto an = Animation::createWithSpriteFrames(animation);
+	an->setDelayPerUnit(0.06f);//é—´éš”æ—¶é—´
+	auto Ani = Animate::create(an);
+	auto Sp = Sprite::create();
+	Sp->setTag(3);//æ ‡å·è®¾å®š
+	Sp->runAction(RepeatForever::create(Ani));
+	this->addChild(Sp,0);
+	Sp->setPosition(150, 150);//æ”¾ç½®ä½ç½®éœ€è®¾å®š
+
     return true;
 }
-//ÒôĞ§´ı´¦Àí
+//éŸ³æ•ˆå¾…å¤„ç†
 void HelloWorld::menuStartCallback(Ref* pSender)
 {
 	auto scene = AccontScene::createScene();
@@ -136,7 +155,7 @@ void HelloWorld::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	log("HelloWorld onEnterTransitionDidFinish");
-	//²¥·Å
+	//æ’­æ”¾
 	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
 	{
 		SimpleAudioEngine::getInstance()->playBackgroundMusic("filename.mp3", true);
@@ -159,6 +178,6 @@ void HelloWorld::cleanup()
 {
 	Layer::cleanup();
 	log("HelloWorld cleanup");
-	//Í£Ö¹
+	//åœæ­¢
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic("filename.mp3");
 }
