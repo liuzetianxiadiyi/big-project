@@ -1,3 +1,4 @@
+
 #include "HelloWorldScene.h"
 #include "WaitingScene.h"
 #include "RoomScene.h"
@@ -5,14 +6,13 @@
 #include "Client.h"
 #include "JsonParser.h"
 #include "enJsonParser.h"
-#include "Information.h"
 
 #include <string>
 
 #define ROOMBUTTONWIDTH 60
 
 extern Information information;
-//������
+//寰呭畬鍠�
 int WaitingScene::room_nums = 0;
 int WaitingScene::SelectedRoomTag = -1;
 bool WaitingScene::replace = false;
@@ -45,7 +45,9 @@ bool WaitingScene::init()
 		"EnterSelected.png",
 		CC_CALLBACK_1(WaitingScene::menuEnterCallback, this)
 	);
-	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//�����˽�һ��
+	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//缇庡伐浜嗚В涓�涓�
+	
+	
 
 	auto createRoomItem = MenuItemImage::create(
 		"createRoomNormal.png",
@@ -82,12 +84,12 @@ void WaitingScene::roomDataThread()
 		{
 			rmtx.lock();
 
-			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
-			json->decode_WaitingData();
-			ValueMap DataMap = json->getList().at(0).asValueMap();		//0 is default position
-			if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
+			JsonParser json(information.getRecvBuf().c_str());
+			json.decode();
+			ValueMap DataMap = json.getList().at(0).asValueMap();		//0 is default position
+			if (DataMap.find(WAITINGSCENEDATA) != DataMap.end())
 			{
-				ValueMap Data = DataMap[SWAITINGSCENEDATA].asValueMap();
+				ValueMap Data = DataMap[WAITINGSCENEDATA].asValueMap();
 
 				room_nums = Data[ADDROOM].asInt();
 
@@ -107,7 +109,7 @@ void WaitingScene::roomDataThread()
 				for (int i = 0; i < room_nums; ++i)
 				{
 					auto roomButton = Button::create("room.png", "roomHighlight.png");
-					//����
+					//缇庡伐
 					roomButton->setScale9Enabled(true);
 					roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
 					roomButton->setTitleFontSize(35);
@@ -119,6 +121,20 @@ void WaitingScene::roomDataThread()
 					roomButton->setTag(i);
 					this->addChild(roomButton, 2);
 				}
+				Slider* slider = Slider::create();
+	//鍔犺浇婊戞潌绾圭悊
+	slider->loadBarTexture("sliderTrack.png");
+	//鍔犺浇婊戝潡鎸夐挳绾圭悊
+	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
+	//鍔犺浇婊戝潡杩涘害鏍忕汗鐞�
+	slider->loadProgressBarTexture("sliderProgress.png");
+	//The max percent of Slider.
+	slider->setMaxPercent(100);
+	slider->setRotation(90);
+
+	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
+	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	this->addChild(slider, 1);
 			}
 
 			rmtx.unlock();
@@ -133,7 +149,6 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 	if (SelectedRoomTag != -1)
 	{
 		UserDefault* defaults = UserDefault::getInstance();
-		defaults->setBoolForKey(OWNER, false);
 		//send room_tag and player of this room message
 		ValueVector plistdata = GameData::WaitingData(false, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
@@ -141,9 +156,9 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		replace = true;
 
 		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-		string sendbuf = enJson->encode_WaitingRoomData();
+		enJson->encode(information, ENTERROOMDATA);
 		Client* client = Client::getInstance();
-		client->send_Cli(sendbuf);
+		client->send_Cli();
 
 		rmtx.unlock();
 		//Scene changes
@@ -166,16 +181,15 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 	rmtx.unlock();
 
 	UserDefault* defaults = UserDefault::getInstance();
-	defaults->setBoolForKey(OWNER, true);
 	//send room_tag and player of this room message
 
 	ValueVector plistdata = GameData::WaitingData(true, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
 	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-	string sendbuf = enJson->encode_WaitingRoomData();
+	enJson->encode(information, ENTERROOMDATA);
 
 	Client* client = Client::getInstance();
-	client->send_Cli(sendbuf);
+	client->send_Cli();
 
 	rmtx.unlock();
 
@@ -219,6 +233,23 @@ void WaitingScene::clickRoomcallback(Ref* pSender)
 		}
 		SelectedRoom->setHighlighted(true);
 		SelectedRoomTag = SelectedRoom->getTag();
+	}
+	
+}
+//Slider婊戝姩浜嬩欢鍥炶皟鍑芥暟
+void  WaitingScene::onChangedSlider(Ref* pSender, Slider::EventType type)
+{
+	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
+	{
+		Slider* slider = dynamic_cast<Slider*>(pSender);
+		float percent = slider->getPercent() * 2.5;
+		for(int i=0;i<room_nums;++i)
+		{
+			auto roomButton=getChildByTag(i);
+			roomButton->setPosition(Vec2(visibleSize.width - 100, 50+percent- roomButton->getContentSize().height*i));
+		}
+		
+
 	}
 
 }
