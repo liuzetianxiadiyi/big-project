@@ -19,6 +19,14 @@ public:
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
+	void CreateDogCallback(Ref* pSender);
+	void CreateSoldierCallback(Ref* pSender);
+	void CreateEngineerCallback(Ref* pSender);
+
+	void CreateDog();
+	void CreateSoldier();
+	void CreateEngineer();
+
 	static int money;
 
 	virtual void None() {};
