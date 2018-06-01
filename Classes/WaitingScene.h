@@ -22,6 +22,9 @@ public:
 	void menuReturnCallback(cocos2d::Ref* pSender);
 
 	void clickRoomcallback(cocos2d::Ref* pSende);
+	
+//Slider-return back func
+	void onChangedSlider(Ref* pSender, Slider::EventType type);
 
 	void roomDataThread();
 
