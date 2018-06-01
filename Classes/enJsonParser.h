@@ -22,6 +22,7 @@ public:
 
 	//void encode(Information information,string order);
 	string encode_WaitingRoomData();
+	string encode_EnterGameData();
 	string encode_MilitaryData();
 	string encode_ConstructionData();
 };

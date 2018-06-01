@@ -116,6 +116,42 @@ string enJsonParser::encode_WaitingRoomData()
 	//log("out: %s", out);
 }
 
+string enJsonParser::encode_EnterGameData()
+{
+	rapidjson::Document document;
+	document.SetObject();		//初始化document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
+
+	rapidjson::Value array(rapidjson::kArrayType);
+
+	for (auto& v : listData)
+	{
+		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
+
+		rapidjson::Value object(rapidjson::kObjectType);
+		ValueMap row = temp[ROOMSCENEDATA].asValueMap();
+		rapidjson::Value v_map(rapidjson::kObjectType);
+
+		rapidjson::Value v_sta;
+		v_sta.SetBool(row[ISSTART].asBool());
+		v_map.AddMember(ISSTART, v_sta, allocator);
+
+		object.AddMember(ROOMSCENEDATA, v_map, allocator);
+
+		array.PushBack(object, allocator);
+	}
+
+	//document.AddMember("change", true, allocator);
+	document.AddMember("Record", array, allocator);
+
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
+
+	document.Accept(writer);	//通过write将数据写入buffer
+
+	return string(buffer.GetString());
+}
+
 string enJsonParser::encode_MilitaryData()
 {
 	using namespace encode_MilitaryData;

@@ -22,6 +22,7 @@ public:
 	bool initWithC_str(const char * data);
 
 	void decode_WaitingData();
+	bool decode_RoomData();
 	void decode_MilitaryData();
 	void decode_ConstructionData();
 };

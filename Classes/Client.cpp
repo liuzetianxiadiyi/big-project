@@ -105,11 +105,11 @@ Client* Client::getInstance()
 	return client;
 }
 
-void Client::SendThread()
+void Client::SendThread(string sendBuf)
 {
 	while (true)
 	{
-		send_Cli();
+		send_Cli(sendBuf);
 		Sleep(TIME_LAG);
 	}
 }

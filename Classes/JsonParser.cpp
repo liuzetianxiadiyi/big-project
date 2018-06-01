@@ -81,6 +81,85 @@ void JsonParser::decode_WaitingData()
 	}
 }
 
+void JsonParser::decode_RoomData()
+{
+	rapidjson::Document document;
+	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
+
+	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
+	log("Parsing to document succeeded");
+	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+
+	const rapidjson::Value& records = document["Record"];
+
+	CC_ASSERT(records.IsArray());
+
+	for (unsigned int i = 0; i < records.Size(); ++i)
+	{
+		row = ValueMap();
+
+		//取一条记录对象
+		const rapidjson::Value &record = records[i];
+
+		if (record.HasMember(SROOMSCENEDATA))		//for server
+		{
+			const rapidjson::Value &temp = record[SROOMSCENEDATA];
+
+			const rapidjson::Value &val_own = temp[OWNER];
+			row[OWNER] = Value(val_own.GetString());
+
+			ValueVector vName;
+			const rapidjson::Value &val_mem = temp[MEMBER];
+			for (auto& v : val_mem.GetArray())
+			{
+				vName.push_back(Value(v.GetInt()));
+			}
+			row[MEMBER] = Value(vName);
+		}
+
+		list.push_back(Value(row));
+	}
+}
+
+bool JsonParser::decode_EnterData()
+{
+	rapidjson::Document document;
+	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
+
+	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
+	log("Parsing to document succeeded");
+	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+
+	const rapidjson::Value& records = document["Record"];
+
+	CC_ASSERT(records.IsArray());
+
+	for (unsigned int i = 0; i < records.Size(); ++i)
+	{
+		row = ValueMap();
+
+		//取一条记录对象
+		const rapidjson::Value &record = records[i];
+
+		if (record.HasMember(SENTERROOMDATA))		//for server
+		{
+			const rapidjson::Value &temp = record[SENTERROOMDATA];
+
+			const rapidjson::Value &val_own = temp[ISSTART];
+			if (val_own.GetBool())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		//list.push_back(Value(row));
+	}
+}
+
 void JsonParser::decode_MilitaryData()
 {
 	rapidjson::Document document;

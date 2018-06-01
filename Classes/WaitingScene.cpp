@@ -1,3 +1,4 @@
+
 #include "HelloWorldScene.h"
 #include "WaitingScene.h"
 #include "RoomScene.h"
@@ -11,7 +12,7 @@
 #define ROOMBUTTONWIDTH 60
 
 extern Information information;
-//待完善
+//寰呭畬鍠�
 int WaitingScene::room_nums = 0;
 int WaitingScene::SelectedRoomTag = -1;
 bool WaitingScene::replace = false;
@@ -44,7 +45,7 @@ bool WaitingScene::init()
 		"EnterSelected.png",
 		CC_CALLBACK_1(WaitingScene::menuEnterCallback, this)
 	);
-	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//美工了解一下
+	EnterItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));		//缇庡伐浜嗚В涓�涓�
 	
 	
 
@@ -108,7 +109,7 @@ void WaitingScene::roomDataThread()
 				for (int i = 0; i < room_nums; ++i)
 				{
 					auto roomButton = Button::create("room.png", "roomHighlight.png");
-					//美工
+					//缇庡伐
 					roomButton->setScale9Enabled(true);
 					roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
 					roomButton->setTitleFontSize(35);
@@ -121,11 +122,11 @@ void WaitingScene::roomDataThread()
 					this->addChild(roomButton, 2);
 				}
 				Slider* slider = Slider::create();
-	//加载滑杆纹理
+	//鍔犺浇婊戞潌绾圭悊
 	slider->loadBarTexture("sliderTrack.png");
-	//加载滑块按钮纹理
+	//鍔犺浇婊戝潡鎸夐挳绾圭悊
 	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
-	//加载滑块进度栏纹理
+	//鍔犺浇婊戝潡杩涘害鏍忕汗鐞�
 	slider->loadProgressBarTexture("sliderProgress.png");
 	//The max percent of Slider.
 	slider->setMaxPercent(100);
@@ -235,7 +236,7 @@ void WaitingScene::clickRoomcallback(Ref* pSender)
 	}
 	
 }
-//Slider滑动事件回调函数
+//Slider婊戝姩浜嬩欢鍥炶皟鍑芥暟
 void  WaitingScene::onChangedSlider(Ref* pSender, Slider::EventType type)
 {
 	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)

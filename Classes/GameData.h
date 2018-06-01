@@ -17,6 +17,13 @@ USING_NS_CC;
 #define DELETED "Deleted"		//是否删除了房间
 #define DELETEDROOM "DeletedRoom"	//删除房间的Tag
 #define PLAYERNAME "playername"		//玩家姓名
+#define OWNER "owner"		//房主
+#define MEMBER "member"		//成员
+
+#define ROOMSCENEDATA "RoomSceneData"		//Room 界面发送数据标识
+#define ISSTART "isStart" 
+
+#define SENTERROOMDATA "sEnterRoomData"		//进入游戏
 
 #define MILITARYDATA "MilitaryData"	//兵种信息
 #define DOGDATA "DogData"
@@ -40,11 +47,12 @@ USING_NS_CC;
 #define BASEDATA "BaseData"
 
 #define SWAITINGSCENEDATA "sWaitingSceneData"		//服务器端
-#define ROOMMATE "RoomMate"
+#define SROOMSCENEDATA "sRoomSceneData"
 
 using std::string;
 using std::initializer_list;
 using std::pair;
+using std::make_pair;
 
 namespace encode_MilitaryData
 {
@@ -78,9 +86,16 @@ public:
 
 	static pair<string, Value> toPair(const char* order, Value value);
 
-	static ValueVector WaitingData(bool Add_Value, int Room_value, string player_value);
+	static ValueVector WaitingData(bool Add_Value, int Room_Value, string player_Value);
 	static ValueVector MilitaryData(initializer_list<Military*> il);
 	static ValueVector ConstructionData(initializer_list<Construction*> il);
+
+
+	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted, ValueVector rdeleted);
+	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted);
+	//当服务器收到房间信息时，制作一个包含房间Tag，玩家姓名，玩家姓名对应的身份的ValueVector，
+	//每一项为ValueMap，各个元素分别为<string,int>,ValueMap<identity,name>,Tag不进行传输
+	static ValueVector sRoomData(string nowner, ValueVector nmember);
 };
 
 #endif
