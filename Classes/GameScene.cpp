@@ -38,16 +38,16 @@ bool GameScene::init()
 
 	//mouse chooose
 
-	auto ml = EventListenerTouchOneByOne::create();
-	ml->onTouchBegan = CC_CALLBACK_2(HelloWorld::MouseDown, this);
-	ml->onTouchMoved = CC_CALLBACK_2(HelloWorld::MouseMoved, this);
-	ml->onTouchEnded = CC_CALLBACK_2(HelloWorld::MouseUp, this);
+	auto mouseListener = EventListenerTouchOneByOne::create();
+	mouseListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::MouseDown, this);
+	mouseListener->onTouchMoved = CC_CALLBACK_2(HelloWorld::MouseMoved, this);
+	mouseListener->onTouchEnded = CC_CALLBACK_2(HelloWorld::MouseUp, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(ml,this);
 	
-	auto s = Sprite::create("s.png");
-	s->setPosition(Vec2(0, 0));
-	s->setTag(10);
-	s->setAnchorPoint(Vec2(0, 0));
+	auto mouseChoose = Sprite::create("s.png");
+	mouseChoose->setPosition(Vec2(0, 0));
+	mouseChoose->setTag(10);
+	mouseChoose->setAnchorPoint(Vec2(0, 0));
 	this->addChild(s,10);
 
 	//end
@@ -59,26 +59,26 @@ bool GameScene::init()
 
 bool HelloWorld::MouseDown(Touch *touch, Event *unused_event)
 {
-	auto e = touch;
-	Vec2 pos = e->getLocation();
-	auto s = getChildByTag(10);
-	s->setPosition(pos);
+	auto event = touch;
+	Vec2 pos = event->getLocation();
+	auto sprite = getChildByTag(10);
+	sprite->setPosition(pos);
 
 	return true;
 }
 
 void HelloWorld::MouseMoved(Touch *touch, Event *unused_event)
 {
-	auto e = touch;
-	auto s = getChildByTag(10);
-	Vec2 pos = e->getDelta() - s->getPosition();
+	auto event = touch;
+	auto sprite = getChildByTag(10);
+	Vec2 pos = event->getDelta() - sprite->getPosition();
 	if (pos.x < 0)
 		pos.x = -pos.x;
 	if (pos.y < 0)
 		pos.y = -pos.y;
 	int x = pos.x;
 	int y = pos.y;
-	s->runAction(ScaleTo::create(0.1, x, y));
+	sprite->runAction(ScaleTo::create(0.1, x, y));
 	std::cout << x << std::endl;
 	std::cout << y << std::endl;
 }
