@@ -24,6 +24,84 @@ Barracks* Barracks::create(string & filename)
 	return nullptr;
 }
 
+Mine* Mine::create(string & filename)
+
+{
+
+	Mine* sprite = new Mine();
+
+
+
+	if (sprite->initWithFile(filename))
+
+	{
+
+		//待优化
+
+		sprite->autorelease();
+
+		sprite->createminingcar = Sprite::create("filename");
+
+
+
+		sprite->init("Mine", 1600, 4, Vec2(150, 150), false, false, 1, 100);
+
+
+
+		return sprite;
+
+	}
+
+
+
+	CC_SAFE_DELETE(sprite);
+
+	return nullptr;
+
+}
+
+
+
+Base* Base::create(string & filename)
+
+{
+
+	Base* sprite = new Base();
+
+
+
+	if (sprite->initWithFile(filename))
+
+	{
+
+		//待优化
+
+		sprite->autorelease();
+
+		sprite->createbarracks = Sprite::create("filename");
+
+		sprite->createwarfactory = Sprite::create("filename");
+
+		sprite->createmine = Sprite::create("filename");
+
+
+
+		sprite->init("Base", 5000, 8, Vec2(100, 100), false, false, 1, 100);
+
+
+
+		return sprite;
+
+	}
+
+
+
+	CC_SAFE_DELETE(sprite);
+
+	return nullptr;
+
+}
+
 void Barracks::CreateDogCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Dog::delay);
