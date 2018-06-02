@@ -18,7 +18,11 @@ private:
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
-
+	
+	bool MouseDown(Touch *touch, Event *unused_event);
+	void MouseMoved(Touch *touch, Event *unused_event);
+	void MouseUp(Touch *touch, Event *unused_event);
+	
 	void setPlayerPosition(cocos2d::Vec2 position);
 	cocos2d::Vec2 tileCoordFromPosition(cocos2d::Vec2 position);
 	void setViewpointCenter(Vec2 position)
