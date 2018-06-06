@@ -191,7 +191,7 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 				i->runAction(Show::create());
 			}
 		}
-		//点击滑块里的就改变
+		//点击里面的就改变
 		else
 		{
 			log("hide==true");
