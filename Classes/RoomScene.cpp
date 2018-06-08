@@ -259,7 +259,7 @@ void RoomScene::messageCallback(Ref* pSender)
 	slider->setRotation(90);
 
 	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	slider->addEventListener(CC_CALLBACK_2(RoomScene::onChangedSlider2, this));
 	this->addChild(slider, 1);
 	
 }
@@ -305,6 +305,7 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 		auto visibleSize = Director::getInstance()->getVisibleSize();
 		Vec2 origin = Director::getInstance()->getVisibleOrigin();
 		auto label = Label::createWithTTF(words, "fonts/Marker Felt.ttf", 24);
+		
 		if (label == nullptr)
 		{
 			problemLoading("'fonts/Marker Felt.ttf'");
@@ -317,6 +318,7 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 			this->addChild(label, 1,i);
 			this->removeChildByTag(i - 6);
 		}
+		
 		auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
 		if (label2 == nullptr)
 		{
@@ -333,10 +335,12 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 		editBox->setText("");
 		i = i + 1;
 	}
+	
 	if (editBox->getTag() == 102)
 	{
 		editBox->setText("you recieved a letter");
 	}
+	
 }
 
 void RoomScene::editBoxTextChanged(EditBox *editBox, const std::string &text)
