@@ -24,6 +24,7 @@ public:
 	void menuDeleteRoomCallback(cocos2d::Ref* pSender);
 
 	void CountryButtonCallback(cocos2d::Ref* pSender);
+	void messageCallback(cocos2d::Ref* pSender);
 
 	//begin
 	virtual void onEnter();
