@@ -40,7 +40,7 @@ public:
 	void touchEnded(Touch* touch, Event* event);
 	//Slider滑动事件回调函数
 	void onChangedSlider(Ref* pSender, Slider::EventType type);
-    
+    void onChangedSlider2(Ref* pSender, Slider::EventType type);
 	//end
 	virtual void editBoxEditingDidBegin(cocos2d::extension::EditBox* editBox);
 	virtual void editBoxEditingDidEnd(cocos2d::extension::EditBox* editBox);
