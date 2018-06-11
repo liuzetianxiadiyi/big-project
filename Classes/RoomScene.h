@@ -29,6 +29,7 @@ public:
 
 	//国家回调函数
 	void countryCallBack(Ref* pSendre, Widget::TouchEventType type);
+	void confirmCallBack(Ref* pSendre, Widget::TouchEventType type);
 	
 	virtual void editBoxEditingDidBegin(cocos2d::extension::EditBox* editBox);
 	virtual void editBoxEditingDidEnd(cocos2d::extension::EditBox* editBox);
