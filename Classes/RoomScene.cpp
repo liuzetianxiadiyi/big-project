@@ -69,7 +69,7 @@ bool RoomScene::init()
 	this->addChild(Accont_back, 0);
 	
 	//选国家
-	auto china = Button::create("china.png");
+	auto china = Button::create("china.png", "china.png", "chinaForbid.png");
 	china->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f));
 	show.push_back(china);
 	china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
@@ -77,22 +77,27 @@ bool RoomScene::init()
 
 	//国家button的间隔
 	float country_interval = china->getContentSize().height/10;
-
-	auto us = Button::create("america.png");
+	
+	auto confirm = Button::create("confirm.png");
+	confirm->setPosition(Vec2(china->getPosition().x+10+china->getContentSize().width,china->getPosition().y));
+	confirm->addTouchEventListener(CC_CALLBACK_2(RoomScene::confirmCallBack, this));
+	this->addChild(confirm);
+	
+	auto us = Button::create("america.png","america.png","americaForbid.png");
 	us->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval - china->getContentSize().height));
 	us->setTag(2);
 	hides.push_back(us);
 	us->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(us, 10);
 
-	auto japan = Button::create("japan.png");
+	auto japan = Button::create("japan.png", "japan.png", "japanForbid.png");
 	japan->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f - country_interval * 2 - china->getContentSize().height * 2));
 	japan->setTag(3);
 	hides.push_back(japan);
 	japan->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(japan, 10);
 
-	auto russia = Button::create("russia.png");
+	auto russia = Button::create("russia.png", "russia.png", "russiaForbid.png");
 	russia->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval * 3 - china->getContentSize().height * 3));
 	hides.push_back(russia);
 	russia->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
@@ -224,6 +229,16 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 		}
 	}			
 }
+
+void RoomScene::confirmCallBack(Ref* pSender, Widget::TouchEventType type)
+{
+	if (type == Widget::TouchEventType::BEGAN)
+	{
+		show.front()->setEnabled(false);
+	}
+		
+}
+
 void RoomScene::editBoxTextChanged(EditBox *editBox, const std::string &text)
 {
 	CCLOG("EditBox_password changed");
