@@ -9,6 +9,11 @@ Military* Military::create(string& filename)
 		sprite->autorelease();
 		sprite->create = Sprite::create("filename");
 		Sprite *hpSprite = Sprite::create("hp.png");
+		
+		Sprite *bgSprite = Sprite::create("hpk.png");
+		bgSprite->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+		sprite->addChild(bgSprite, 1, 1);
+
 		auto progressTimer = ProgressTimer::create(hpSprite);
 		progressTimer->setType(ProgressTimer::Type::BAR);//条形
 		progressTimer->setMidpoint(Point(0, 0));//血条起始点
