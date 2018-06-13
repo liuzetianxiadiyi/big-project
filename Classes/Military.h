@@ -78,7 +78,7 @@ public:
 
 	static Military* create(string& filename);
 
-	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX, float _destinationY, Action* _move, Vec2 hpposition);
+	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX, float _destinationY, Action* _move);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);
