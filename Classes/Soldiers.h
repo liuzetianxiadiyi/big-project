@@ -21,7 +21,6 @@ public:
 
 public:
 	static Soldier* create(string& filename);
-	static void createBar(Sprite *a);
 	virtual void None() {};
 };
 
@@ -38,7 +37,6 @@ public:
 
 public:
 	static Dog* create(string& filename);
-	static void createBar(Sprite *a);
 	virtual void None() {};
 };
 
@@ -55,7 +53,6 @@ public:
 	
 public:
 	static Engineer* create(string& filename);
-	static void createBar(Sprite *a);
 	virtual void None() {};
 };
 #endif
