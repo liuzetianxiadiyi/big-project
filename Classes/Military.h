@@ -24,7 +24,6 @@ private:
 	bool Selected;
 	string status;
 	int country;
-	Vec2 hpposition;
 
 	static int power;
 	static string name;
@@ -43,7 +42,6 @@ public:
 	void setSelected(bool b);
 	void createBar(Sprite *a);
 	int gethp();
-	void sethpDestination(Vec2 v);
 	Action* getMoveAction()
 	{
 		return move;
