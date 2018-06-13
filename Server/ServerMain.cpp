@@ -7,9 +7,9 @@
 int main()
 {
 	Server server;
-	thread connectThread = thread(server.AcceptClients);
+	thread connectThread = thread([&] {server.AcceptClients(); });
 	connectThread.detach();
 
-	thread WaitingThread = thread(server.RoomNums_Data_Thread);
+	thread WaitingThread = thread([&] {server.RoomNums_Data_Thread(); });
 	WaitingThread.detach();
 }
