@@ -16,7 +16,7 @@ Military* Military::create(string& filename)
 	return nullptr;
 };
 
-void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX,float _destinationY, Action* _move,Vec2 _hpposition)
+void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX,float _destinationY, Action* _move)
 {
 	name = _name;
 	health_point = _health_point;
@@ -27,7 +27,6 @@ void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _positio
 	destinationX = _destinationX;
 	destinationY = _destinationY;
 	move = _move;
-	hpposition=_hpposition;
 }
 
 void Military::sethp(int damage)
@@ -72,7 +71,3 @@ int Military::gethp()
 	return health_point;
 }
 
-void Military::sethpDestination(Vec2 v)
-{
-	hpposition = v;
-}
