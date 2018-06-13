@@ -1,9 +1,13 @@
 #include "Server.h"
 #include "ctime"
+#include "senJsonParser.h"
+#include "GameData.h"
 
 Server::Server()
 {
-	init();
+	WaitingData = GameData::sWaitngData(0, ValueVector(), false);
+	int create = init();
+	log("create %d", create);
 }
 
 bool Server::init()		//如果init返回False，用return退出程序
@@ -73,9 +77,13 @@ BOOL Server::AcceptClients()
 		sClient = accept(sServer, (sockaddr *)&addrClient, &addrClientLen);
 		if (INVALID_SOCKET != sClient)
 		{
-			rmtx.lock();
 			wClients.push_back(sClient);
-			rmtx.unlock();
+			senJsonParser* Json = senJsonParser::createWithArray(WaitingData);
+			string sendBuf = Json->encode_WaitingData();
+			if (SOCKET_ERROR == send(sClient, sendBuf.c_str(), sendBuf.length, 0))
+			{
+				log("send waiting data false for %s", inet_ntoa(addrClient.sin_addr));
+			}
 		}
 		rmtx.unlock();
 
@@ -85,32 +93,15 @@ BOOL Server::AcceptClients()
 	return TRUE;
 }
 
-
-BOOL Server::recv_Ser(SOCKET sClient)
-{
-	char recvBuf[BUFLEN];
-	ZeroMemory(recvBuf, sizeof(recvBuf));
-	if (SOCKET_ERROR == recv(sClient, recvBuf, sizeof(recvBuf), 0))
-	{
-		//closesocket(sServer);
-		//closesocket(sClient);
-		//WSACleanup();
-		return FALSE;
-	}
-
-	information.setSendAndRecv(recvBuf);
-	return TRUE;
-}
-
-//发送数据
-BOOL Server::send_Ser(SOCKET sClient)
+//发送数据,超出五秒则不再发送
+BOOL Server::send_Ser(SOCKET sClient,string message)
 {
 	clock_t start = clock();
 
 	while (true)
 	{
-		char* sendBuf = const_cast<char*>(information.getSendBuf().c_str());
-		if (SOCKET_ERROR == send(sClient, sendBuf, sizeof(sendBuf), 0))
+		//char* sendBuf = const_cast<char*>(information.getSendBuf().c_str());
+		if (SOCKET_ERROR == send(sClient, message.c_str(), message.length, 0))
 		{
 			//closesocket(sServer);
 			//closesocket(sClient);
@@ -128,43 +119,44 @@ BOOL Server::send_Ser(SOCKET sClient)
 	return TRUE;
 }
 
-void Server::RoomNums_Data_Thread()
+void Server::EnterGame_Data_Thread()
 {
 	while (true)
 	{
 		rmtx.lock();
 
 		char recvBuf[BUFLEN];
-		vector<SOCKET>::iterator it;
-		for (it = wClients.begin();it!= wClients.end();++it)
+		vector < unordered_map<int, SOCKET>::iterator> deleteds;
+		for (unordered_map<int, SOCKET>::iterator it = rOwner.begin();it!=rOwner.end();++it)
 		{
-			ZeroMemory(recvBuf, sizeof(recvBuf));
-			if (SOCKET_ERROR != recv(*it, recvBuf, sizeof(recvBuf), 0))
+			if (SOCKET_ERROR != recv(it->second, recvBuf, sizeof(recvBuf), 0))
 			{
-				Room_Nums_Data = recvBuf;
-				sJsonParser* json = sJsonParser::createWithC_str(recvBuf);
-				json->decode;
-
-				string pName = json->getList().at(0).asValueMap()[PLAYERNAME].asString();
-				int rLable = json->getList().at(0).asValueMap()[ROOMLABEL].asInt();
-				
-				if ((json->getList().at(0).asValueMap())[ADDROOM].asBool())
+				for (auto rc : rClients[it->first])
 				{
-					++room_nums;
-					Room_Client temp_client;
-					temp_client.addMember(pName, *it);
-					rClients[rLable] = temp_client;
+					if (SOCKET_ERROR == send(rc, recvBuf, sizeof(recvBuf), 0))
+					{
+						log("send enter data false for %d", rc);
+					}
+				}
+				//put roomClient in gameClient
+				sJsonParser* json = sJsonParser::createWithC_str(recvBuf);
+				if (json->decode_RoomData)
+				{
+					gameClients.push_back(rClients[it->first]);
 				}
 				else
 				{
-					rClients[rLable].addMember(pName, *it);
-					//send some message
-
-
+					for (auto rc : rClients[it->first])
+					{
+						wClients.push_back(rc);
+					}
 				}
-
-				wClients.erase(it);
+				deleteds.push_back(it);
 			}
+		}
+		for (auto d : deleteds)
+		{
+			rOwner.erase(d);
 		}
 
 		rmtx.unlock();
@@ -173,19 +165,88 @@ void Server::RoomNums_Data_Thread()
 	}
 }
 
-vector<SOCKET>& Server::GetwClients()
+void Server::RoomNums_Data_Thread()
 {
-	return wClients;
+	while (true)
+	{
+		rmtx.lock();
+
+		int addroom = 0;
+		ValueVector vLabel;
+		ValueVector PlayerName;
+		char recvBuf[BUFLEN];
+		vector<SOCKET>::iterator it;
+		vector<vector<SOCKET>::iterator> deleteds;
+		for (it = wClients.begin();it!= wClients.end();++it)
+		{
+			ZeroMemory(recvBuf, sizeof(recvBuf));
+			if (SOCKET_ERROR != recv(*it, recvBuf, sizeof(recvBuf), 0))
+			{
+				sJsonParser* json = sJsonParser::createWithC_str(recvBuf);
+				json->decode_WaitingData;
+
+				string pName = json->getList().at(0).asValueMap()[PLAYERNAME].asString();
+				int rLabel = json->getList().at(0).asValueMap()[ROOMLABEL].asInt();
+				rClients[rLabel].push_back(*it);
+				if ((json->getList().at(0).asValueMap())[ADDROOM].asBool())
+				{
+					//记录数据用于Accept线程数据发送
+					++addroom;
+					vLabel.push_back(Value(rLabel));
+				}
+				else
+				{
+					//send some message
+					for (auto s : rClient_names[rLabel])
+					{
+						PlayerName.push_back(Value(s));
+					}
+					senJsonParser* enJson = senJsonParser::createWithArray( GameData::sRoomData(PlayerName));
+					string sendBuf = enJson->encode_RoomData();
+					if (SOCKET_ERROR == send(*it, sendBuf.c_str(), sendBuf.length, 0))
+					{
+						log("send room data false for %d",*it);
+					}
+				}
+				rClient_names[rLabel].push_back(pName);
+				deleteds.push_back(it);
+			}
+		}
+
+		for (auto d : deleteds)
+		{
+			wClients.erase(it);
+		}
+
+		rmtx.unlock();
+
+		Sleep(TIME_LAG);
+	}
 }
 
-vector<vector<SOCKET>>& Server::GetClient_inGame_Vector()
+void Server::GameData_Thread()
 {
-	return Client_inGame_Vector;
-}
+	while (true)
+	{
+		rmtx.lock();
+		for (auto cs : gameClients)
+		{
+			string information;
+			for (auto c : cs)
+			{
+				char recvBuf[BUFLEN];
+				if (SOCKET_ERROR != recv(c, recvBuf, sizeof(recvBuf), 0))
+				{
 
-unordered_map<int, Room_Client>& Server::GetrClients()
-{
-	return rClients;
+				}
+			}
+		}
+
+		rmtx.unlock();
+
+		Sleep(TIME_LAG);
+	}
+
 }
 
 Server::~Server()
