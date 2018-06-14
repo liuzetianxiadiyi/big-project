@@ -98,9 +98,9 @@ string senJsonParser::encode_RoomData()		//这里换成message防止直接使用全局变量in
 		ValueMap row = temp[SROOMSCENEDATA].asValueMap();
 		rapidjson::Value v_map(rapidjson::kObjectType);
 
-		rapidjson::Value v_own;
+		/*rapidjson::Value v_own;
 		v_own.SetString(row[OWNER].asString().c_str(), allocator);
-		v_map.AddMember(OWNER, v_own, allocator);
+		v_map.AddMember(OWNER, v_own, allocator);*/
 
 		rapidjson::Value aname(rapidjson::kArrayType);
 		ValueVector names = row[MEMBER].asValueVector();
@@ -154,7 +154,6 @@ string senJsonParser::encode_EnterData()
 		object.AddMember(SROOMSCENEDATA, v_map, allocator);
 
 		array.PushBack(object, allocator);
-	}
 	}
 
 	//document.AddMember("change", true, allocator);

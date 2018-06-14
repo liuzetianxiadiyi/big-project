@@ -9,13 +9,14 @@ using std::string;
 
 enum 
 {
-	//´ýÍêÉÆ
+	//å¾…å®Œå–„
 };
 
 class Military : public Sprite
 {
 private:
 	int health_point;
+	int max_hp;
 	Vec2 position;
 	bool dead;
 	float destinationX;
@@ -39,7 +40,8 @@ public:
 	void setDestination(Vec2 v);
 	void setdead();
 	void setSelected(bool b);
-	int gethp()const;
+	void createBar(Sprite *a);
+	int gethp();
 	Action* getMoveAction()
 	{
 		return move;
@@ -76,7 +78,7 @@ public:
 
 	static Military* create(string& filename);
 
-	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position ,float _destinationX,float _destinationY,Action* _move);
+	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX, float _destinationY, Action* _move);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);
