@@ -7,7 +7,10 @@
 #include "writer.h"
 #include "reader.h"
 #include "stringbuffer.h"
-
+#include <string>
+#include "GameData.h"
+USING_NS_CC;
+using std::string;
 class sJsonParser :public cocos2d::Ref
 {
 	CC_SYNTHESIZE(cocos2d::ValueVector, list, List);

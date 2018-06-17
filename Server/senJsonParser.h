@@ -1,34 +1,27 @@
 #ifndef __ENJSON_PARSER_SCENE_H_
 #define __ENJSON_PARSER_SCENE_H_
 //±àÂë
-#include "cocos2d.h"
-
-#include "document.h"
-#include "writer.h"
-#include "reader.h"
-#include "stringbuffer.h"
+#include "Value.h"
+#include "json\json.h"
 
 #include <string>
-
-USING_NS_CC;
+#include "GameData.h"
 using std::string;
 
-class senJsonParser :public cocos2d::Ref
+class senJsonParser
 {
 private:
 	ValueVector listData;
 	std::string content;
 public:
 
-	static senJsonParser * createWithArray(ValueVector pListData);
-
-	bool initWithArray(ValueVector pListData);
+	senJsonParser(ValueVector pListData);
 
 	string encode_WaitingData();
 	string encode_RoomData();
 	string encode_EnterData();
-	string encode_MilitaryData();
-	string encode_ConstructionData();
+	//string encode_MilitaryData();
+	//string encode_ConstructionData();
 };
 
 #endif
