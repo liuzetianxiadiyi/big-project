@@ -2,11 +2,9 @@
 #define __GAMEDATA_H__
 
 #include <iostream>
-#include "cocos2d.h"
-
+#include "Value.h"
 #include <initializer_list>
 //这里可以再私有变量中加一个函数指针，通过函数指针来调用不同函数，但是我不能正确赋值
-USING_NS_CC;
 
 #define WAITINGSCENEDATA "WaitingSceneData"	//Waiting界面发送数据的标识
 #define ROOMNUMS "RoomNums"			//房间数量
@@ -76,13 +74,13 @@ namespace encode_ConstructionData
 class GameData
 {
 public:
-	static ValueVector toValueVector(Value value);
-	static ValueVector toValueVector(initializer_list<Value> il);
+	static ValueVector toValueVector(MyValue value);
+	static ValueVector toValueVector(initializer_list<MyValue> il);
 
-	static ValueMap toValueMap(initializer_list<pair<string, Value>> il);
-	static ValueMap toValueMap(pair<string, Value>);
+	static ValueMap toValueMap(initializer_list<pair<string, MyValue>> il);
+	static ValueMap toValueMap(pair<string, MyValue>);
 
-	static pair<string, Value> toPair(const char* order, Value value);
+	static pair<string, MyValue> toPair(const char* order, MyValue value);
 
 	static ValueVector WaitingData(bool Add_Value, int Room_Value, string player_Value);
 

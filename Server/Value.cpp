@@ -1,5 +1,6 @@
 #include "Value.h"
 class MyValue;
+#define CC_SAFE_DELETE(p)           do { delete (p); (p) = nullptr; } while(0)
 MyValue::MyValue()
 	: _type(Type::NONE)
 {
@@ -113,10 +114,7 @@ MyValue::MyValue(MyValue&& other)
 	*this = std::move(other);
 }
 
-MyValue::~MyValue()
-{
-	clear();
-}
+MyValue::~MyValue(){}
 
 MyValue& MyValue::operator= (const MyValue& other)
 {
@@ -689,4 +687,75 @@ const ValueMapIntKey& MyValue::asIntKeyMap() const
 {
 	//CCASSERT(_type == Type::INT_KEY_MAP, "The value type isn't Type::INT_KEY_MAP");
 	return *_field.intKeyMapVal;
+}
+
+void MyValue::reset(Type type)
+{
+	if (_type == type)
+		return;
+	
+	clear();
+
+	// Allocate memory for the new value
+	switch (type)
+	{
+	case Type::STRING:
+		_field.strVal = new (std::nothrow) std::string();
+		break;
+	case Type::VECTOR:
+		_field.vectorVal = new (std::nothrow) ValueVector();
+		break;
+	case Type::MAP:
+		_field.mapVal = new (std::nothrow) ValueMap();
+		break;
+	case Type::INT_KEY_MAP:
+		_field.intKeyMapVal = new (std::nothrow) ValueMapIntKey();
+		break;
+	default:
+		break;
+	}
+
+	_type = type;
+}
+
+void MyValue::clear()
+{
+	// Free memory the old value allocated
+	switch (_type)
+	{
+	case Type::BYTE:
+		_field.byteVal = 0;
+		break;
+	case Type::INTEGER:
+		_field.intVal = 0;
+		break;
+	case Type::UNSIGNED:
+		_field.unsignedVal = 0u;
+		break;
+	case Type::FLOAT:
+		_field.floatVal = 0.0f;
+		break;
+	case Type::DOUBLE:
+		_field.doubleVal = 0.0;
+		break;
+	case Type::BOOLEAN:
+		_field.boolVal = false;
+		break;
+	case Type::STRING:
+		CC_SAFE_DELETE(_field.strVal);
+		break;
+	case Type::VECTOR:
+		CC_SAFE_DELETE(_field.vectorVal);
+		break;
+	case Type::MAP:
+		CC_SAFE_DELETE(_field.mapVal);
+		break;
+	case Type::INT_KEY_MAP:
+		CC_SAFE_DELETE(_field.intKeyMapVal);
+		break;
+	default:
+		break;
+	}
+
+	_type = Type::NONE;
 }

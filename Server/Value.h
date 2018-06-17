@@ -199,5 +199,7 @@ private:
 	}_field;
 
 	Type _type;
+	void reset(Type type);
+	void clear();
 };
 #endif // ! __VALUE_H__

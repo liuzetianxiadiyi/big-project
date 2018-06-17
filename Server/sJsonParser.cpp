@@ -26,7 +26,7 @@ bool sJsonParser::decode_RoomData()
 	if (reader.parse(content, root))
 	{
 		Json::Value vTemp = root[ROOMSCENEDATA];
-		if (vTemp[ISSTART].asBool)
+		if (vTemp[ISSTART].asBool())
 		{
 			return true;
 		}

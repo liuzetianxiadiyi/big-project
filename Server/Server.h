@@ -11,8 +11,6 @@
 #include <vector>
 #include <map>
 #include <mutex>
-#include "cocos2d.h"
-USING_NS_CC;
 #include "sJsonParser.h"
 #include "senJsonParser.h"
 

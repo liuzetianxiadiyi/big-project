@@ -80,9 +80,9 @@ BOOL Server::AcceptClients()
 			wClients.push_back(sClient);
 			senJsonParser Json = senJsonParser(WaitingData);
 			string sendBuf = Json.encode_WaitingData();
-			if (SOCKET_ERROR == send(sClient, sendBuf.c_str(), sendBuf.length, 0))
+			if (SOCKET_ERROR == send(sClient, sendBuf.c_str(), sendBuf.length(), 0))
 			{
-				//log("send waiting data false for %s", inet_ntoa(addrClient.sin_addr));
+				printf("send waiting data false for %s\n", inet_ntoa(addrClient.sin_addr));
 			}
 		}
 		//rmtx.unlock();
@@ -101,7 +101,7 @@ BOOL Server::send_Ser(SOCKET sClient,string message)
 	while (true)
 	{
 		//char* sendBuf = const_cast<char*>(information.getSendBuf().c_str());
-		if (SOCKET_ERROR == send(sClient, message.c_str(), message.length, 0))
+		if (SOCKET_ERROR == send(sClient, message.c_str(), message.length(), 0))
 		{
 			//closesocket(sServer);
 			//closesocket(sClient);
@@ -136,12 +136,12 @@ void Server::EnterGame_Data_Thread()
 				{
 					if (SOCKET_ERROR == send(rc, recvBuf, sizeof(recvBuf), 0))
 					{
-						//log("send enter data false for %d", rc);
+						printf("send enter data false for %d\n", rc);
 					}
 				}
 				//put roomClient in gameClient
 				sJsonParser json = sJsonParser(recvBuf);
-				if (json.decode_RoomData)
+				if (json.decode_RoomData())
 				{
 					//将room中一个vector中的客户端全部加入gameClient
 					gameClients.push_back(rClients[it->first]);
@@ -184,7 +184,7 @@ void Server::RoomNums_Data_Thread()
 			{
 				recvBuf[BUFLEN] = '\0';
 				sJsonParser json = sJsonParser(recvBuf);
-				json.decode_WaitingData;
+				json.decode_WaitingData();
 
 				string pName = json.getRow()[PLAYERNAME].asString();
 				int rLabel = json.getRow()[ROOMLABEL].asInt();
@@ -205,9 +205,9 @@ void Server::RoomNums_Data_Thread()
 					}
 					senJsonParser enJson = senJsonParser( GameData::sRoomData(PlayerName));
 					string sendBuf = enJson.encode_RoomData();
-					if (SOCKET_ERROR == send(*it, sendBuf.c_str(), sendBuf.length, 0))
+					if (SOCKET_ERROR == send(*it, sendBuf.c_str(), sendBuf.length(), 0))
 					{
-						//log("send room data false for %d",*it);
+						printf("send room data false for %d\n",*it);
 					}
 				}
 				rClient_names[rLabel].push_back(pName);
