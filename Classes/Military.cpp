@@ -1,5 +1,5 @@
 #include "Military.h"
-
+#include "Soldier.h"
 Military* Military::create(string& filename)
 {
 	Military* sprite = new Military();
@@ -7,7 +7,6 @@ Military* Military::create(string& filename)
 	if (sprite->initWithFile(filename))
 	{
 		sprite->autorelease();
-		sprite->create = Sprite::create("filename");
 		return sprite;
 	}
 
@@ -62,7 +61,15 @@ void Military::createBar(Sprite * a)
 
 void Military::attack(Military* sprite)
 {
-	sprite->sethp(power);
+	int pTemp;
+	if (typeid(*this) == typeid(Soldier))
+		pTemp = Soldier::power;
+	else if (typeid(*this) == typeid(Dog))
+		pTemp = Dog::power;
+	else if (typeid(*this) == typeid(Engineer))
+		pTemp = Engineer::power;
+	sprite->sethp(pTemp);
+
 }
 
 int Military::gethp()
