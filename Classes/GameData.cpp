@@ -105,10 +105,10 @@ ValueVector GameData::MilitaryData(initializer_list<Military*> il)
 		pair<string, Value> temp_pair0 = make_pair(HEALTHPOINT, Value(v->gethp()));
 		pair<string, Value> temp_pair1 = make_pair (POSITIONX, Value(v->getPositionX()));
 		pair<string, Value> temp_pair2 = make_pair(POSITIONY, Value(v->getPositionY()));
-		pair<string, Value> temp_pair3 = make_pair(DESTINATIONX, Value(v->getDestinationX()));
-		pair<string, Value> temp_pair4 = make_pair(DESTINATIONY, Value(v->getDestinationY()));
+		pair<string, Value> temp_pair3 = make_pair(DESTINATIONX, Value(v->getDestination().x));
+		pair<string, Value> temp_pair4 = make_pair(DESTINATIONY, Value(v->getDestination().y));
 		pair<string, Value> temp_pair5 = make_pair(STATUS, Value(v->getStatus()));
-		pair<string, Value> temp_pair6 = make_pair(COUNTRY, Value(v->getCountry));
+		pair<string, Value> temp_pair6 = make_pair(COUNTRY, Value(v->getCountry()));
 		ValueMap temp_map = GameData::toValueMap({ temp_pair0,temp_pair1,temp_pair2,temp_pair3,temp_pair4,temp_pair5,temp_pair6 });
 		if (typeid(v) == typeid(Dog))
 		{

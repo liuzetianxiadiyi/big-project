@@ -9,35 +9,35 @@ Scene* HelloWorld::createScene()
 	auto scene = Scene::create();
 	auto layer = Layer::create();
 	scene->addChild(layer);
-    return scene;
+	return scene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
+	//////////////////////////////
+	// 1. super init first
+	if (!Layer::init())
+	{
+		return false;
+	}
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+	/////////////////////////////
+	// 2. add a menu item with "X" image, which is clicked to quit the program
+	//    you may modify it.
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-	// è¿™é‡Œçš„ä¸‰ä¸ªé€‰é¡¹æ‰€éœ€è¦çš„å›¾ç‰‡å¯ä»¥å…ˆå·æ‡’åªç»™ä¸€ä¸ªï¼ŒæŠŠå›¾ç‰‡åå­—æ”¹æˆä¸€æ ·çš„å°±è¡Œäº†ï¼Œå®Œæˆé¡¹ç›®åå†è¿›è¡Œè¡¥å……
+	// add a "close" icon to exit the progress. it's an autorelease object
+	// ÕâÀïµÄÈı¸öÑ¡ÏîËùĞèÒªµÄÍ¼Æ¬¿ÉÒÔÏÈÍµÀÁÖ»¸øÒ»¸ö£¬°ÑÍ¼Æ¬Ãû×Ö¸Ä³ÉÒ»ÑùµÄ¾ÍĞĞÁË£¬Íê³ÉÏîÄ¿ºóÔÙ½øĞĞ²¹³ä
 	auto StartItem = MenuItemImage::create(
 		"StartNormal.png",
 		"StartSelected.png",
@@ -50,65 +50,65 @@ bool HelloWorld::init()
 		CC_CALLBACK_1(HelloWorld::menuSettingCallback, this)
 	);
 	SettingItem->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 100));
-    auto ExitItem = MenuItemImage::create(
-                                           "ExitNormal.png",
-                                           "ExitSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuExitCallback, this));
+	auto ExitItem = MenuItemImage::create(
+		"ExitNormal.png",
+		"ExitSelected.png",
+		CC_CALLBACK_1(HelloWorld::menuExitCallback, this));
 
-    if (ExitItem == nullptr ||
-        ExitItem->getContentSize().width <= 0 ||
-        ExitItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - ExitItem->getContentSize().width/2;
-        float y = origin.y + ExitItem->getContentSize().height/2;
-        ExitItem->setPosition(Vec2(x,y));
-    }
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(StartItem,SettingItem,ExitItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("background.png");
-    if (sprite == nullptr)
-    {
-        problemLoading("'background.png'");
-    }
-    else
-    {
-        // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-        // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
-    }
-	//æ— é™å¾ªç¯åŠ¨ç”»
-		Vector<SpriteFrame*> animation;
+	if (ExitItem == nullptr ||
+		ExitItem->getContentSize().width <= 0 ||
+		ExitItem->getContentSize().height <= 0)
+	{
+		problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+	}
+	else
+	{
+		float x = origin.x + visibleSize.width - ExitItem->getContentSize().width / 2;
+		float y = origin.y + ExitItem->getContentSize().height / 2;
+		ExitItem->setPosition(Vec2(x, y));
+	}
 	
-	for (int i = 1;i<12; i++) 
+	// create menu, it's an autorelease object
+	auto menu = Menu::create(StartItem, SettingItem, ExitItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 1);
+
+	// add "HelloWorld" splash screen"
+	auto sprite = Sprite::create("background.png");
+	if (sprite == nullptr)
+	{
+		problemLoading("'background.png'");
+	}
+	else
+	{
+		// position the sprite on the center of the screen
+		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+
+		// add the sprite as a child to this layer
+		this->addChild(sprite, 0);
+	}
+	//ÎŞÏŞÑ­»·¶¯»­
+	Vector<SpriteFrame*> animation;
+
+	for (int i = 1; i<12; i++)
 	{
 		auto sf = SpriteFrame::create(StringUtils::format("filename%d.jpg", i), Rect(0, 0, 1000, 1500));
-		//å›¾ç‰‡å¤§å°,ä¸ªæ•°,æ ¼å¼è¿˜éœ€è®¾å®šï¼Œ
+		//Í¼Æ¬´óĞ¡,¸öÊı,¸ñÊ½»¹ĞèÉè¶¨£¬
 		animation.pushBack(sf);
 	}
 
 	auto an = Animation::createWithSpriteFrames(animation);
-	an->setDelayPerUnit(0.06f);//é—´éš”æ—¶é—´
+	an->setDelayPerUnit(0.06f);//¼ä¸ôÊ±¼ä
 	auto Ani = Animate::create(an);
 	auto Sp = Sprite::create();
-	Sp->setTag(3);//æ ‡å·è®¾å®š
+	Sp->setTag(3);//±êºÅÉè¶¨
 	Sp->runAction(RepeatForever::create(Ani));
-	this->addChild(Sp,0);
-	Sp->setPosition(150, 150);//æ”¾ç½®ä½ç½®éœ€è®¾å®š
+	this->addChild(Sp, 0);
+	Sp->setPosition(150, 150);//·ÅÖÃÎ»ÖÃĞèÉè¶¨
 
-    return true;
+	return true;
 }
-//éŸ³æ•ˆå¾…å¤„ç†
+//ÒôĞ§´ı´¦Àí
 void HelloWorld::menuStartCallback(Ref* pSender)
 {
 	auto scene = AccontScene::createScene();
@@ -131,17 +131,17 @@ void HelloWorld::menuSettingCallback(Ref* pSender)
 }
 void HelloWorld::menuExitCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+	//Close the cocos2d-x game scene and quit the application
+	Director::getInstance()->end();
 	SimpleAudioEngine::getInstance()->playEffect("filename");
-    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
 #endif
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
+	/*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
 
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
+	//EventCustom customEndEvent("game_scene_close_event");
+	//_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
 }
@@ -155,7 +155,7 @@ void HelloWorld::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	log("HelloWorld onEnterTransitionDidFinish");
-	//æ’­æ”¾
+	//²¥·Å
 	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
 	{
 		SimpleAudioEngine::getInstance()->playBackgroundMusic("filename.mp3", true);
@@ -178,6 +178,6 @@ void HelloWorld::cleanup()
 {
 	Layer::cleanup();
 	log("HelloWorld cleanup");
-	//åœæ­¢
+	//Í£Ö¹
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic("filename.mp3");
 }

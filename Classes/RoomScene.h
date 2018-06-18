@@ -5,14 +5,14 @@
 #include "cocos2d.h"
 #include"ui/CocosGUI.h"
 #include"cocos-ext.h"
-
+#include"GameScene.h"
 USING_NS_CC;
 USING_NS_CC_EXT;
 
 using namespace std;
 using namespace cocos2d::ui;
 
-class RoomScene:public cocos2d::Layer，public EditBoxDelegate,public ScrollViewDelegate
+class RoomScene:public cocos2d::Layer,public EditBoxDelegate
 {
 public:
 	static Scene* createScene();
@@ -21,7 +21,7 @@ public:
 
 	void menuStartGameCallback(cocos2d::Ref* pSender);
 	void menuDeleteRoomCallback(cocos2d::Ref* pSender);
-	void messageCloseCallback(cocos2d::Ref* pSender);
+	void messageCallback(cocos2d::Ref* pSender);
 	void CountryButtonCallback(cocos2d::Ref* pSender);	
     	
 	//国家的button

@@ -1,10 +1,8 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-//#include "SimpleAudioEngine.h"
-//声音设置可能会出现问题，不知道xml文件在哪，如果有问题并且无法解决，换成文件操作来储存设置
 
-//#define USE_AUDIO_ENGINE 1
-#define USE_SIMPLE_AUDIO_ENGINE 1
+// #define USE_AUDIO_ENGINE 1
+// #define USE_SIMPLE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
 #error "Don't use AudioEngine and SimpleAudioEngine at the same time. Please just select one in your game!"
@@ -19,9 +17,9 @@ using namespace CocosDenshion;
 #endif
 
 USING_NS_CC;
-                                                                   
-static cocos2d::Size designResolutionSize = cocos2d::Size(1136, 640);
-static cocos2d::Size smallResolutionSize = cocos2d::Size(960, 640);
+
+static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
+static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
@@ -61,9 +59,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("HelloWorld", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+        glview = GLViewImpl::createWithRect("HelloWorldLZH", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-        glview = GLViewImpl::create("HelloWorld");
+        glview = GLViewImpl::create("HelloWorldLZH");
 #endif
         director->setOpenGLView(glview);
     }
@@ -94,18 +92,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     register_all_packages();
-    // create a scene. it's an autorelease object
+
+    // create a scene. it's an autorelease object 初始化场景
     auto scene = HelloWorld::createScene();
 
-    // run
+    // run 场景跳转
     director->runWithScene(scene);
-	//可以加载很多,可能这里会出现bug，不知道这里的getInstance有没有注册这一说法,然而是会的
-	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("filename.mp3");
-	SimpleAudioEngine::getInstance()->preloadEffect("filename.mp3");
-	UserDefault * defaults = UserDefault::getInstance();
-	defaults->setBoolForKey("sound_key", true);
-	defaults->setBoolForKey("music_key", true);
-	defaults->flush();
+
     return true;
 }
 

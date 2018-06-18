@@ -37,7 +37,7 @@ bool WaitingScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	thread roomThread(this->roomDataThread);
+	thread roomThread([&] {this->roomDataThread(); });
 	roomThread.detach();
 
 	auto EnterItem = MenuItemImage::create(
@@ -80,7 +80,7 @@ Slider* slider = Slider::create();
 	slider->setRotation(90);
 
 	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	slider->addEventListener(CC_CALLBACK_2(WaitingScene::onChangedSlider, this));
 	this->addChild(slider, 1);
 
 	return true;
@@ -88,13 +88,13 @@ Slider* slider = Slider::create();
 
 void WaitingScene::roomDataThread()
 {
-	rmtx.lock();
+	//rmtx.lock();
 	while (!replace)
 	{
 		Client* client = Client::getInstance();
-		if (client->recv_Cli())
-		{
-			rmtx.lock();
+		//if (client->recv_Cli())
+		
+			//rmtx.lock();
 
 			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
 			json->decode_WaitingData();
@@ -120,6 +120,8 @@ void WaitingScene::roomDataThread()
 
 				for (int i = 0; i < room_nums; ++i)
 				{
+					auto visibleSize = Director::getInstance()->getVisibleSize();
+					Vec2 origin = Director::getInstance()->getVisibleOrigin();
 					auto roomButton = Button::create("room.png", "roomHighlight.png");
 					//美工
 					roomButton->setScale9Enabled(true);
@@ -135,11 +137,11 @@ void WaitingScene::roomDataThread()
 				}
 			}
 
-			rmtx.unlock();
-		}
+			//rmtx.unlock();
+		
 		Sleep(2*TIME_LAG);
 	}
-	rmtx.unlock();
+	//rmtx.unlock();
 }
 
 void WaitingScene::menuEnterCallback(Ref* pSender)
@@ -151,7 +153,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		//send room_tag and player of this room message
 		ValueVector plistdata = GameData::WaitingData(false, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
-		rmtx.lock();
+		//rmtx.lock();
 		replace = true;
 
 		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
@@ -159,7 +161,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		Client* client = Client::getInstance();
 		client->send_Cli(sendbuf);
 
-		rmtx.unlock();
+		//rmtx.unlock();
 		//Scene changes
 		auto scene = RoomScene::createScene();
 		auto reScene = TransitionJumpZoom::create(1.0f, scene);
@@ -173,11 +175,11 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 
 void WaitingScene::createRoomCallback(Ref* pSender)
 {
-	rmtx.lock();
+	//rmtx.lock();
 
 	replace = true;
 
-	rmtx.unlock();
+	//rmtx.unlock();
 
 	UserDefault* defaults = UserDefault::getInstance();
 	defaults->setBoolForKey(OWNER, true);
@@ -191,7 +193,7 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 	Client* client = Client::getInstance();
 	client->send_Cli(sendbuf);
 
-	rmtx.unlock();
+	//rmtx.unlock();
 
 	auto scene = RoomScene::createScene(); 
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
@@ -204,7 +206,7 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 
 void WaitingScene::menuReturnCallback(Ref* pSender)
 {
-	rmtx.lock();
+	//rmtx.lock();
 	replace = true;
 
 	auto scene = HelloWorld::createScene();

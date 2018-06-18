@@ -1,4 +1,4 @@
-#include "Client.h"
+﻿#include "Client.h"
 #include <ctime>
 #include <thread>
 #include <algorithm>
@@ -10,7 +10,7 @@ Client* Client::client = new Client();
 
 bool Client::init()
 {
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData))//�ɹ�����0  
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData))//³É¹¦·µ»Ø0  
 	{
 		return FALSE;
 	}
@@ -23,12 +23,12 @@ bool Client::init()
 		return FALSE;
 	}
 
-	//3 ׼��ͨ�ŵ�ַ  
+	//3 ×¼±¸Í¨ÐÅµØÖ·  
 	SOCKADDR_IN addrServer;
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_port = htons(PORT);
-	addrServer.sin_addr.s_addr = inet_addr("10.22.106.30");
-	
+	addrServer.sin_addr.s_addr = inet_addr("192.168.0.3");
+
 	return true;
 }
 
@@ -39,7 +39,6 @@ BOOL Client::ConnectServer()
 		//cout <<clock()-start;
 		closesocket(sHost);
 		WSACleanup();
-		log("can't connect Server!");
 		system("pause");
 		return FALSE;
 	}
@@ -49,7 +48,7 @@ BOOL Client::ConnectServer()
 
 string Client::recv_Cli()
 {
-	char recvBuf[BUFLEN+1];
+	char recvBuf[BUFLEN + 1];
 	ZeroMemory(recvBuf, sizeof(recvBuf));
 	if (SOCKET_ERROR == recv(sHost, recvBuf, sizeof(recvBuf), 0))
 	{
@@ -67,7 +66,7 @@ BOOL Client::send_Cli(string sendBuf)
 	clock_t start = clock();
 	while (true)
 	{
-		if (SOCKET_ERROR == send(sHost,sendBuf.c_str(), sendBuf.length(), 0))
+		if (SOCKET_ERROR == send(sHost, sendBuf.c_str(), sendBuf.length(), 0))
 		{
 			//closesocket(sHost);
 			//WSACleanup();
@@ -92,9 +91,9 @@ Client::Client()
 		log("init Client false!");
 	}
 
-	if (ConnectServer())
+	if (!ConnectServer())
 	{
-		log("connect Server!");
+		log("can't connect Server!");
 	}
 }
 

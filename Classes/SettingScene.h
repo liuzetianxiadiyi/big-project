@@ -1,10 +1,10 @@
-#ifndef __SETTING_SCENE_H_
+﻿#ifndef __SETTING_SCENE_H_
 #define __SETTING_SCENE_H_
 
 #include "SystemHeader.h"
 #include "cocos2d.h"
 USING_NS_CC;
-class Setting : public cocos2d::Layer
+class Setting : public cocos2d::Layer,public EditBoxDelegate
 {
 public:
 	static cocos2d::Scene* createScene();
