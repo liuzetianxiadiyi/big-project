@@ -234,15 +234,21 @@ void GameScene::onMouseUp(Event* event)
 	}
 }
 
-vector<MyTile*> GameScene::FindWay(Vec2 start, Vec2 goal)
+vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 {
+	//create start Tile
 	MyTile* sta = MyTile::create(NULL, start, goal);
-	openTile.push(*sta);
+	openTile.push_back(*sta);
 	Vec2 pos = start;
+	//count use to juggle if the Tile is added newly
+	int count = 0;
 	while (pos != goal)
 	{
-		closeTile.push_back(openTile.top());
-		openTile.pop();
+		//choose the best one as the nextway
+		closeTile.push_back(*openTile.begin());
+		//delete it from the vector of choices
+		openTile.erase(openTile.begin());
+		//used to get different direction Tile
 		int flag_x, flag_y;
 		for (int i = 0; i < 4; ++i)
 		{
@@ -265,11 +271,13 @@ vector<MyTile*> GameScene::FindWay(Vec2 start, Vec2 goal)
 				flag_y = -1;
 				break;
 			}
-			pos.x += flag_x;
-			pos.y += flag_y;
-			if (ColsCheck(Vec2(pos.x, pos.y)))
+			Vec2 temp;
+			temp.x = pos.x + flag_x;
+			temp.y = pos.y + flag_y;
+			//Check collision
+			if (ColsCheck(temp))
 			{
-				Tile* nextWay = Tile::create(&openTile[0], Vec2(pos.x, pos.y), goal);
+				MyTile* nextWay = MyTile::create(&openTile[0], temp, goal);
 				vector<MyTile>::iterator iter;
 				iter = find(closeTile.begin(), closeTile.end(), *nextWay);
 				//is not in closeTile
@@ -282,27 +290,27 @@ vector<MyTile*> GameScene::FindWay(Vec2 start, Vec2 goal)
 						if (*nextWay < *it)
 						{
 							*it = *nextWay;
-							sort(openTile.begin(), openTile.end());
 						}
 					}
 					else
 					{
 						openTile.push_back(*nextWay);
-						sort(openTile.begin(), openTile.end());
 					}
 				}
 			}
 		}
-		pos = openTil[0].GetPosition();
+		sort(openTile.begin(), openTile.end());
+		pos = openTile.begin->GetPosition();
+		++count;
 	}
 	vector<Vec2> Way;
 	Way.push_back(goal);
-	MyTile& temp = closeTile[0];
+	MyTile* temp = &closeTile[closeTile.size() - 1];
 	do
 	{
-		Way.push_back(temp.GetPosition());
-		temp = *temp.GetParent();
-	} while (temp.GetParent() != NULL);
+		Way.push_back(temp->GetPosition());
+		temp = temp->GetParent();
+	} while (temp != NULL);
 
 	reverse(Way.cbegin(), Way.cend());
 

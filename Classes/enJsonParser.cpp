@@ -77,15 +77,12 @@ string enJsonParser::encode_WaitingRoomData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 
-	rapidjson::Value array(rapidjson::kArrayType);
-
+	rapidjson::Value v_map;
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
 
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[WAITINGSCENEDATA].asValueMap();
-		rapidjson::Value v_map(rapidjson::kObjectType);
 
 		rapidjson::Value v_add;
 		v_add.SetBool(row[ADDROOM].asBool());
@@ -98,14 +95,10 @@ string enJsonParser::encode_WaitingRoomData()
 		rapidjson::Value v_name;
 		v_name.SetString(row[PLAYERNAME].asString().c_str(), allocator);
 		v_map.AddMember(PLAYERNAME, v_name, allocator);
-
-		object.AddMember(WAITINGSCENEDATA, v_map, allocator);
-
-		array.PushBack(object, allocator);
 	}
 
 	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
+	document.AddMember(WAITINGSCENEDATA, v_map, allocator);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
@@ -122,27 +115,21 @@ string enJsonParser::encode_EnterGameData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 
-	rapidjson::Value array(rapidjson::kArrayType);
+	rapidjson::Value v_map;
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
 
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[ROOMSCENEDATA].asValueMap();
-		rapidjson::Value v_map(rapidjson::kObjectType);
 
 		rapidjson::Value v_sta;
 		v_sta.SetBool(row[ISSTART].asBool());
 		v_map.AddMember(ISSTART, v_sta, allocator);
-
-		object.AddMember(ROOMSCENEDATA, v_map, allocator);
-
-		array.PushBack(object, allocator);
 	}
 
 	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
+	document.AddMember(ROOMSCENEDATA, v_map, allocator);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
@@ -158,15 +145,13 @@ string enJsonParser::encode_MilitaryData()
 	rapidjson::Document document;
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-	//放置object																		//放置object
-	rapidjson::Value array(rapidjson::kArrayType);
+	//放置object
+	rapidjson::Value object;
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();
 		//放置三种兵种的信息
-		rapidjson::Value dobject(rapidjson::kObjectType);
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[MILITARYDATA].asValueMap();
 
 		ValueVector DogData = row[DOGDATA].asValueVector();
@@ -199,7 +184,7 @@ string enJsonParser::encode_MilitaryData()
 			for (auto& dv : temp_data)	//dv为ValueMap代表一个兵的信息
 			{
 				ValueMap temp_map = dv.asValueMap();
-				rapidjson::Value json_map(rapidjson::kObjectType);
+				rapidjson::Value json_map;
 
 				rapidjson::Value v_hp;
 				v_hp.SetInt(temp_map[HEALTHPOINT].asInt());
@@ -244,10 +229,8 @@ string enJsonParser::encode_MilitaryData()
 				object.AddMember(ENGINEERDATA, temp_array, allocator);
 			}
 		}
-		dobject.AddMember(MILITARYDATA, object, allocator);
-		array.PushBack(dobject, allocator);
 	}
-	document.AddMember("Record", array, allocator);
+	document.AddMember(MILITARYDATA, object, allocator);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
@@ -264,14 +247,12 @@ string enJsonParser::encode_ConstructionData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 																					//放置object																		//放置object
-	rapidjson::Value array(rapidjson::kArrayType);
+	rapidjson::Value object(rapidjson::kObjectType);
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();
 
-		rapidjson::Value dobject(rapidjson::kObjectType);
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[CONSTRUCTIONDATA].asValueMap();
 
 		ValueVector barData = row[BARRACKSDATA].asValueVector();
@@ -348,10 +329,8 @@ string enJsonParser::encode_ConstructionData()
 				object.AddMember(BASEDATA, temp_array, allocator);
 			}
 		}
-		dobject.AddMember(CONSTRUCTIONDATA, object, allocator);
-		array.PushBack(dobject, allocator);
 	}
-	document.AddMember("Record", array, allocator);
+	document.AddMember(CONSTRUCTIONDATA, object, allocator);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里

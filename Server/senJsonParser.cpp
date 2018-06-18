@@ -1,173 +1,100 @@
 #include "senJsonParser.h"
-#include "GameData.h"
 
-senJsonParser * senJsonParser::createWithArray(ValueVector pListData)
-{
-	senJsonParser * pRef = new senJsonParser();
-
-	if (pRef->initWithArray(pListData))
-	{
-		pRef->autorelease();
-		return pRef;
-	}
-	CC_SAFE_DELETE(pRef);
-	return nullptr;
-}
-
-bool senJsonParser::initWithArray(ValueVector pListData)
+senJsonParser::senJsonParser(ValueVector pListData)
 {
 	listData = pListData;
-	return true;
 }
-
 string senJsonParser::encode_WaitingData()		//这里换成message防止直接使用全局变量information造成未知的bug
 {
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-
-	rapidjson::Value array(rapidjson::kArrayType);
+	Json::Value object;
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();
 
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[SWAITINGSCENEDATA].asValueMap();
-		rapidjson::Value v_map(rapidjson::kObjectType);
+		Json::Value v_map;
 
-		rapidjson::Value v_add;
-		v_add.SetInt(row[ADDROOM].asInt());
-		v_map.AddMember(ADDROOM, v_add, allocator);
+		v_map[ADDROOM] = row[ADDROOM].asInt();
 
-		rapidjson::Value v_rTag(rapidjson::kArrayType);
-		ValueVector TagVector = row[ROOMLABEL].asValueVector;
+		Json::Value v_rTag(Json::arrayValue);
+		ValueVector TagVector = row[ROOMLABEL].asValueVector();
 		for (auto& tv : TagVector)
 		{
-			v_rTag.PushBack(tv.asInt(),allocator);
+			v_rTag.append(tv.asInt());
 		}
-		//v_rTag.SetInt(row[ROOMLABEL].asInt());
-		v_map.AddMember(ROOMLABEL, v_rTag, allocator);
+		v_map[ROOMLABEL] = v_rTag;
 
-		rapidjson::Value v_del;
-		v_del.SetBool(row[DELETED].asBool());
-		v_map.AddMember(DELETED, v_del, allocator);
+		v_map[DELETED] = row[DELETED].asBool();
 
 		if (row[DELETED].asBool())
 		{
-			rapidjson::Value v_dTag(rapidjson::kArrayType);
-			ValueVector dTagVector = row[DELETEDROOM].asValueVector;
+			Json::Value v_dTag(Json::arrayValue);
+			ValueVector dTagVector = row[DELETEDROOM].asValueVector();
 			for (auto& dv : dTagVector)
 			{
-				v_dTag.PushBack(dv.asInt(), allocator);
+				v_dTag.append(dv.asInt());
 			}
-			v_map.AddMember(DELETEDROOM, v_dTag, allocator);
+			v_map[DELETEDROOM] = v_dTag;
 		}
 
-		object.AddMember(SWAITINGSCENEDATA, v_map, allocator);
-
-		array.PushBack(object, allocator);
+		object[SWAITINGSCENEDATA] = v_map;
 	}
 
-	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	string sendBuf = buffer.GetString();
-	return sendBuf;
+	return object.toStyledString();
 	//log("out: %s", out);
 }
 
 string senJsonParser::encode_RoomData()		//这里换成message防止直接使用全局变量information造成未知的bug
 {
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-
-	rapidjson::Value array(rapidjson::kArrayType);
+	Json::Value object;
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();
 
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[SROOMSCENEDATA].asValueMap();
-		rapidjson::Value v_map(rapidjson::kObjectType);
+		Json::Value v_map(Json::arrayValue);
 
-		rapidjson::Value v_own;
+		/*rapidjson::Value v_own;
 		v_own.SetString(row[OWNER].asString().c_str(), allocator);
-		v_map.AddMember(OWNER, v_own, allocator);
+		v_map.AddMember(OWNER, v_own, allocator);*/
 
-		rapidjson::Value aname(rapidjson::kArrayType);
+		Json::Value aname(Json::arrayValue);
 		ValueVector names = row[MEMBER].asValueVector();
 		for (auto &nv : names)
 		{
-			rapidjson::Value ntemp;
-			ntemp.SetString(nv.asString().c_str(), allocator);
-			aname.PushBack(ntemp, allocator);
+			aname.append(nv.asString());
 		}
-		v_map.AddMember(MEMBER, aname, allocator);
+		v_map[MEMBER] = aname;
 
-		object.AddMember(SROOMSCENEDATA, v_map, allocator);
-
-		array.PushBack(object, allocator);
+		object[SROOMSCENEDATA] = v_map;
 	}
 
-	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	string sendBuf = buffer.GetString();
-	return sendBuf;
+	return object.toStyledString();
 	//log("out: %s", out);
 }
 
 
 string senJsonParser::encode_EnterData()
 {
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-
-	rapidjson::Value array(rapidjson::kArrayType);
+	Json::Value object;
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
 
-		rapidjson::Value object(rapidjson::kObjectType);
 		ValueMap row = temp[SROOMSCENEDATA].asValueMap();
-		rapidjson::Value v_map(rapidjson::kObjectType);
+		Json::Value v_map(Json::arrayValue);
 
-		rapidjson::Value v_sta;
-		v_sta.SetBool(row[ISSTART].asBool());
-		v_map.AddMember(ISSTART, v_sta, allocator);
+		v_map[ISSTART] = row[ISSTART].asBool();
 
-		object.AddMember(SROOMSCENEDATA, v_map, allocator);
-
-		array.PushBack(object, allocator);
-	}
+		object[SROOMSCENEDATA] = v_map;
 	}
 
-	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	return string(buffer.GetString());
+	return object.toStyledString();
 }
-
+/*
 string senJsonParser::encode_MilitaryData()
 {
 	using namespace encode_MilitaryData;
@@ -375,4 +302,4 @@ string senJsonParser::encode_ConstructionData()
 	document.Accept(writer);	//通过write将数据写入buffer
 
 	return string(buffer.GetString());
-}
+}*/

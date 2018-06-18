@@ -5,16 +5,14 @@
 #define __SERVER_H__
 
 //服务器		由服务器主机运行
-#include "WinSock2.h"	//socket 所需文件
+#include <WinSock2.h>	//socket 所需文件
 #pragma comment(lib,"WS2_32.lib")	// link socket 库
 #include <iostream>
 #include <vector>
 #include <map>
 #include <mutex>
-
-#include "Information.h"
-#include "Client_Vector.h"
 #include "sJsonParser.h"
+#include "senJsonParser.h"
 
 #define PORT 9999
 #define TIME_LAG 500		//发送和接收信息的时间间隔
@@ -37,7 +35,7 @@
 #define SWAITINGSCENEDATA "sWaitingSceneData"
 //不使用构造和析构函数
 
-recursive_mutex rmtx;
+//recursive_mutex rmtx;
 using namespace std;
 
 class Server
@@ -48,25 +46,29 @@ private:
 	SOCKADDR_IN addrServer;
 
 	vector<SOCKET> wClients;
-	unordered_map<int,Room_Client>  rClients;
+	unordered_map<int,vector<SOCKET>>  rClients;
+	unordered_map<int, vector<string>> rClient_names;
+	unordered_map<int, SOCKET> rOwner;
+	vector<vector<SOCKET>> gameClients;
 
-	Information information;
-	string Room_Nums_Data;
-	int room_nums;
+	//Information information;
+	//string Room_Nums_Data;
+	ValueVector WaitingData;
 public:
 	bool init();
 	Server();
 	~Server();
 
 	BOOL AcceptClients();
-	BOOL recv_Ser(SOCKET sClient);
-	BOOL send_Ser(SOCKET sClient);
+	BOOL send_Ser(SOCKET sClient,string message);
 
 	void RoomNums_Data_Thread();
+	void EnterGame_Data_Thread();
+	void GameData_Thread();
 
-	vector<SOCKET>& GetwClients();
+	/*vector<SOCKET>& GetwClients();
 	vector<vector<SOCKET>>& GetClient_inGame_Vector();
-	unordered_map<int, Room_Client>& GetrClients();
+	unordered_map<int, Room_Client>& GetrClients();*/
 };
 
 #endif
