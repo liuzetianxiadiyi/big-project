@@ -47,7 +47,7 @@ bool RoomScene::init()
 		"StartGameSelected.png",
 		CC_CALLBACK_1(RoomScene::menuStartGameCallback, this)
 	);
-	StartGameItem->setPosition();
+	StartGameItem->setPosition(Vec2(50,50));
 	UserDefault* defaults = UserDefault::getInstance();
 	if (!defaults->getBoolForKey(OWNER))
 	{
@@ -59,13 +59,13 @@ bool RoomScene::init()
 		"DeleteRoomSelected.png",
 		CC_CALLBACK_1(RoomScene::menuDeleteRoomCallback, this)
 	);
-	DeleteRoomItem->setPosition();
+	DeleteRoomItem->setPosition(Vec2(50,50));
 	auto CountryItem = MenuItemImage::create(
 		"CountryNormal.png",
 		"CountrySelected.png",
 		CC_CALLBACK_1(RoomScene::CountryButtonCallback, this)
 	);
-	CountryItem->setPosition();
+	CountryItem->setPosition(Vec2(50,50));
 
 	auto menu = Menu::create(StartGameItem, DeleteRoomItem, CountryItem);
 	menu->setPosition(Vec2::ZERO);
@@ -76,14 +76,14 @@ bool RoomScene::init()
 	Accont_back->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	this->addChild(Accont_back, 0);
 	
-	//选国家
+	//country
 	auto china = Button::create("china.png", "china.png", "chinaForbid.png");
 	china->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f));
 	show.push_back(china);
 	china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(china, 10);
 
-	//国家button的间隔
+	//country_interval
 	float country_interval = china->getContentSize().height/10;
 	
 	auto confirm = Button::create("confirm.png");
@@ -111,7 +111,7 @@ bool RoomScene::init()
 	russia->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(russia, 10);
 
-	//初始隐藏
+	//start to hide
 	for (auto &country : hides)
 	{		
 		country->runAction(Hide::create());		
@@ -133,7 +133,7 @@ bool RoomScene::init()
 	}
 
 
-      //聊天框
+      //
 	auto MessageItem = MenuItemImage::create(
 		"pastmessage.png",
 		"pastmessage.png",
@@ -160,14 +160,14 @@ bool RoomScene::init()
 
 	auto pEditBox_name = EditBox::create(CCSizeMake(250,50), Scale9Sprite::create("text2.png"));
 	pEditBox_name->setPosition(ccp(visibleSize.width *1/ 3, visibleSize.height * 1/ 5));
-	pEditBox_name->setFontColor(Color3B(0, 0, 0));//设置字体颜色  
+	pEditBox_name->setFontColor(Color3B(0, 0, 0));// 
 	pEditBox_name->setFont("Arial", 20);
-	pEditBox_name->setPlaceHolder("Input: ");//设置预置文本    
-	pEditBox_name->setMaxLength(160);//设置最大长度    
-	pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);//可以输入任何，但是不包括换行   
-	pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//设置输入标志位    
-	pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//设置返回类型    
-	pEditBox_name->setDelegate(this);//当前类继承CCEditBoxDelegate类    
+	pEditBox_name->setPlaceHolder("Input: ");//    
+	pEditBox_name->setMaxLength(160);//   
+	pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);// 
+	pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//  
+	pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//   
+	pEditBox_name->setDelegate(this);//  
 	pEditBox_name->setTag(101);
 	this->addChild(pEditBox_name,2);
 
@@ -187,7 +187,7 @@ void RoomScene::editBoxEditingDidEnd(EditBox *editBox)
 }
 
 
-//聊天框历史消息回调函数
+//
 void RoomScene::messageCallback(Ref* pSender)
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -256,18 +256,10 @@ void RoomScene::messageCallback(Ref* pSender)
 			++labelcount;
 		}
 			++tag;
-		
-	
-
-	//创建滑块控件
 	Slider* slider = Slider::create();
-	//加载滑杆纹理
 	slider->loadBarTexture("sliderTrack.png");
-	//加载滑块按钮纹理
 	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
-	//加载滑块进度栏纹理
 	slider->loadProgressBarTexture("sliderProgress.png");
-	//The max percent of Slider.
 	slider->setMaxPercent(100);
 	slider->setRotation(90);
 
@@ -276,7 +268,7 @@ void RoomScene::messageCallback(Ref* pSender)
 	this->addChild(slider, 1,499);
 	
 }
-//聊天框发送信息
+//
 void RoomScene::editBoxReturn(EditBox *editBox)
 {
 	CCLOG("editbox return");
@@ -284,23 +276,23 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 
 	if (editBox->getTag() == 101)
 	{
-		// 获取系统时间
+		//
 		time_t now;
 		struct tm *time1;
 
 		now = time(NULL);
 
-		time1 = localtime(&now);      //microseconds: 微秒
+		time1 = localtime(&now);      
 		int year = time1->tm_year + 1900;
-		log("year = %d", year);         //显示年份
+		log("year = %d", year);         
 		asctime(time1);
 		char date1[32] = { 0 };
 		sprintf(date1, "%d %02d %02d", (int)time1->tm_year + 1900, (int)time1->tm_mon + 1, (int)time1->tm_mday);
-		log("%s", date1);        //显示年月日
+		log("%s", date1);       
 
 		char date2[50] = { 0 };
 		sprintf(date2, "%02d %02d %02d", (int)time1->tm_hour, (int)time1->tm_min, (int)time1->tm_sec);
-		log("%s", date2);       //显示时分秒
+		log("%s", date2);       
 
 		//auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
 		
@@ -347,7 +339,6 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 	}
 }
 
-//国家的回调函数
 void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 {
 	
@@ -364,7 +355,6 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 				hide = true; break;
 			}
 		}
-		//点击被选中就显示
 		if (hide == false)
 		{
 			log("hide==false");
@@ -373,17 +363,13 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 				i->runAction(Show::create());
 			}
 		}
-		//点击里面的就改变
 		else
 		{
 			log("hide==true");
-			//交换位置
 			auto pos1 = button->getPosition();			
 			auto sprite = show[0];
 			button->setPosition(sprite->getPosition());
 			sprite->setPosition(pos1);
-
-			//交换标记
 			for (auto i =hides.begin();i!=hides.end();++i)
 			{
 				if (*i == button)
@@ -395,10 +381,7 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 					break;
 				}
 			}
-			
 			show[0]=button;
-
-			//隐藏
 			for (auto i :hides)
 			{
 				i->runAction(Hide::create());
