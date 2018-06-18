@@ -9,7 +9,7 @@ USING_NS_CC;
 
 #define TILENUMS 10
 #define CHECKNUMS 8
-#define WEIGHT 10
+#define WEIGHT 1000
 
 using std::vector;
 using std::pair;
@@ -33,7 +33,6 @@ private:
 	int f_value;
 	int h_value;
 	int g_value;
-	bool available;
 	MyTile* parent;
 	Vec2 pos;
 	Vec2 goal;
@@ -47,11 +46,9 @@ public:
 	}
 	void set_hv()
 	{
-		int temp_h = 0;
 		int temp_x = goal.x - pos.x;
 		int temp_y = goal.y - pos.y;
-		temp_h += (abs(temp_x) + abs(temp_y))*WEIGHT;
-		h_value = temp_h;
+		h_value += (abs(temp_x) + abs(temp_y));
 	}
 	Vec2 GetPosition()
 	{
@@ -61,22 +58,28 @@ public:
 	{
 		return g_value;
 	}
+
+	void changeValue(int count)
+	{
+		f_value -= count;
+	}
+
 	void init(MyTile* _parent, Vec2 _pos, Vec2 _goal)
 	{
 		parent = _parent;
 		pos = _pos;
 		goal = _goal;
 		set_hv();
-		g_value = parent->Get_gv() + 1;
+		if (parent != NULL)
+		{
+			g_value = parent->Get_gv() + 1;
+		}
+		else
+		{
+			g_value = 1;
+		}
 		f_value = h_value + g_value;
-	}
-	void SetAvailable(bool b)
-	{
-		available = b;
-	}
-	bool Getavailable()
-	{
-		return available;
+		f_value *= WEIGHT;
 	}
 	MyTile* GetParent()
 	{
@@ -84,7 +87,7 @@ public:
 	}
 	friend bool operator<(MyTile t1, MyTile t2)	
 	{
-		return t1.f_value <= t2.f_value;
+		return t1.f_value < t2.f_value;
 	}
 	friend bool operator==(MyTile t1, MyTile t2)
 	{
@@ -98,6 +101,8 @@ public:
 		parent = t.parent;
 		pos = t.pos;
 		goal = t.goal;
+
+		return *this;
 	}
 
 	/*~Tile() {}

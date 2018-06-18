@@ -5,8 +5,6 @@
 #define __CLIENT_H__
 #include<iostream>  
 #include<WinSock2.h>
-#include "Information.h"
-
 //#include <ctime>
 //客户端  单例模式
 
@@ -19,7 +17,7 @@ using namespace std;
 #define TIMEOUTERROR 5000	//超时时间
 #define BUFLEN 1024
 
-std::recursive_mutex rmtx;
+//mutex rmtx;
 
 class Client
 {
@@ -41,12 +39,10 @@ public:
 	static Client* getInstance();
 
 	BOOL ConnectServer();
-	BOOL recv_Cli();
+	string recv_Cli();
 	BOOL send_Cli(string sendBuf);
 
 	void SendThread(string sendBuf);		//建立子进程
 	void RecvThread();
-
-	void StartClient();
 };
 #endif

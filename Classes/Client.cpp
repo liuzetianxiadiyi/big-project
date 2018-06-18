@@ -6,8 +6,6 @@
 
 USING_NS_CC;
 
-extern Information information;
-
 Client* Client::client = new Client();
 
 bool Client::init()
@@ -29,7 +27,7 @@ bool Client::init()
 	SOCKADDR_IN addrServer;
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_port = htons(PORT);
-	addrServer.sin_addr.s_addr = inet_addr("192.168.0.3");
+	addrServer.sin_addr.s_addr = inet_addr("10.22.106.30");
 	
 	return true;
 }
@@ -41,6 +39,7 @@ BOOL Client::ConnectServer()
 		//cout <<clock()-start;
 		closesocket(sHost);
 		WSACleanup();
+		log("can't connect Server!");
 		system("pause");
 		return FALSE;
 	}
@@ -48,7 +47,7 @@ BOOL Client::ConnectServer()
 	return TRUE;
 }
 
-BOOL Client::recv_Cli()
+string Client::recv_Cli()
 {
 	char recvBuf[BUFLEN+1];
 	ZeroMemory(recvBuf, sizeof(recvBuf));
@@ -59,9 +58,8 @@ BOOL Client::recv_Cli()
 		return FALSE;
 	}
 	recvBuf[BUFLEN] = '\0';
-	information.setRecvBuf(recvBuf);
 
-	return TRUE;
+	return string(recvBuf);
 }
 
 BOOL Client::send_Cli(string sendBuf)
@@ -69,13 +67,13 @@ BOOL Client::send_Cli(string sendBuf)
 	clock_t start = clock();
 	while (true)
 	{
-		if (SOCKET_ERROR == send(sHost, const_cast<char *>(sendBuf.c_str()), information.getSendBuf().length(), 0))
+		if (SOCKET_ERROR == send(sHost,sendBuf.c_str(), sendBuf.length(), 0))
 		{
 			//closesocket(sHost);
 			//WSACleanup();
 			if (clock() - start > TIMEOUTERROR)
 			{
-				log("send message %s fail,time out", information.getSendBuf().c_str());
+				log("send message %s fail,time out", sendBuf.c_str());
 				break;
 			}
 			Sleep(WAITTIME);
@@ -94,9 +92,9 @@ Client::Client()
 		log("init Client false!");
 	}
 
-	if (!ConnectServer())
+	if (ConnectServer())
 	{
-		log("can't connect Server!");
+		log("connect Server!");
 	}
 }
 
@@ -121,12 +119,4 @@ void Client::RecvThread()
 		recv_Cli();
 		Sleep(TIME_LAG);
 	}
-}
-
-void Client::StartClient()
-{
-	thread SendThread(client->SendThread);
-	SendThread.detach();
-	thread RecvThread(client->RecvThread);
-	RecvThread.detach();
 }
