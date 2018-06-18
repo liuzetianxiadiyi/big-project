@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include <iostream>
-
+#include<string>
 using std::string;
 USING_NS_CC;
 
