@@ -1,14 +1,14 @@
-#ifndef __CONSTRUCTIONS_H__
+﻿#ifndef __CONSTRUCTIONS_H__
 #define __CONSTRUCTIONS_H__
 
 #include "Construction.h"
 
 class Barracks:public Construction
 {
-public:
+private:
 	//use to create menu
 	Sprite * createdog;
-	Sprite * createsolder;
+	Sprite * createsoldier;
 	Sprite * createengineer;
 
 public:
@@ -27,6 +27,13 @@ public:
 	void CreateSoldier();
 	void CreateEngineer();
 
+	virtual Menu* createMenu()
+	{
+		auto dogItem = MenuItemSprite::create(createdog, createdog, CC_CALLBACK_1(Barracks::CreateDogCallback, this));
+		auto soldierItem = MenuItemSprite::create(createsoldier, createsoldier, CC_CALLBACK_1(Barracks::CreateSoldierCallback, this));
+		auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
+	}
+
 	static int money;
 
 	virtual void None() {};
@@ -38,7 +45,7 @@ public:
 
 	Sprite* getsolder()
 	{
-		return createsolder;
+		return createsoldier;
 	}
 
 	Sprite* getengineer()
@@ -159,7 +166,7 @@ public:
 
 public:
 
-	static Base* create(string & filename);
+	static Base* create(const string & filename);
 
 	/*static Barracks* create(const std::string & filename, const Rect & rect);
 	static Barracks* createWithTexture(Texture2D * texture);

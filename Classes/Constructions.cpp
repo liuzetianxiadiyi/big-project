@@ -1,4 +1,4 @@
-#include "Constructions.h"
+﻿#include "Constructions.h"
 #include "Soldiers.h"
 
 
@@ -7,7 +7,10 @@ int Barracks::money = 2000;
 int Warfactory::money = 3000;
 int Base::money = 5000;
 
-
+/*Menu* Barracks::createMenu()
+{
+	MenuItem Item1 = MenuItem::create(CreateDog);
+}*/
 
 
 
@@ -23,13 +26,12 @@ Barracks* Barracks::create(string & filename)
 
 	{
 
-		//待优化
-
+		//寰呬紭鍖?
 		sprite->autorelease();
 
 		sprite->createdog = Sprite::create("filename");
 
-		sprite->createsolder = Sprite::create("filename");
+		sprite->createsoldier = Sprite::create("filename");
 
 		sprite->createengineer = Sprite::create("filename");
 
@@ -65,8 +67,7 @@ Warfactory* Warfactory::create(string & filename)
 
 	{
 
-		//待优化
-
+		//寰呬紭鍖?
 		sprite->autorelease();
 
 		sprite->createtank = Sprite::create("filename");
@@ -103,8 +104,7 @@ Mine* Mine::create(string & filename)
 
 	{
 
-		//待优化
-
+		//寰呬紭鍖?
 		sprite->autorelease();
 
 		sprite->createminingcar = Sprite::create("filename");
@@ -129,7 +129,7 @@ Mine* Mine::create(string & filename)
 
 
 
-Base* Base::create(string & filename)
+Base* Base::create(const string & filename)
 
 {
 
@@ -141,8 +141,7 @@ Base* Base::create(string & filename)
 
 	{
 
-		//待优化
-
+		//寰呬紭鍖?
 		sprite->autorelease();
 
 		sprite->createbarracks = Sprite::create("filename");
@@ -172,41 +171,41 @@ Base* Base::create(string & filename)
 void Barracks::CreateDogCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Dog::delay);
-	auto seq = Sequence::create(delay, CreateDog,nullptr);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
 	this->runAction(seq);
 }
 
 void Barracks::CreateSoldierCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Soldier::delay);
-	auto seq = Sequence::create(delay, CreateDog, nullptr);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
 	this->runAction(seq);
 }
 
 void Barracks::CreateEngineerCallback(Ref* pSender)
 {
 	auto delay = DelayTime::create(Engineer::delay);
-	auto seq = Sequence::create(delay, CreateDog, nullptr);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
 	this->runAction(seq);
 }
 
-//代码重用
+//浠ｇ爜閲嶇敤
 void Barracks::CreateDog()
 {
 	string filename = "filename";
 	Dog* dog = Dog::create(filename);
-	dog->init("Dog", 100, 50, 30, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(dog->getSpeed(), dog->getDestination()), 300);
-	dog->setPosition();
+	dog->init(100,  false, false, Vec2(300, 300),Vec2(0,0),MoveBy::create(dog->getSpeed(), dog->getDestination()));
+	dog->setPosition(Vec2(0,0));
 	auto target=  Director::getInstance()->getRunningScene();
-	target->addChild(dog, 2);
+	target->addChild(dog, 2); 
 }
 
 void Barracks::CreateSoldier()
 {
 	string filename = "filename";
-	Soldier* soldier = Solider::create(filename);
-	soldier->init();
-	soldier->setPosition();
+	Soldier* soldier = Soldier::create(filename);
+	soldier->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(soldier->getSpeed(), soldier->getDestination()));
+	soldier->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
 	target->addChild(soldier, 2);
 }
@@ -215,8 +214,8 @@ void Barracks::CreateEngineer()
 {
 	string filename = "filename";
 	Engineer* engineer = Engineer::create(filename);
-	engineer->init();
-	engineer->setPosition();
+	engineer->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(engineer->getSpeed(), engineer->getDestination()));
+	engineer->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
 	target->addChild(engineer, 2);
 }

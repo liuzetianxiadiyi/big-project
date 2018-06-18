@@ -13,9 +13,9 @@ Soldier* Soldier::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Soldier", 200, 30, 10, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0), Vec2(300, 310));
-		createBar(sprite);
+
+		sprite->init( 200,false,false, Vec2(300, 300),Vec2(0,0), MoveBy::create(sprite->getSpeed(), sprite->getDestination()));
+		 createBar(sprite);
 		return sprite;
 	}
 
@@ -31,8 +31,7 @@ Dog* Dog::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Dog", 100, 50, 30, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0),Vec2(300, 310));
+		sprite->init( 100, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
 		createBar(sprite);
 		return sprite;
 	}
@@ -50,8 +49,7 @@ Engineer* Engineer::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Engineer", 350, 0, 15, 0.5f, false, false, Vec2(300, 300), Vec2(300, 300));
+		sprite->init( 350,  false, false, Vec2(300, 300), Vec2(300, 300), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
 		createBar(sprite);
 		return sprite;
 	}

@@ -29,6 +29,11 @@ public:
 
 	cocos2d::Vec2 tileCoordFromPosition(cocos2d::Vec2 position);
 	void setViewpointCenter(Vec2 position);
+
+	virtual bool onTouchBegan(cocos2d::Touch*touch, cocos2d::Event*event);
+	virtual void onTouchMoved(cocos2d::Touch*touch, cocos2d::Event*event);
+	virtual void onTouchEnded(cocos2d::Touch*touch, cocos2d::Event*event);
+
 	
 	virtual bool onMouseDown(cocos2d::Event * event);
 	virtual void onMouseUp(cocos2d::Event* event);
@@ -38,7 +43,7 @@ public:
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
 
 	//friend class Tile;
-	vector<MyTile*> FindWay(Vec2 start, Vec2 goal);
+	vector<Vec2> FindWay(Vec2 start, Vec2 goal);
 	bool ColsCheck(Vec2 pos);
 
 	CREATE_FUNC(GameScene);

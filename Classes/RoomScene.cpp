@@ -1,4 +1,4 @@
-#include "RoomScene.h"
+﻿#include "RoomScene.h"
 #include "SystemHeader.h"
 #include "GameData.h"
 #include "Client.h"
@@ -7,6 +7,7 @@
 #include "SimpleAudioEngine.h"
 #include "time.h"
 #include <vector>
+#include<string>
 
 USING_NS_CC;
 using std::string;
@@ -47,7 +48,7 @@ bool RoomScene::init()
 		"StartGameSelected.png",
 		CC_CALLBACK_1(RoomScene::menuStartGameCallback, this)
 	);
-	StartGameItem->setPosition(Vec2(50,50));
+	StartGameItem->setPosition(100,100);//浣嶇疆
 	UserDefault* defaults = UserDefault::getInstance();
 	if (!defaults->getBoolForKey(OWNER))
 	{
@@ -59,13 +60,13 @@ bool RoomScene::init()
 		"DeleteRoomSelected.png",
 		CC_CALLBACK_1(RoomScene::menuDeleteRoomCallback, this)
 	);
-	DeleteRoomItem->setPosition(Vec2(50,50));
+	DeleteRoomItem->setPosition(100,50);//浣嶇疆
 	auto CountryItem = MenuItemImage::create(
 		"CountryNormal.png",
 		"CountrySelected.png",
 		CC_CALLBACK_1(RoomScene::CountryButtonCallback, this)
 	);
-	CountryItem->setPosition(Vec2(50,50));
+	CountryItem->setPosition(100,100);//璁惧畾浣嶇疆
 
 	auto menu = Menu::create(StartGameItem, DeleteRoomItem, CountryItem);
 	menu->setPosition(Vec2::ZERO);
@@ -76,14 +77,12 @@ bool RoomScene::init()
 	Accont_back->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	this->addChild(Accont_back, 0);
 	
-	//country
 	auto china = Button::create("china.png", "china.png", "chinaForbid.png");
 	china->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f));
 	show.push_back(china);
-	china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
+    china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(china, 10);
 
-	//country_interval
 	float country_interval = china->getContentSize().height/10;
 	
 	auto confirm = Button::create("confirm.png");
@@ -111,7 +110,6 @@ bool RoomScene::init()
 	russia->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
 	this->addChild(russia, 10);
 
-	//start to hide
 	for (auto &country : hides)
 	{		
 		country->runAction(Hide::create());		
@@ -131,18 +129,11 @@ bool RoomScene::init()
 		// add the sprite as a child to this layer
 		this->addChild(sendsprite, 0);
 	}
-
-
-      //
 	auto MessageItem = MenuItemImage::create(
 		"pastmessage.png",
 		"pastmessage.png",
-		CC_CALLBACK_1(HelloWorld::messageCallback, this)
-	);
-
-	if (MessageItem == nullptr ||
-		MessageItem->getContentSize().width <= 0 ||
-		MessageItem->getContentSize().height <= 0)
+		CC_CALLBACK_1(RoomScene::messageCallback, this));
+	if (MessageItem == nullptr ||		MessageItem->getContentSize().width <= 0 ||		MessageItem->getContentSize().height <= 0)
 	{
 		problemLoading("'pastmessage.png' and pastmessage.png'");
 	}
@@ -160,14 +151,14 @@ bool RoomScene::init()
 
 	auto pEditBox_name = EditBox::create(CCSizeMake(250,50), Scale9Sprite::create("text2.png"));
 	pEditBox_name->setPosition(ccp(visibleSize.width *1/ 3, visibleSize.height * 1/ 5));
-	pEditBox_name->setFontColor(Color3B(0, 0, 0));// 
+	pEditBox_name->setFontColor(Color3B(0, 0, 0));//璁剧疆瀛椾綋棰滆壊  
 	pEditBox_name->setFont("Arial", 20);
-	pEditBox_name->setPlaceHolder("Input: ");//    
-	pEditBox_name->setMaxLength(160);//   
-	pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);// 
-	pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//  
-	pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//   
-	pEditBox_name->setDelegate(this);//  
+	pEditBox_name->setPlaceHolder("Input: ");//璁剧疆棰勭疆鏂囨湰    
+	pEditBox_name->setMaxLength(160);//璁剧疆鏈€澶ч暱搴?   
+	pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);//鍙互杈撳叆浠讳綍锛屼絾鏄笉鍖呮嫭鎹㈣   
+	pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//璁剧疆杈撳叆鏍囧織浣?   
+	pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//璁剧疆杩斿洖绫诲瀷    
+	pEditBox_name->setDelegate(this);//褰撳墠绫荤户鎵緾CEditBoxDelegate绫?   
 	pEditBox_name->setTag(101);
 	this->addChild(pEditBox_name,2);
 
@@ -187,8 +178,7 @@ void RoomScene::editBoxEditingDidEnd(EditBox *editBox)
 }
 
 
-//
-void RoomScene::messageCallback(Ref* pSender)
+//鑱婂ぉ妗嗗巻鍙叉秷鎭洖璋冨嚱鏁?void RoomScene::messageCallback(Ref* pSender)
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -209,7 +199,7 @@ void RoomScene::messageCallback(Ref* pSender)
 	auto closeItem = MenuItemImage::create(
 		"CloseNormal.png",
 		"CloseSelected.png",
-		CC_CALLBACK_1(HelloWorld::messageCloseCallback, this));
+		CC_CALLBACK_1(RoomScene::messageCallback, this));
 
 	if (closeItem == nullptr ||
 		closeItem->getContentSize().width <= 0 ||
@@ -256,10 +246,17 @@ void RoomScene::messageCallback(Ref* pSender)
 			++labelcount;
 		}
 			++tag;
+		
+	
+
+	//鍒涘缓婊戝潡鎺т欢
 	Slider* slider = Slider::create();
+	//鍔犺浇婊戞潌绾圭悊
 	slider->loadBarTexture("sliderTrack.png");
+	//鍔犺浇婊戝潡鎸夐挳绾圭悊
 	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
-	slider->loadProgressBarTexture("sliderProgress.png");
+	//鍔犺浇婊戝潡杩涘害鏍忕汗鐞?	slider->loadProgressBarTexture("sliderProgress.png");
+	//The max percent of Slider.
 	slider->setMaxPercent(100);
 	slider->setRotation(90);
 
@@ -268,32 +265,29 @@ void RoomScene::messageCallback(Ref* pSender)
 	this->addChild(slider, 1,499);
 	
 }
-//
-void RoomScene::editBoxReturn(EditBox *editBox)
+//鑱婂ぉ妗嗗彂閫佷俊鎭?void RoomScene::editBoxReturn(EditBox *editBox)
 {
 	CCLOG("editbox return");
 	auto editbox = (EditBox*)editBox;
 
 	if (editBox->getTag() == 101)
 	{
-		//
+		// 鑾峰彇绯荤粺鏃堕棿
 		time_t now;
 		struct tm *time1;
 
 		now = time(NULL);
 
-		time1 = localtime(&now);      
+		time1 = localtime(&now);      //microseconds: 寰
 		int year = time1->tm_year + 1900;
-		log("year = %d", year);         
+		log("year = %d", year);         //鏄剧ず骞翠唤
 		asctime(time1);
 		char date1[32] = { 0 };
 		sprintf(date1, "%d %02d %02d", (int)time1->tm_year + 1900, (int)time1->tm_mon + 1, (int)time1->tm_mday);
-		log("%s", date1);       
-
+		log("%s", date1);        //鏄剧ず骞存湀鏃?
 		char date2[50] = { 0 };
 		sprintf(date2, "%02d %02d %02d", (int)time1->tm_hour, (int)time1->tm_min, (int)time1->tm_sec);
-		log("%s", date2);       
-
+		log("%s", date2);       //鏄剧ず鏃跺垎绉?
 		//auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
 		
 		news.push_back(asctime(time1));
@@ -339,7 +333,7 @@ void RoomScene::editBoxReturn(EditBox *editBox)
 	}
 }
 
-void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
+//鍥藉鐨勫洖璋冨嚱鏁?void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 {
 	
 	Button* button = static_cast<Button*>(pSender);
@@ -355,7 +349,7 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 				hide = true; break;
 			}
 		}
-		if (hide == false)
+		//鐐瑰嚮琚€変腑灏辨樉绀?		if (hide == false)
 		{
 			log("hide==false");
 			for (auto i :hides)
@@ -363,13 +357,17 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 				i->runAction(Show::create());
 			}
 		}
+		//鐐瑰嚮閲岄潰鐨勫氨鏀瑰彉
 		else
 		{
 			log("hide==true");
+			//浜ゆ崲浣嶇疆
 			auto pos1 = button->getPosition();			
 			auto sprite = show[0];
 			button->setPosition(sprite->getPosition());
 			sprite->setPosition(pos1);
+
+			//浜ゆ崲鏍囪
 			for (auto i =hides.begin();i!=hides.end();++i)
 			{
 				if (*i == button)
@@ -381,7 +379,10 @@ void RoomScene::countryCallBack(Ref* pSender, Widget::TouchEventType type)
 					break;
 				}
 			}
+			
 			show[0]=button;
+
+			//闅愯棌
 			for (auto i :hides)
 			{
 				i->runAction(Hide::create());
@@ -417,21 +418,22 @@ void RoomScene::editBoxTextChanged(EditBox *editBox, const std::string &text)
 
 void RoomScene::onChangedSlider2(Ref* pSender, Slider::EventType type)
 {
-	
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
 	{
-		
+
 		Slider* slider = dynamic_cast<Slider*>(pSender);
 		float percent = slider->getPercent() * 5;
-		for (int m = 500; m <labelcount; m++)
+		for (int m = 500; m < labelcount; m++)
 		{
 			auto label1 = getChildByTag(m);
-			label1->runAction(MoveTo::create(0.5, Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100-30*(m-500) + percent
+			label1->runAction(MoveTo::create(0.5, Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - 30 * (m - 500) + percent
 			)));
-		
+		}
 	}
+}
 
 void RoomScene::menuStartGameCallback(Ref* pSender)
 {
@@ -441,7 +443,7 @@ void RoomScene::menuStartGameCallback(Ref* pSender)
 	string sendBuf = enJson->encode_EnterGameData();
 	client->send_Cli(sendBuf);
 
-	auto scene = ::createScene();	//´ý¶¨
+	auto scene = GameScene::createScene();	//麓媒露篓
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
@@ -458,7 +460,7 @@ void RoomScene::menuDeleteRoomCallback(Ref* pSender)
 	string sendBuf = enJson->encode_EnterGameData();
 	client->send_Cli(sendBuf);
 
-	auto scene = WaitingScene::createScene();	//´ý¶¨
+	auto scene = WaitingScene::createScene();	//麓媒露篓
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
