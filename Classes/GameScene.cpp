@@ -9,6 +9,8 @@ using namespace cocos2d::ui;
 using std::find;
 using std::reverse;
 
+Vec2 BeginLocation;
+
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
@@ -22,19 +24,26 @@ void GameScene::onEnter()
 	Layer::onEnter();
 	log("GameScene onEnter");
 
+	auto listener = EventListenerTouchOneByOne::create();
+	auto dispatcher = Director::getInstance()->getEventDispatcher();
+	listener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	listener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	listener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
+	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
 	auto Mouselistener = EventListenerMouse::create();
 
-	Mouselistener->onMouseDown = GameScene::onMouseDown;
-	Mouselistener->onMouseUp = GameScene::onMouseUp;
-	Mouselistener->onMouseMove = GameScene::onMouseMove;
-	Mouselistener->onMouseScroll = GameScene::onMouseScroll;
+	Mouselistener->onMouseDown =CC_CALLBACK_1(GameScene::onMouseDown,this);
+	Mouselistener->onMouseUp = CC_CALLBACK_1(GameScene::onMouseUp, this);
+	Mouselistener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMove, this);
+	Mouselistener->onMouseScroll = CC_CALLBACK_1(GameScene::onMouseScroll, this);
 
-	EventDispather* eventDispather = Director::getInstance()->getEventDispatcher();
-	eventDispather->addEventListenerWithSceneGraphPriority(Mouselistener, this);
+	EventDispatcher* eventDispatcher = Director::getInstance()->getEventDispatcher();
+	eventDispatcher->addEventListenerWithSceneGraphPriority(Mouselistener, this);
 
 	auto broadlistener = EventListenerKeyboard::create();
-	broadlistener->onKeyPressed = GameScene::onKeyPress;
-	eventDispather->addEventListenerWithSceneGraphPriority(broadlistener, this);
+	broadlistener->onKeyPressed =CC_CALLBACK_2( GameScene::onKeyPress,this);
+	eventDispatcher->addEventListenerWithSceneGraphPriority(broadlistener, this);
 }
 
 bool GameScene::init()
@@ -49,7 +58,7 @@ bool GameScene::init()
 
 	_tileMap = TMXTiledMap::create(".tmx");
 	addChild(_tileMap, 0);
-	//´ýµ÷Õû
+	//å¾…è°ƒæ•´
 	TMXObjectGroup* group = _tileMap->getObjectGroup("objects");
 	ValueMap spawnPoint = group->getObject("born");
 
@@ -68,7 +77,7 @@ bool GameScene::init()
 	Set->setScale9Enabled(true);
 	Set->setPosition(Vec2(visibleSize.width - 100, 50));
 
-	//ÉèÖÃbuttonµÄ¼àÌýÆ÷
+	//è®¾ç½®buttonçš„ç›‘å¬å™¨
 	Set->addClickEventListener(CC_CALLBACK_1(GameScene::ButtonSettingCallback, this));
 	this->addChild(Set, 3);
 
@@ -143,7 +152,7 @@ bool GameScene::ColsCheck(Vec2 position)
 Vec2 GameScene::tileCoordFromPosition(Vec2 pos)
 {
 	int x = pos.x / _tileMap->getTileSize().width;
-	int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - pos.y) / _tileMap->getTileSize().setSize;
+	int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - pos.y) / _tileMap->getTileSize().height;
 
 	return Vec2(x, y);
 }
@@ -227,12 +236,68 @@ void GameScene::onMouseUp(Event* event)
 			if (c->getBoundingBox().containsPoint(pos))
 			{
 				Menu* menu = c->createMenu();
-				menu->setPosition();
+				menu->setPosition(Vec2(0, 0));
 				this->addChild(menu, 3);
 			}
 		}
 	}
 }
+
+bool GameScene::onTouchBegan(cocos2d::Touch*touch, cocos2d::Event*event)
+{
+	auto BeginLocation = touch->getLocation();
+
+	log("onTouchBegan succeed");
+
+
+	return true;
+};
+
+void GameScene::onTouchMoved(cocos2d::Touch*touch, cocos2d::Event*event)
+{
+	log("onTouchMoved succeed ");
+};
+
+void GameScene::onTouchEnded(cocos2d::Touch*touch, cocos2d::Event*event)
+{
+	auto EndLocation = touch->getLocation();
+	auto EndLocation_x = EndLocation.x;
+	auto EndLocation_y = EndLocation.y;
+
+	auto BeginLocation_x = BeginLocation.x;
+	auto BeginLocation_y = BeginLocation.y;
+
+	Rect rect = Rect(BeginLocation.x, EndLocation.y, EndLocation.x - BeginLocation.x, BeginLocation.y - EndLocation.y);
+
+	/*for (int flag = 0; flag <= labelcount; flag++)
+	{
+	auto sp =this-> getChildByTag(flag);
+	Vec2 vec = sp->getPosition();
+	if (rect.containsPoint(vec))
+	{
+	sp->setSelected (true);
+	}
+
+
+	}*/
+	for (auto& v : sVector)
+	{
+		Vec2 spritePos = v->getPosition();
+
+		if (rect.containsPoint(spritePos))
+		{
+			v->setSelected ( true);
+		}
+
+
+	}
+
+
+
+
+	log("onTouchEnded succeed");
+};
+
 
 vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 {
@@ -300,7 +365,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 			}
 		}
 		sort(openTile.begin(), openTile.end());
-		pos = openTile.begin->GetPosition();
+		pos = openTile.begin()->GetPosition();
 		++count;
 	}
 	vector<Vec2> Way;
@@ -319,7 +384,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 
 pair<Vec2, Vec2> Position::GetLocation(Vec2 point)
 {
-	return make_pair(Vec2(point.x % CHECKNUMS, point.y % CHECKNUMS), Vec2(point.x / CHECKNUMS, point.y / CHECKNUMS));
+	return make_pair(Vec2(static_cast<int>(point.x) %CHECKNUMS, static_cast<int>(point.y) %CHECKNUMS), Vec2(static_cast<int>(point.x) % CHECKNUMS, static_cast<int>( point.y )% CHECKNUMS));
 }
 
 Vec2 Position::GetTopleft(Vec2 cpoint)
