@@ -6,8 +6,11 @@
 #include "Construction.h"
 #include "FindWay.h"
 #include <queue>
+#include<vector>
 
 USING_NS_CC;
+using std::queue;
+using std::vector;
 
 class GameScene:public cocos2d::Layer
 {
