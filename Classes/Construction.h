@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include <iostream>
-
+#include<string>
 using std::string;
 USING_NS_CC;
 
@@ -17,7 +17,7 @@ private:
 	bool destroy;
 	bool Selected;
 	int sLevel;
-	int delay;
+	float delay;
 	int country;
 
 public:
@@ -66,6 +66,8 @@ public:
 	static Construction* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
 	static Construction* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Construction* createWithSpriteFrameName(const std::string & spriteFrameName);
+
+	virtual Menu* createMenu();
 
 	void init(string _name, int _health_point, int _view,Vec2 _location,bool _destroy,bool _Selected,int _sLevel,int _delay)
 	{

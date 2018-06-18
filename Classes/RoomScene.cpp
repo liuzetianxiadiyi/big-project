@@ -7,6 +7,7 @@
 #include "SimpleAudioEngine.h"
 #include "time.h"
 #include <vector>
+#include <strng>
 
 USING_NS_CC;
 using std::string;
