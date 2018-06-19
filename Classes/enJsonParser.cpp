@@ -214,6 +214,10 @@ string enJsonParser::encode_MilitaryData()
 				v_ct.SetInt(temp_map[COUNTRY].asInt());
 				json_map.AddMember(COUNTRY, v_ct, allocator);
 
+				rapidjson::Value v_tg;
+				v_tg.SetInt(temp_map[STAG].asInt());
+				json_map.AddMember(STAG, v_tg, allocator);
+
 				temp_array.PushBack(temp_map, allocator);
 			}
 			if (i == Dog_Data)
@@ -309,6 +313,10 @@ string enJsonParser::encode_ConstructionData()
 				rapidjson::Value v_ct;
 				v_ct.SetInt(temp_map[COUNTRY].asInt());
 				json_map.AddMember(COUNTRY, v_ct, allocator);
+
+				rapidjson::Value v_tg;
+				v_tg.SetInt(temp_map[STAG].asInt());
+				json_map.AddMember(STAG, v_tg, allocator);
 
 				temp_array.PushBack(temp_map, allocator);
 			}

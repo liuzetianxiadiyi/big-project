@@ -7,26 +7,25 @@
 #include "writer.h"
 #include "reader.h"
 #include "stringbuffer.h"
-#include "Information.h"
-
+USING_NS_CC;
+#include <string>
+using std::string;
 class JsonParser:public cocos2d::Ref
 {
-	CC_SYNTHESIZE(cocos2d::ValueVector, list, List);
+	//CC_SYNTHESIZE(cocos2d::ValueVector, list, List);
 
 private:
 	string content;
-	cocos2d::ValueMap row;
-
+	ValueMap row;
 public:
 	static JsonParser * createWithC_str(const char * data);
 
 	bool initWithC_str(const char * data);
 
-	void decode_WaitingData();
-	void decode_RoomData();
+	ValueMap decode_WaitingData();
+	ValueMap decode_RoomData();
 	bool decode_EnterData();
-	void decode_MilitaryData();
-	void decode_ConstructionData();
+	ValueMap decode_GameData();
 };
 
 #endif

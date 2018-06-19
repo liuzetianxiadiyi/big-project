@@ -4,10 +4,17 @@
 #include "ui/CocosGUI.h"
 #include "SettingScene.h"
 #include <algorithm>
+#include "GameData.h"
+#include "enJsonParser.h"
+#include "JsonParser.h"
+#include <thread>
+//#include <mutex>
 
 using namespace cocos2d::ui;
 using std::find;
 using std::reverse;
+
+Client* GameScene::client = Client::getInstance();
 
 Scene* GameScene::createScene()
 {
@@ -24,17 +31,17 @@ void GameScene::onEnter()
 
 	auto Mouselistener = EventListenerMouse::create();
 
-	Mouselistener->onMouseDown = GameScene::onMouseDown;
-	Mouselistener->onMouseUp = GameScene::onMouseUp;
-	Mouselistener->onMouseMove = GameScene::onMouseMove;
-	Mouselistener->onMouseScroll = GameScene::onMouseScroll;
+	Mouselistener->onMouseDown = CC_CALLBACK_1(GameScene::onMouseDown,this);
+	Mouselistener->onMouseUp = CC_CALLBACK_1(GameScene::onMouseUp, this);
+	Mouselistener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMove, this);
+	Mouselistener->onMouseScroll = CC_CALLBACK_1(GameScene::onMouseScroll, this);
 
-	EventDispather* eventDispather = Director::getInstance()->getEventDispatcher();
-	eventDispather->addEventListenerWithSceneGraphPriority(Mouselistener, this);
+	EventDispatcher* eventDispatcher = Director::getInstance()->getEventDispatcher();
+	eventDispatcher->addEventListenerWithSceneGraphPriority(Mouselistener, this);
 
 	auto broadlistener = EventListenerKeyboard::create();
-	broadlistener->onKeyPressed = GameScene::onKeyPress;
-	eventDispather->addEventListenerWithSceneGraphPriority(broadlistener, this);
+	broadlistener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPress, this);
+	eventDispatcher->addEventListenerWithSceneGraphPriority(broadlistener, this);
 }
 
 bool GameScene::init()
@@ -73,6 +80,12 @@ bool GameScene::init()
 	this->addChild(Set, 3);
 
 	Sprite* MenuBar = Sprite::create("filename");
+
+	thread SendThread = thread([&] {this->SendDataThread(); });
+	SendThread.detach();
+	thread RecvThread = thread([&] {this->RecvDataThread(); });
+	RecvThread.detach();
+
 	this->addChild(MenuBar,3);
 
 	return true;
@@ -143,7 +156,7 @@ bool GameScene::ColsCheck(Vec2 position)
 Vec2 GameScene::tileCoordFromPosition(Vec2 pos)
 {
 	int x = pos.x / _tileMap->getTileSize().width;
-	int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - pos.y) / _tileMap->getTileSize().setSize;
+	int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - pos.y) / _tileMap->getTileSize().height;
 
 	return Vec2(x, y);
 }
@@ -184,10 +197,11 @@ void GameScene::onMouseUp(Event* event)
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
 	EventMouse::MouseButton ButtonTag = em->getMouseButton();
 	Vec2 pos = em->getLocationInView();
+	//wait to add click can move area
 	if (ButtonTag == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
 		int x = _tileMap->getTileSize().width, y = _tileMap->getTileSize().height;
-		for (auto& v : sVector)
+		for (auto& v : selectedMilitary)
 		{
 			Vec2 spritePos = v->getPosition();
 
@@ -216,12 +230,8 @@ void GameScene::onMouseUp(Event* event)
 	}
 	else if (ButtonTag == EventMouse::MouseButton::BUTTON_LEFT)
 	{
-		vector<Military*>::iterator it;
-		for (it = sVector.begin();it!=sVector.end();++it)
-		{
-			uVector.push_back(*it);
-			sVector.erase(it);
-		}
+		selectedMilitary.insert(selectedMilitary.end(), unselectedMilitary.begin(), unselectedMilitary.end());
+		unselectedMilitary.clear();
 		for (auto& c : MyConstructions)
 		{
 			if (c->getBoundingBox().containsPoint(pos))
@@ -234,22 +244,31 @@ void GameScene::onMouseUp(Event* event)
 	}
 }
 
+bool GameScene::ConstructionCheck(Vec2 pos)
+{
+	for (auto& c : MyConstructions)
+	{
+		if (c->getBoundingBox().containsPoint(pos))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 {
 	//create start Tile
 	MyTile* sta = MyTile::create(NULL, start, goal);
-	openTile.push_back(*sta);
+	closeTile.push_back(*sta);
 	Vec2 pos = start;
 	//count use to juggle if the Tile is added newly
 	int count = 0;
 	while (pos != goal)
 	{
-		//choose the best one as the nextway
-		closeTile.push_back(*openTile.begin());
-		//delete it from the vector of choices
-		openTile.erase(openTile.begin());
 		//used to get different direction Tile
 		int flag_x, flag_y;
+		bool flag = false;
 		for (int i = 0; i < 4; ++i)
 		{
 			switch (i)
@@ -275,7 +294,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 			temp.x = pos.x + flag_x;
 			temp.y = pos.y + flag_y;
 			//Check collision
-			if (ColsCheck(temp))
+			if (ColsCheck(temp)&&ConstructionCheck(temp))
 			{
 				MyTile* nextWay = MyTile::create(&openTile[0], temp, goal);
 				vector<MyTile>::iterator iter;
@@ -283,6 +302,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 				//is not in closeTile
 				if (iter == closeTile.end())
 				{
+					flag = true;	//find an available way
 					vector<MyTile>::iterator it;
 					it = find(openTile.begin(), openTile.end(), *nextWay);
 					if (it != openTile.end())
@@ -299,10 +319,29 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 				}
 			}
 		}
-		sort(openTile.begin(), openTile.end());
-		pos = openTile.begin->GetPosition();
-		++count;
+		//if flag==true ,it means that this way is available
+		//if not , it means that there is no way to use
+		//so keep the impasse in closeTile
+		//and the make pos = the position of the Tile whose child is added in closeTile latest
+		//(because the added in closeTile latest one is impasse)
+		//and then find again
+		if (flag)
+		{
+			sort(openTile.begin(), openTile.end());
+			pos = openTile.begin()->GetPosition();
+			//choose the best one as the nextway
+			closeTile.push_back(*openTile.begin());
+			//delete it from the vector of choices
+			openTile.erase(openTile.begin());
+			++count;
+			flag = false;
+		}
+		else
+		{
+			pos = closeTile[closeTile.size() - 1].GetParent()->GetPosition();
+		}
 	}
+	//put the finded way in a vector
 	vector<Vec2> Way;
 	Way.push_back(goal);
 	MyTile* temp = &closeTile[closeTile.size() - 1];
@@ -310,7 +349,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 	{
 		Way.push_back(temp->GetPosition());
 		temp = temp->GetParent();
-	} while (temp != NULL);
+	} while (temp!= NULL);
 
 	reverse(Way.cbegin(), Way.cend());
 
@@ -319,7 +358,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 
 pair<Vec2, Vec2> Position::GetLocation(Vec2 point)
 {
-	return make_pair(Vec2(point.x % CHECKNUMS, point.y % CHECKNUMS), Vec2(point.x / CHECKNUMS, point.y / CHECKNUMS));
+	return make_pair(Vec2(int(point.x) % CHECKNUMS, int(point.y) % CHECKNUMS), Vec2(point.x / CHECKNUMS, point.y / CHECKNUMS));
 }
 
 Vec2 Position::GetTopleft(Vec2 cpoint)
@@ -340,4 +379,140 @@ Vec2 Position::GetTopright(Vec2 cpoint)
 Vec2 Position::GetBelowright(Vec2 cpoint)
 {
 	return Vec2((cpoint.x + 1)*TILENUMS - 1, (cpoint.y + 1)*TILENUMS - 1);
+}
+
+void GameScene::SendDataThread()
+{
+	while (true)
+	{
+		mtx.lock();
+
+		enJsonParser* json = enJsonParser::createWithArray(GameData::MilitaryData(unselectedMilitary));
+		string sendBuf = json->encode_MilitaryData();
+		GameScene::client->send_Cli(sendBuf);
+
+		mtx.unlock();
+		Sleep(TIME_LAG);
+	}
+}
+
+void GameScene::RecvDataThread()
+{
+	using namespace encode_MilitaryData;
+	using namespace encode_ConstructionData;
+	while (true)
+	{
+		mtx.lock();
+		//receive message
+		string recvBuf = client->recv_Cli();
+		//parser message
+		JsonParser* json = JsonParser::createWithC_str(recvBuf.c_str());
+		ValueMap Gamedata = json->decode_GameData();
+
+		ValueMap MilitaryVector = Gamedata[MILITARYDATA].asValueMap();
+		ValueMap ConstructionVectror = Gamedata[CONSTRUCTIONDATA].asValueMap();
+
+		ValueVector dogdata;
+		ValueVector soldierdata;
+		ValueVector engineerdata;
+
+		dogdata = MilitaryVector[DOGDATA].asValueVector();
+		soldierdata = MilitaryVector[SOLDIERDATA].asValueVector();
+		engineerdata = MilitaryVector[ENGINEERDATA].asValueVector();
+
+		this->updateMilitary(dogdata,Dog_Data);
+		this->updateMilitary(soldierdata,Soldier_Data);
+		this->updateMilitary(engineerdata,Engineer_Data);
+
+		ValueVector bardata;
+		ValueVector wardata;
+		ValueVector mindata;
+		ValueVector basdata;
+
+		bardata = ConstructionVectror[BARRACKSDATA].asValueVector();
+		wardata = ConstructionVectror[WARFACTORYDATA].asValueVector();
+		mindata = ConstructionVectror[MINEDATA].asValueVector();
+		basdata = ConstructionVectror[BASEDATA].asValueVector();
+
+		this->updateConstruction(bardata, Bar_Data);
+		this->updateConstruction(wardata, War_Data);
+		this->updateConstruction(mindata, Min_Data);
+		this->updateConstruction(basdata, Bas_Data);
+
+		mtx.unlock();
+	}
+}
+
+void GameScene::updateMilitary(ValueVector& valuevector,int type)
+{
+	//in GameData.h
+	using namespace encode_MilitaryData;
+	for (auto& v : valuevector)
+	{
+		// one military's information
+		ValueMap map = v.asValueMap();
+		int spriteTag = map[STAG].asInt();
+		Military* sprite = dynamic_cast<Military*>(this->getChildByTag(spriteTag));
+		if (sprite)
+		{
+			sprite->sethp(map[HEALTHPOINT].asInt());
+			sprite->setPosition(Vec2(map[POSITIONX].asInt(), map[POSITIONY].asInt()));
+			sprite->setDestination(Vec2(map[DESTINATIONX].asInt(), map[DESTINATIONY].asInt()));
+			sprite->setStatus(map[STATUS].asString().c_str());
+		}
+		else
+		{
+			if (type == Dog_Data)
+			{
+				sprite = Dog::create("");	//filename modify to staitc member variable
+			}
+			else if (type == Soldier_Data)
+			{
+				sprite = Soldier::create("");
+			}
+			else if (type == Engineer_Data)
+			{
+				sprite = Engineer::create("");
+			}
+			sprite->init();
+			this->addChild(sprite, tag, z);
+		}
+	}
+}
+
+void GameScene::updateConstruction(ValueVector& valuevector, int type)
+{
+	using namespace encode_ConstructionData;
+	for (auto& v : valuevector)
+	{
+		ValueMap map = v.asValueMap();
+		int spriteTag = map[STAG].asInt();
+		Construction* sprite = dynamic_cast<Construction*>(this->getChildByTag(spriteTag));
+		if (sprite)
+		{
+			sprite->sethp(map[HEALTHPOINT].asInt());
+			sprite->setPosition(Vec2(map[POSITIONX].asInt(), map[POSITIONY].asInt()));
+		}
+		else
+		{
+			if (type == Bar_Data)
+			{
+				sprite = Barracks::create("");	//filename modify to staitc member variable
+			}
+			else if (type == War_Data)
+			{
+				sprite = Warfactory::create("");
+			}
+			else if (type == Min_Data)
+			{
+				sprite = Mine::create("");
+			}
+			else if (type == Bas_Data)
+			{
+				sprite = Base::create("");
+			}
+			sprite->init();
+			this->addChild(sprite, tag, z);
+		}
+	}
 }

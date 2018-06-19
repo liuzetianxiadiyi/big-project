@@ -3,12 +3,13 @@
 
 #include <iostream>
 #include "cocos2d.h"
-#include "SystemHeader.h"
-
 #include <initializer_list>
-#include <mutex>
+#include <vector>
+#include "Military.h"
+#include "Construction.h"
 //这里可以再私有变量中加一个函数指针，通过函数指针来调用不同函数，但是我不能正确赋值
 USING_NS_CC;
+using std::vector;
 
 #define WAITINGSCENEDATA "WaitingSceneData"	//Waiting界面发送数据的标识
 #define ROOMNUMS "RoomNums"			//房间数量
@@ -33,8 +34,9 @@ USING_NS_CC;
 #define DESTINATIONX "destinationX"	//目的地
 #define DESTINATIONY "destinationY"
 #define POSITIONX "PositionX"		//所在地
-#define POSITIONY "positionY"
+#define POSITIONY "PositionY"
 #define STATUS "Status"	//状态
+#define STAG "SpriteTag"	//精灵标签
 #define ISFIGHTING "isFighting"
 #define ISMOVING "isMoving"
 #define NOTHING "nothing"
@@ -87,15 +89,13 @@ public:
 	static pair<string, Value> toPair(const char* order, Value value);
 
 	static ValueVector WaitingData(bool Add_Value, int Room_Value, string player_Value);
-	static ValueVector MilitaryData(initializer_list<Military*> il);
-	static ValueVector ConstructionData(initializer_list<Construction*> il);
-
 
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted, ValueVector rdeleted);
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted);
-	//当服务器收到房间信息时，制作一个包含房间Tag，玩家姓名，玩家姓名对应的身份的ValueVector，
-	//每一项为ValueMap，各个元素分别为<string,int>,ValueMap<identity,name>,Tag不进行传输
-	static ValueVector sRoomData(string nowner, ValueVector nmember);
+
+	static ValueVector sRoomData(ValueVector nmember);
+	static ValueVector ConstructionData(vector<Construction*> il);
+	static ValueVector MilitaryData(vector<Military*> il);
 };
 
 #endif
