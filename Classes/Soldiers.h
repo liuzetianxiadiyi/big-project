@@ -1,8 +1,9 @@
-#ifndef __SOLDIERS_H__
+﻿#ifndef __SOLDIERS_H__
 #define __SOLDIERS_H__
 #include"Military.h"
 #include"Construction.h"
 #include "ui/CocosGUI.h"
+#include<string>
 
 USING_NS_CC;
 using std::string;

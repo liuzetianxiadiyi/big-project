@@ -1,4 +1,4 @@
-#include "Soldiers.h"
+﻿#include "Soldiers.h"
 
 int Soldier::money = 500;
 int Dog::money = 300;
@@ -13,9 +13,9 @@ Soldier* Soldier::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Soldier", 200, 30, 10, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0), Vec2(300, 310));
-		createBar(sprite);
+
+		sprite->init( 200,false,false, Vec2(300, 300),Vec2(0,0), MoveBy::create(sprite->getSpeed(), sprite->getDestination()));
+		 createBar(sprite);
 		return sprite;
 	}
 
@@ -31,8 +31,7 @@ Dog* Dog::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Dog", 100, 50, 30, 0.5f, false, false, Vec2(300, 300), Vec2(0, 0),Vec2(300, 310));
+		sprite->init( 100, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
 		createBar(sprite);
 		return sprite;
 	}
@@ -50,8 +49,7 @@ Engineer* Engineer::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->create = Sprite::create("filename");
-		sprite->init("Engineer", 350, 0, 15, 0.5f, false, false, Vec2(300, 300), Vec2(300, 300));
+		sprite->init( 350,  false, false, Vec2(300, 300), Vec2(300, 300), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
 		createBar(sprite);
 		return sprite;
 	}
@@ -63,12 +61,12 @@ Engineer* Engineer::create(string & filename)
 /*
 Sprite *hpSprite = Sprite::create("hp.png");
 auto hp = ProgressTimer::create(hpSprite);
-hp->setType(ProgressTimer::Type::BAR);//条形
-hp->setMidpoint(Point(0, 0));//血条起始点
-hp->setBarChangeRate(Point(1, 0));//血条改变的是x方向
-hp->setPosition(Vec2(32, 67));//血条相对精灵的位置
-hp->setPercentage(100);//设置值
+hp->setType(ProgressTimer::Type::BAR);//鏉″舰
+hp->setMidpoint(Point(0, 0));//琛€鏉¤捣濮嬬偣
+hp->setBarChangeRate(Point(1, 0));//琛€鏉℃敼鍙樼殑鏄痻鏂瑰悜
+hp->setPosition(Vec2(32, 67));//琛€鏉＄浉瀵圭簿鐏电殑浣嶇疆
+hp->setPercentage(100);//璁剧疆鍊?
 
-pSprite->addChild(hp, 1, 1);//把血条绑定在精灵上
+pSprite->addChild(hp, 1, 1);//鎶婅鏉＄粦瀹氬湪绮剧伒涓?
 */
 

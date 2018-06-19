@@ -1,16 +1,15 @@
-#ifndef __MILITARY_H__
+﻿#ifndef __MILITARY_H__
 #define __MILITARY_H__
 
 #include "cocos2d.h"
 #include <iostream>
-
+#include<string>
 USING_NS_CC;
 using std::string;
 
-enum 
+/*enum 
 {
-	//待完善
-};
+	//寰呭畬鍠?};*/
 
 class Military : public Sprite
 {
@@ -19,8 +18,8 @@ private:
 	int max_hp;
 	Vec2 position;
 	bool dead;
-	float destinationX;
-	float destinationY;
+
+	Vec2  destination;
 	bool Selected;
 	string status;
 	int country;
@@ -35,13 +34,13 @@ private:
 	//ValueVector data;
 
 public:
-	void attack(Military*);
 	void sethp(int damage);
 	void setDestination(Vec2 v);
 	void setdead();
+	void setPosition(Vec2 v);
+	void Military::attack(Military* sprite);
 	void setSelected(bool b);
-	void createBar(Sprite *a);
-	int gethp();
+	static void createBar(Military *a);
 	Action* getMoveAction()
 	{
 		return move;
@@ -50,13 +49,9 @@ public:
 	{
 		return speed;
 	}
-	float getDestinationX()
+	Vec2 getDestination()
 	{
-		return destinationX;
-	}
-	float getDestinationY()
-	{
-		return destinationY;
+		return destination;
 	}
 	Vec2 getPosition()
 	{
@@ -75,10 +70,16 @@ public:
 	{
 		return country;
 	}
+	
+    int gethp()
+	{
+		return health_point;
+	}
+
 
 	static Military* create(string& filename);
 
-	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX, float _destinationY, Action* _move);
+	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position,Vec2 _destination , Action* _move);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);
