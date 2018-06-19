@@ -17,6 +17,7 @@ using std::vector;
  int tag = 1;
  int labelcount = 500;
 vector<string> news;
+extern mutex mtx;
 
 static void problemLoading(const char* filename)
 {
@@ -186,6 +187,40 @@ void RoomScene::editBoxEditingDidEnd(EditBox *editBox)
 	
 }
 
+//let members in the room except owner receive message from server to ensure if their game game is start
+//if there is a bug of this function ,you can try create a scene to ensure if it is in onEnterTransitionDidFinish function when the scene is running
+//if not, put these code in the function which is runned when the scene is showed
+void RoomScene::onEnterTransitionDidFinish()
+{
+	UserDefault* defaults = UserDefault::getInstance();
+	if (!defaults->getBoolForKey(OWNER))
+	{
+		Client* client = Client::getInstance();
+		string information = client->recv_Cli();
+		JsonParser* json = JsonParser::createWithC_str(information.c_str());
+		if (json->decode_EnterData())
+		{
+			auto scene = GameScene::createScene();	//待定
+			auto reScene = TransitionJumpZoom::create(1.0f, scene);
+			Director::getInstance()->pushScene(reScene);
+			if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
+			{
+				SimpleAudioEngine::getInstance()->playEffect("filename");
+			}
+		}
+		else
+		{
+			auto scene = WaitingScene::createScene();	//待定
+			WaitingScene::replace = false;
+			auto reScene = TransitionJumpZoom::create(1.0f, scene);
+			Director::getInstance()->pushScene(reScene);
+			if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
+			{
+				SimpleAudioEngine::getInstance()->playEffect("filename");
+			}
+		}
+	}
+}
 
 //聊天框历史消息回调函数
 void RoomScene::messageCallback(Ref* pSender)
@@ -458,7 +493,7 @@ void RoomScene::menuStartGameCallback(Ref* pSender)
 	string sendBuf = enJson->encode_EnterGameData();
 	client->send_Cli(sendBuf);
 
-	auto scene = ::createScene();	//´ý¶¨
+	auto scene = GameScene::createScene();	//´ý¶¨
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
@@ -476,6 +511,7 @@ void RoomScene::menuDeleteRoomCallback(Ref* pSender)
 	client->send_Cli(sendBuf);
 
 	auto scene = WaitingScene::createScene();	//´ý¶¨
+	WaitingScene::replace = false;
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))

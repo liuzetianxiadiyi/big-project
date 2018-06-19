@@ -10,8 +10,6 @@
 
 using std::string;
 
-Information information;
-
 Scene* AccontScene::createScene()
 {
 	auto scene = Scene::create();
@@ -103,27 +101,3 @@ void AccontScene::buttonOkCallback(Ref* pSender)
 		Director::getInstance()->replaceScene(reScene);
 	}
 }
-
-/*void AccontScene::onExit()
-{
-	UserDefault* defaults = UserDefault::getInstance();			//将用户输入的text放入pair
-	GameData namedata(PLAYERNAME);
-	
-	cocos2d::ValueVector plistdata;
-	plistdata.push_back(namedata.toValue(Value(defaults->getStringForKey("playername"))));
-	/*std::pair<string, Value> pairname(PLAYERNAME, defaults->getStringForKey("playername"));
-
-	cocos2d::ValueMap temp_map;
-	temp_map.insert(pairname);
-
-	Value val(temp_map);		//将map转化为Value
-	cocos2d::ValueVector plistdata;
-	plistdata.push_back(val);
-
-	enJsonParser* encode = enJsonParser::createWithArray(plistdata);
-
-	information.setisChanging(true);
-	encode->encode(information);
-	information.setisChanging(true);
-	//auto client = Client::getInstance();
-}*/
