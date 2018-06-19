@@ -5,17 +5,17 @@
 #include "Client.h"
 #include "JsonParser.h"
 #include "enJsonParser.h"
-#include "Information.h"
+#include <mutex>
 
 #include <string>
 
 #define ROOMBUTTONWIDTH 60
 
-extern Information information;
 //待完善
 int WaitingScene::room_nums = 0;
 int WaitingScene::SelectedRoomTag = -1;
 bool WaitingScene::replace = false;
+mutex mtx;
 
 Scene* WaitingScene::createScene()
 {
@@ -88,14 +88,13 @@ Slider* slider = Slider::create();
 
 void WaitingScene::roomDataThread()
 {
-	rmtx.lock();
+	mtx.lock();
 	while (!replace)
 	{
 		Client* client = Client::getInstance();
-		if (client->recv_Cli())
+		string information
+		if ((information=client->recv_Cli())!="")
 		{
-			rmtx.lock();
-
 			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
 			json->decode_WaitingData();
 			ValueMap DataMap = json->getList().at(0).asValueMap();		//0 is default position
@@ -135,11 +134,10 @@ void WaitingScene::roomDataThread()
 				}
 			}
 
-			rmtx.unlock();
 		}
 		Sleep(2*TIME_LAG);
 	}
-	rmtx.unlock();
+	mtx.unlock();
 }
 
 void WaitingScene::menuEnterCallback(Ref* pSender)
@@ -151,7 +149,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		//send room_tag and player of this room message
 		ValueVector plistdata = GameData::WaitingData(false, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
-		rmtx.lock();
+		mtx.lock();
 		replace = true;
 
 		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
@@ -159,7 +157,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		Client* client = Client::getInstance();
 		client->send_Cli(sendbuf);
 
-		rmtx.unlock();
+		mtx.unlock();
 		//Scene changes
 		auto scene = RoomScene::createScene();
 		auto reScene = TransitionJumpZoom::create(1.0f, scene);
@@ -173,11 +171,11 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 
 void WaitingScene::createRoomCallback(Ref* pSender)
 {
-	rmtx.lock();
+	mtx.lock();
 
 	replace = true;
 
-	rmtx.unlock();
+	mtx.unlock();
 
 	UserDefault* defaults = UserDefault::getInstance();
 	defaults->setBoolForKey(OWNER, true);
@@ -188,10 +186,12 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
 	string sendbuf = enJson->encode_WaitingRoomData();
 
+	mtx.lock();
+
 	Client* client = Client::getInstance();
 	client->send_Cli(sendbuf);
 
-	rmtx.unlock();
+	mtx.unlock();
 
 	auto scene = RoomScene::createScene(); 
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
@@ -204,8 +204,9 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 
 void WaitingScene::menuReturnCallback(Ref* pSender)
 {
-	rmtx.lock();
+	mtx.lock();
 	replace = true;
+	mtx.unlock();
 
 	auto scene = HelloWorld::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
