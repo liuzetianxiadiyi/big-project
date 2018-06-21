@@ -1,4 +1,4 @@
-﻿#ifndef __SOLDIERS_H__
+#ifndef __SOLDIERS_H__
 #define __SOLDIERS_H__
 #include"Military.h"
 #include"Construction.h"
@@ -21,7 +21,7 @@ public:
 	static int power;
 
 public:
-	static Soldier* create(string& filename);
+	static Soldier* create(const string filename);
 	virtual void None() {};
 };
 
@@ -37,7 +37,7 @@ public:
 
 
 public:
-	static Dog* create(string& filename);
+	static Dog* create(const string filename);
 	virtual void None() {};
 };
 
@@ -53,7 +53,39 @@ public:
 	static int power;
 	
 public:
-	static Engineer* create(string& filename);
+	static Engineer* create(const string filename);
+	virtual void None() {};
+};
+
+class Tank : public Military
+{
+public:
+	static string name;
+	static int speed;
+	static int delay;
+	static Action* move;
+	static int money;
+	static int cure;
+	static int power;
+
+public:
+	static Tank* create(const string filename);
+	virtual void None() {};
+};
+
+class Miningcar : public Military
+{
+public:
+	static string name;
+	static int speed;
+	static int delay;
+	static Action* move;
+	static int money;
+	static int cure;
+	static int power;
+
+public:
+	static Miningcar* create(const string filename);
 	virtual void None() {};
 };
 #endif
