@@ -36,7 +36,7 @@ public:
 		auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
 	}
 	static int money;
-	static int health_point;
+	int health_point;
 	static int max_hp;
 
 	virtual void None() {};
@@ -86,7 +86,7 @@ public:
 	//*******************
 
 	static int money;
-	static int health_point;
+	int health_point;
 	static int max_hp;
 
 	virtual void None() {};
@@ -127,7 +127,7 @@ public:
 	//*******************
 
 	static int money;
-	static int health_point;
+	int health_point;
 	static int max_hp;
 
 	virtual void None() {};
@@ -159,7 +159,7 @@ public:
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
 	static int money;
-	static int health_point;
+	int health_point;
 	static int max_hp;
 
 	static void createBar(Base * a);
