@@ -5,8 +5,8 @@
 #include "cocos2d.h"
 #include <initializer_list>
 #include <vector>
-#include "Military.h"
-#include "Construction.h"
+//#include "Military.h"
+//#include "Construction.h"
 //这里可以再私有变量中加一个函数指针，通过函数指针来调用不同函数，但是我不能正确赋值
 USING_NS_CC;
 using std::vector;
@@ -18,6 +18,7 @@ using std::vector;
 #define DELETED "Deleted"		//是否删除了房间
 #define DELETEDROOM "DeletedRoom"	//删除房间的Tag
 #define PLAYERNAME "playername"		//玩家姓名
+#define ADDNAME "addName"  //加入玩家的姓名
 #define OWNER "owner"		//房主
 #define MEMBER "member"		//成员
 
@@ -77,6 +78,27 @@ namespace encode_ConstructionData
 	};
 }
 
+namespace MemberTagInRoom
+{
+	enum
+	{
+		Player1 = 1000,
+		Player2,
+		Player3,
+		Player4
+	};
+}
+
+namespace RoomMessage
+{
+	enum
+	{
+		AddMember = -1,
+		DeleteRoom = 0,
+		StartGame = 1
+	};
+}
+
 class GameData
 {
 public:
@@ -89,13 +111,14 @@ public:
 	static pair<string, Value> toPair(const char* order, Value value);
 
 	static ValueVector WaitingData(bool Add_Value, int Room_Value, string player_Value);
+	static ValueVector RoomData(bool start);
 
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted, ValueVector rdeleted);
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted);
 
 	static ValueVector sRoomData(ValueVector nmember);
-	static ValueVector ConstructionData(vector<Construction*> il);
-	static ValueVector MilitaryData(vector<Military*> il);
+	/*static ValueVector ConstructionData(vector<Construction*> il);
+	static ValueVector MilitaryData(vector<Military*> il);*/
 };
 
 #endif

@@ -17,6 +17,7 @@ class JsonParser:public cocos2d::Ref
 private:
 	string content;
 	ValueMap row;
+	string information;
 public:
 	static JsonParser * createWithC_str(const char * data);
 
@@ -24,8 +25,13 @@ public:
 
 	ValueMap decode_WaitingData();
 	ValueMap decode_RoomData();
-	bool decode_EnterData();
+	int decode_EnterData();
 	ValueMap decode_GameData();
+
+	string& getInformation()
+	{
+		return information;
+	}
 };
 
 #endif

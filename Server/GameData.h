@@ -6,6 +6,7 @@
 #include <initializer_list>
 //这里可以再私有变量中加一个函数指针，通过函数指针来调用不同函数，但是我不能正确赋值
 
+
 #define WAITINGSCENEDATA "WaitingSceneData"	//Waiting界面发送数据的标识
 #define ROOMNUMS "RoomNums"			//房间数量
 #define ADDROOM "AddRoom"		//是否添加房间
@@ -13,6 +14,7 @@
 #define DELETED "Deleted"		//是否删除了房间
 #define DELETEDROOM "DeletedRoom"	//删除房间的Tag
 #define PLAYERNAME "playername"		//玩家姓名
+#define ADDNAME "addName"  //加入玩家的姓名
 #define OWNER "owner"		//房主
 #define MEMBER "member"		//成员
 
@@ -29,8 +31,9 @@
 #define DESTINATIONX "destinationX"	//目的地
 #define DESTINATIONY "destinationY"
 #define POSITIONX "PositionX"		//所在地
-#define POSITIONY "positionY"
+#define POSITIONY "PositionY"
 #define STATUS "Status"	//状态
+#define STAG "SpriteTag"	//精灵标签
 #define ISFIGHTING "isFighting"
 #define ISMOVING "isMoving"
 #define NOTHING "nothing"

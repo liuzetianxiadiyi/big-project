@@ -4,9 +4,12 @@
 #include "Client.h"
 #include "enJsonParser.h"
 #include "WaitingScene.h"
-#include "SimpleAudioEngine.h"
+#include "SystemHeader.h"
+#include "JsonParser.h"
 #include "time.h"
 #include <vector>
+#include "GameScene.h"
+#include <string>
 
 USING_NS_CC;
 using std::string;
@@ -190,15 +193,16 @@ void RoomScene::editBoxEditingDidEnd(EditBox *editBox)
 //let members in the room except owner receive message from server to ensure if their game game is start
 //if there is a bug of this function ,you can try create a scene to ensure if it is in onEnterTransitionDidFinish function when the scene is running
 //if not, put these code in the function which is runned when the scene is showed
-void RoomScene::onEnterTransitionDidFinish()
+void RoomScene::recvThread()
 {
-	UserDefault* defaults = UserDefault::getInstance();
-	if (!defaults->getBoolForKey(OWNER))
+	using namespace RoomMessage;
+	while (true)
 	{
 		Client* client = Client::getInstance();
 		string information = client->recv_Cli();
 		JsonParser* json = JsonParser::createWithC_str(information.c_str());
-		if (json->decode_EnterData())
+		int juggle = json->decode_EnterData();
+		if (juggle == StartGame)
 		{
 			auto scene = GameScene::createScene();	//待定
 			auto reScene = TransitionJumpZoom::create(1.0f, scene);
@@ -207,8 +211,9 @@ void RoomScene::onEnterTransitionDidFinish()
 			{
 				SimpleAudioEngine::getInstance()->playEffect("filename");
 			}
+			break;
 		}
-		else
+		else if(juggle == DeleteRoom)
 		{
 			auto scene = WaitingScene::createScene();	//待定
 			WaitingScene::replace = false;
@@ -218,6 +223,12 @@ void RoomScene::onEnterTransitionDidFinish()
 			{
 				SimpleAudioEngine::getInstance()->playEffect("filename");
 			}
+			break;
+		}
+		else if (juggle == AddMember)
+		{
+			string name = json->getInformation();
+			//create a roomMember sprite
 		}
 	}
 }

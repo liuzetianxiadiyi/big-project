@@ -7,9 +7,10 @@
 #include "writer.h"
 #include "reader.h"
 #include "stringbuffer.h"
+#include <string>
 USING_NS_CC;
 //#include "MyUtility.h"
-
+using std::string;
 class enJsonParser :public cocos2d::Ref
 {
 private:

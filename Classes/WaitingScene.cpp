@@ -5,6 +5,7 @@
 #include "Client.h"
 #include "JsonParser.h"
 #include "enJsonParser.h"
+#include "SystemHeader.h"
 #include <mutex>
 
 #include <string>
@@ -68,7 +69,7 @@ bool WaitingScene::init()
 	auto sprite = Sprite::create(".png");
 	sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	this->addChild(sprite, 0);
-Slider* slider = Slider::create();
+	Slider* slider = Slider::create();
 	//加载滑杆纹理
 	slider->loadBarTexture("sliderTrack.png");
 	//加载滑块按钮纹理
@@ -92,12 +93,11 @@ void WaitingScene::roomDataThread()
 	while (!replace)
 	{
 		Client* client = Client::getInstance();
-		string information
+		string information;
 		if ((information=client->recv_Cli())!="")
 		{
-			JsonParser* json = JsonParser::createWithC_str(information.getRecvBuf().c_str());
-			json->decode_WaitingData();
-			ValueMap DataMap = json->getList().at(0).asValueMap();		//0 is default position
+			JsonParser* json = JsonParser::createWithC_str(information.c_str());
+			ValueMap DataMap = json->decode_WaitingData();
 			if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
 			{
 				ValueMap Data = DataMap[SWAITINGSCENEDATA].asValueMap();
