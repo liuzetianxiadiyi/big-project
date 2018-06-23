@@ -1,192 +1,143 @@
-#include "Constructions.h"
-#include "Soldiers.h"
+#ifndef __CONSTRUCTIONS_H__
+#define __CONSTRUCTIONS_H__
 
-int Mine::money = 1000;
-int Barracks::money = 2000;
-int Warfactory::money = 3000;
-int Base::money = 5000;
+#include "Construction.h"
 
-Barracks* Barracks::create(const string filename)
+class Barracks:public Construction
 {
-	Barracks* sprite = new Barracks();
-	if (sprite->initWithFile(filename))
+private:
+	//use to create menu
+	Sprite * createdog;
+	Sprite * createsoldier;
+	Sprite * createengineer;
+
+public:
+	static Barracks* create(const string filename);
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
+
+	void CreateDogCallback(Ref* pSender);
+	void CreateSoldierCallback(Ref* pSender);
+	void CreateEngineerCallback(Ref* pSender);
+
+	void CreateDog();
+	void CreateSoldier();
+	void CreateEngineer();
+
+	static void createBar(Barracks * a);
+
+	virtual Menu* createMenu()
 	{
-		sprite->autorelease();
-		sprite->createdog = Sprite::create("filename");
-		sprite->createsoldier = Sprite::create("filename");
-		sprite->createengineer = Sprite::create("filename");
-		sprite->init("Barracks", 1000, 4, Vec2(300, 300), false, false, 1, 100);
-		return sprite;
+		auto dogItem = MenuItemSprite::create(createdog, createdog, CC_CALLBACK_1(Barracks::CreateDogCallback, this));
+		auto soldierItem = MenuItemSprite::create(createsoldier, createsoldier, CC_CALLBACK_1(Barracks::CreateSoldierCallback, this));
+		auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
 	}
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
-}
 
-Sprite* Barracks::getsolder()
-{
-	return createsoldier;
-}
+	virtual void None() {};
 
-Sprite* Barracks::getdog()
-{
-	return createdog;
-}
+	Sprite* getdog();
 
-Sprite* Barracks::getengineer()
-{
-	return createengineer;
-}
+	Sprite* getsolder();
 
-Warfactory* Warfactory::create(const string filename)
+	Sprite* getengineer();
+};
+
+class Warfactory :public Construction
 {
-	Warfactory* sprite = new Warfactory();
-	if (sprite->initWithFile(filename))
-	{
-		sprite->autorelease();
-		sprite->createtank = Sprite::create("filename");
-		sprite->init("Warfactory", 1800, 4, Vec2(400, 400), false, false, 1, 100);
-		return sprite;
+public:
+
+	//button
+	Sprite * createtank;
+
+public:
+
+	static Warfactory* create(const string filename);
+
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
+
+	//*******************
+	void CreateTankCallback(Ref* pSender);
+	void CreateTank();
+
+	static void createBar(Warfactory * a);
+
+	virtual Menu* createMenu() {
+		auto tankItem = MenuItemSprite::create(createtank, createtank, CC_CALLBACK_1(Warfactory::CreateTankCallback, this));
 	}
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
-}
 
-Sprite* Warfactory::gettank()
-{
-	return createtank;
-}
+	virtual void None() {};
 
-Mine* Mine::create(const string filename)
+	Sprite* gettank();
+};
+
+class Mine :public Construction
 {
-	Mine* sprite = new Mine();
-	if (sprite->initWithFile(filename))
-	{
-		sprite->autorelease();
-		sprite->createminingcar = Sprite::create("filename");
-		sprite->init("Mine", 1600, 4, Vec2(150, 150), false, false, 1, 100);
-		return sprite;
+
+public:
+
+	//button
+	Sprite * createminingcar;
+public:
+
+	static Mine* create(const string filename);
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
+
+	//*******************
+	void CreateMiningcarCallback(Ref* pSender);
+	void CreateMiningcar();
+
+	static void createBar(Mine * a);
+
+	virtual Menu* createMenu() {
+		auto miningcarItem = MenuItemSprite::create(createminingcar, createminingcar, CC_CALLBACK_1(Mine::CreateMiningcarCallback, this));
 	}
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
-}
 
-Sprite* Mine::getminingcar()
-{
-	return createminingcar;
-}
+	virtual void None() {};
+	Sprite* getminingcar();
+};
 
-Base* Base::create(const string filename)
+class Base :public Construction
 {
-	Base* sprite = new Base();
-	if (sprite->initWithFile(filename))
-	{
-		sprite->autorelease();
-		sprite->createbarracks = Sprite::create("filename");
-		sprite->createwarfactory = Sprite::create("filename");
-		sprite->createmine = Sprite::create("filename");
-		sprite->init("Base", 5000, 8, Vec2(100, 100), false, false, 1, 100);
-		return sprite;
-	}
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
-}
 
-Sprite* Base::getbarracks()
-{
-	return createbarracks;
-}
+public:
+	//button
+	Sprite * createbarracks;
 
-Sprite* Base::getwarfactory()
-{
-	return createwarfactory;
-}
+	Sprite * createwarfactory;
 
-Sprite* Base::getmine()
-{
-	return createmine;
-}
+	Sprite * createmine;
 
-void Barracks::CreateDogCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Dog::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
+public:
 
-void Barracks::CreateSoldierCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Soldier::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
+	static Base* create(const string filename);
 
-void Barracks::CreateEngineerCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Engineer::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-void Barracks::CreateDog()
-{
-	string filename = "filename";
-	Dog* dog = Dog::create(filename);
-	dog->init(100,  false, false, Vec2(300, 300),Vec2(0,0),MoveBy::create(dog->getSpeed(), dog->getDestination()));
-	dog->setPosition(Vec2(0,0));
-	auto target=  Director::getInstance()->getRunningScene();
-	target->addChild(dog, 2); 
-}
+	static void createBar(Base * a);
 
-void Barracks::CreateSoldier()
-{
-	string filename = "filename";
-	Soldier* soldier = Soldier::create(filename);
-	soldier->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(soldier->getSpeed(), soldier->getDestination()));
-	soldier->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(soldier, 2);
-}
+	virtual void None() {};
+	Sprite* getbarracks();
 
-void Barracks::CreateEngineer()
-{
-	string filename = "filename";
-	Engineer* engineer = Engineer::create(filename);
-	engineer->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(engineer->getSpeed(), engineer->getDestination()));
-	engineer->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(engineer, 2);
-}
+	Sprite* getwarfactory();
 
-void Warfactory::CreateTank()
-{
-	string filename = "filename";
-	Tank* tank = Tank::create(filename);
-	tank->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(tank->getSpeed(), tank->getDestination()));
-	tank->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(tank, 2);
-}
+	Sprite* getmine();
+};
 
-void Warfactory::CreateTankCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Tank::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateTank(); }, nullptr);
-	this->runAction(seq);
-}
 
-void Mine::CreateMiningcar()
-{
-	string filename = "filename";
-	Miningcar* miningcar = Miningcar::create(filename);
-	miningcar->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(miningcar->getSpeed(), miningcar->getDestination()));
-	miningcar->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(miningcar, 2);
-}
 
-void Mine::CreateMiningcarCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Miningcar::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateMiningcar(); }, nullptr);
-	this->runAction(seq);
-}
+#endif
