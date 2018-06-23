@@ -38,20 +38,11 @@ public:
 
 	virtual void None() {};
 
-	Sprite* getdog()
-	{
-		return createdog;
-	}
+	Sprite* getdog();
 
-	Sprite* getsolder()
-	{
-		return createsoldier;
-	}
+	Sprite* getsolder();
 
-	Sprite* getengineer()
-	{
-		return createengineer;
-	}
+	Sprite* getengineer();
 };
 
 class Warfactory :public Construction
@@ -83,12 +74,7 @@ public:
 
 	virtual void None() {};
 
-	Sprite* gettank()
-	{
-
-		return createtank;
-
-	}
+	Sprite* gettank();
 };
 
 class Mine :public Construction
@@ -118,10 +104,7 @@ public:
 	}
 
 	virtual void None() {};
-	Sprite* getminingcar()
-	{
-		return createminingcar;
-	}
+	Sprite* getminingcar();
 };
 
 class Base :public Construction
@@ -148,20 +131,13 @@ public:
 	static void createBar(Base * a);
 
 	virtual void None() {};
-	Sprite* getbarracks()
-	{
-		return createbarracks;
-	}
+	Sprite* getbarracks();
 
-	Sprite* getwarfactory()
-	{
-		return createwarfactory;
-	}
+	Sprite* getwarfactory();
 
-	Sprite* getmine()
-	{
-		return createmine;
-	}
+	Sprite* getmine();
 };
+
+
 
 #endif
