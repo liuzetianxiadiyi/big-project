@@ -43,280 +43,240 @@ bool JsonParser::initWithC_str(const char * data)
 	return true;
 }
 
-void JsonParser::decode_WaitingData()
+ValueMap JsonParser::decode_WaitingData()
 {
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
-	log("Parsing to document succeeded");
-	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+	CC_ASSERT(document.IsObject());
 
-	const rapidjson::Value& records = document["Record"];
+	row = ValueMap();
 
-	CC_ASSERT(records.IsArray());
-
-	for (unsigned int i = 0; i < records.Size(); ++i)
+	if (document.HasMember(SWAITINGSCENEDATA))		//for server
 	{
-		row = ValueMap();
+		const rapidjson::Value &temp = document[SWAITINGSCENEDATA];
 
-		//取一条记录对象
-		const rapidjson::Value &record = records[i];
+		const rapidjson::Value &val_add = temp[ADDROOM];
+		row[ADDROOM] = Value(val_add.GetInt());
 
-		if (record.HasMember(SWAITINGSCENEDATA))		//for server
+		const rapidjson::Value &val_rLabel = temp[ROOMLABEL];
+		ValueVector rTemp;
+		for (auto& r : val_rLabel.GetArray())
 		{
-			const rapidjson::Value &temp = record[SWAITINGSCENEDATA];
-
-			const rapidjson::Value &val_add = temp[ADDROOM];
-			row[ADDROOM] = Value(val_add.GetBool());
-
-			const rapidjson::Value &val_rLabel = temp[ROOMLABEL];
-			row[ROOMLABEL] = Value(val_rLabel.GetInt());
-
-			const rapidjson::Value &val_name = temp[PLAYERNAME];
-			row[PLAYERNAME] = Value(val_name.GetString());
+			rTemp.push_back(Value(r.GetInt()));
 		}
+		row[ROOMLABEL] = Value(rTemp);
 
-		list.push_back(Value(row));
+		const rapidjson::Value& val_del = temp[DELETED];
+		row[DELETED] = val_del.GetBool();
+
+		if (val_del.GetBool())
+		{
+			ValueVector dTemp;
+			const rapidjson::Value& val_rDel = temp[DELETEDROOM];
+			for (auto& d : val_rDel.GetArray())
+			{
+				dTemp.push_back(Value(d.GetInt()));
+			}
+			row[DELETEDROOM] = Value(dTemp);
+		}
 	}
+
+	return row;
 }
 
-void JsonParser::decode_RoomData()
+ValueMap JsonParser::decode_RoomData()
 {
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
-	log("Parsing to document succeeded");
-	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+	CC_ASSERT(document.IsObject());
 
-	const rapidjson::Value& records = document["Record"];
-
-	CC_ASSERT(records.IsArray());
-
-	for (unsigned int i = 0; i < records.Size(); ++i)
+	if (document.HasMember(SROOMSCENEDATA))		//for server
 	{
-		row = ValueMap();
+		const rapidjson::Value &temp = document[SROOMSCENEDATA];
 
-		//取一条记录对象
-		const rapidjson::Value &record = records[i];
+		/*const rapidjson::Value &val_own = temp[OWNER];
+		row[OWNER] = Value(val_own.GetString());*/
 
-		if (record.HasMember(SROOMSCENEDATA))		//for server
+		ValueVector vName;
+		const rapidjson::Value &val_mem = temp[MEMBER];
+		for (auto& v : val_mem.GetArray())
 		{
-			const rapidjson::Value &temp = record[SROOMSCENEDATA];
-
-			const rapidjson::Value &val_own = temp[OWNER];
-			row[OWNER] = Value(val_own.GetString());
-
-			ValueVector vName;
-			const rapidjson::Value &val_mem = temp[MEMBER];
-			for (auto& v : val_mem.GetArray())
-			{
-				vName.push_back(Value(v.GetInt()));
-			}
-			row[MEMBER] = Value(vName);
+			vName.push_back(Value(v.GetString()));
 		}
-
-		list.push_back(Value(row));
+		row[MEMBER] = Value(vName);
 	}
+
+	return row;
 }
 
-bool JsonParser::decode_EnterData()
+int JsonParser::decode_EnterData()
 {
+	using namespace RoomMessage;
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
-	log("Parsing to document succeeded");
-	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+	CC_ASSERT(document.IsObject());
+	//取一条记录对象
 
-	const rapidjson::Value& records = document["Record"];
-
-	CC_ASSERT(records.IsArray());
-
-	for (unsigned int i = 0; i < records.Size(); ++i)
+	if (document.HasMember(SENTERROOMDATA))		//for server
 	{
-		row = ValueMap();
+		const rapidjson::Value &temp = document[SENTERROOMDATA];
 
-		//取一条记录对象
-		const rapidjson::Value &record = records[i];
-
-		if (record.HasMember(SENTERROOMDATA))		//for server
+		const rapidjson::Value &val_own = temp[ISSTART];
+		if (val_own.GetBool())
 		{
-			const rapidjson::Value &temp = record[SENTERROOMDATA];
-
-			const rapidjson::Value &val_own = temp[ISSTART];
-			if (val_own.GetBool())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return 1;
 		}
-
-		//list.push_back(Value(row));
+		else
+		{
+			return 0;
+		}
 	}
+	else if (document.HasMember(ADDNAME))
+	{
+		const rapidjson::Value& name = document[ADDNAME];
+		information = name.GetString();
+		return -1;
+	}
+
+	//list.push_back(Value(row));
 }
 
-void JsonParser::decode_MilitaryData()
+ValueMap JsonParser::decode_GameData()
 {
 	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
+	document.Parse<0>(content.c_str());
 
-	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
-	log("Parsing to document succeeded");
-	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
+	CC_ASSERT(document.IsArray());
 
-	const rapidjson::Value& records = document["Record"];
 
-	CC_ASSERT(records.IsArray());
+	row = ValueMap();
+	ValueMap Military_map;
 
-	for (unsigned int i = 0; i < records.Size(); ++i)
+	if (document.HasMember(MILITARYDATA))		//获得dogdata等
 	{
-		row = ValueMap();
-		ValueMap temp_map = ValueMap();
+		const rapidjson::Value &temp = document[MILITARYDATA];
 
-		//取一条记录对象
-		const rapidjson::Value &record = records[i];
+		const rapidjson::Value &val_dog = temp[DOGDATA];	//val_dog为包含多个map的数组，一个元素代表一个兵
+		const rapidjson::Value &val_sold = temp[SOLDIERDATA];
+		const rapidjson::Value &val_eng = temp[ENGINEERDATA];
 
-		if (record.HasMember(MILITARYDATA))		//获得dogdata等
+		ValueVector dogdata;
+		ValueVector soldierdata;
+		ValueVector engineerdata;
+
+		for (auto& v : val_dog.GetArray())
 		{
-			const rapidjson::Value &temp = record[MILITARYDATA];
-
-			const rapidjson::Value &val_dog = temp[DOGDATA];	//val_dog为包含多个map的数组，一个元素代表一个兵
-			const rapidjson::Value &val_sold = temp[SOLDIERDATA];
-			const rapidjson::Value &val_eng = temp[ENGINEERDATA];
-
-			ValueVector dogdata;
-			ValueVector soldierdata;
-			ValueVector engineerdata;
-
-			for (auto& v : val_dog.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
-				temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
-				temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				dogdata.push_back(Value(temp_map));
-			}
-			for (auto& v : val_sold.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
-				temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
-				temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				soldierdata.push_back(Value(temp_map));
-			}
-			for (auto& v : val_eng.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
-				temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
-				temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				engineerdata.push_back(Value(temp_map));
-			}
-
-			pair<string, Value> pair0 = make_pair(DOGDATA, Value(dogdata));
-			pair<string, Value> pair1 = make_pair(SOLDIERDATA, Value(soldierdata));
-			pair<string, Value> pair2 = make_pair(ENGINEERDATA, Value(engineerdata));
-			row = GameData::toValueMap({ pair0,pair1,pair2 });
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
+			temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
+			temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			dogdata.push_back(Value(temp_map));
 		}
-		list.push_back(Value(row));
+		for (auto& v : val_sold.GetArray())
+		{
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
+			temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
+			temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			soldierdata.push_back(Value(temp_map));
+		}
+		for (auto& v : val_eng.GetArray())
+		{
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[DESTINATIONX] = v.GetObjectW()[DESTINATIONX].GetFloat();
+			temp_map[DESTINATIONY] = v.GetObjectW()[DESTINATIONY].GetFloat();
+			temp_map[STATUS] = v.GetObjectW()[STATUS].GetString();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			engineerdata.push_back(Value(temp_map));
+		}
+
+		pair<string, Value> pair0 = make_pair(DOGDATA, Value(dogdata));
+		pair<string, Value> pair1 = make_pair(SOLDIERDATA, Value(soldierdata));
+		pair<string, Value> pair2 = make_pair(ENGINEERDATA, Value(engineerdata));
+		Military_map = GameData::toValueMap({ pair0,pair1,pair2 });
 	}
-}
-
-void JsonParser::decode_ConstructionData()
-{
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
-
-	CCASSERT(!document.HasParseError(), "Parsing to document failure.");
-	log("Parsing to document succeeded");
-	CC_ASSERT(document.IsObject() && document.HasMember("Record"));		//判断是否是有效对象，是否有record数据项
-
-	const rapidjson::Value& records = document["Record"];
-
-	CC_ASSERT(records.IsArray());
-
-	for (unsigned int i = 0; i < records.Size(); ++i)
+	
+	ValueMap Construction_map;
+	if (document.HasMember(CONSTRUCTIONDATA))		//获得dogdata等
 	{
-		row = ValueMap();
-		ValueMap temp_map = ValueMap();
+		const rapidjson::Value &temp = document[CONSTRUCTIONDATA];
 
-		//取一条记录对象
-		const rapidjson::Value &record = records[i];
+		const rapidjson::Value &val_bar = temp[BARRACKSDATA];
+		const rapidjson::Value &val_war = temp[WARFACTORYDATA];
+		const rapidjson::Value &val_min = temp[MINEDATA];
+		const rapidjson::Value &val_bas = temp[BASEDATA];
 
-		if (record.HasMember(CONSTRUCTIONDATA))		//获得dogdata等
+		ValueVector bardata;
+		ValueVector wardata;
+		ValueVector mindata;
+		ValueVector basdata;
+
+		for (auto& v : val_bar.GetArray())
 		{
-			const rapidjson::Value &temp = record[CONSTRUCTIONDATA];
-
-			const rapidjson::Value &val_bar = temp[BARRACKSDATA];
-			const rapidjson::Value &val_war = temp[WARFACTORYDATA];
-			const rapidjson::Value &val_min = temp[MINEDATA];
-			const rapidjson::Value &val_bas = temp[BASEDATA];
-
-			ValueVector bardata;
-			ValueVector wardata;
-			ValueVector mindata;
-			ValueVector basdata;
-
-			for (auto& v : val_bar.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				bardata.push_back(Value(temp_map));
-			}
-			for (auto& v : val_war.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				wardata.push_back(Value(temp_map));
-			}
-			for (auto& v : val_min.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				mindata.push_back(Value(temp_map));
-			}
-			for (auto& v : val_bas.GetArray())
-			{
-				ValueMap temp_map;
-				temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
-				temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
-				temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
-				temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
-				basdata.push_back(Value(temp_map));
-			}
-
-			pair<string, Value> pair0 = make_pair(BARRACKSDATA, Value(bardata));
-			pair<string, Value> pair1 = make_pair(WARFACTORYDATA, Value(wardata));
-			pair<string, Value> pair2 = make_pair(MINEDATA, Value(mindata));
-			pair<string, Value> pair3 = make_pair(BASEDATA, Value(basdata));
-			row = GameData::toValueMap({ pair0,pair1,pair2,pair3 });
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			bardata.push_back(Value(temp_map));
 		}
-		list.push_back(Value(row));
+		for (auto& v : val_war.GetArray())
+		{
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			wardata.push_back(Value(temp_map));
+		}
+		for (auto& v : val_min.GetArray())
+		{
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			mindata.push_back(Value(temp_map));
+		}
+		for (auto& v : val_bas.GetArray())
+		{
+			ValueMap temp_map;
+			temp_map[HEALTHPOINT] = v.GetObjectW()[HEALTHPOINT].GetInt();
+			temp_map[POSITIONX] = v.GetObjectW()[POSITIONX].GetFloat();
+			temp_map[POSITIONY] = v.GetObjectW()[POSITIONY].GetFloat();
+			temp_map[COUNTRY] = v.GetObjectW()[COUNTRY].GetInt();
+			temp_map[STAG] = v.GetObjectW()[STAG].GetInt();
+			basdata.push_back(Value(temp_map));
+		}
+
+		pair<string, Value> pair0 = make_pair(BARRACKSDATA, Value(bardata));
+		pair<string, Value> pair1 = make_pair(WARFACTORYDATA, Value(wardata));
+		pair<string, Value> pair2 = make_pair(MINEDATA, Value(mindata));
+		pair<string, Value> pair3 = make_pair(BASEDATA, Value(basdata));
+		Construction_map = GameData::toValueMap({ pair0,pair1,pair2,pair3 });
 	}
+
+	pair<string, Value> mPair = make_pair(MILITARYDATA, Value(Military_map));
+	pair<string, Value> cPair = make_pair(CONSTRUCTIONDATA, Value(Construction_map));
+	return GameData::toValueMap({ mPair,cPair });
 }

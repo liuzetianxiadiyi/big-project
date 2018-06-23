@@ -15,7 +15,7 @@ bool Client::init()
 		return FALSE;
 	}
 
-	SOCKET sHost = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	sHost = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (INVALID_SOCKET == sHost)
 	{
 		closesocket(sHost);
@@ -24,10 +24,9 @@ bool Client::init()
 	}
 
 	//3 准备通信地址  
-	SOCKADDR_IN addrServer;
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_port = htons(PORT);
-	addrServer.sin_addr.s_addr = inet_addr("10.22.106.30");
+	addrServer.sin_addr.s_addr = inet_addr("192.168.0.7");
 	
 	return true;
 }
@@ -49,15 +48,14 @@ BOOL Client::ConnectServer()
 
 string Client::recv_Cli()
 {
-	char recvBuf[BUFLEN+1];
+	char recvBuf[BUFLEN];
 	ZeroMemory(recvBuf, sizeof(recvBuf));
-	if (SOCKET_ERROR == recv(sHost, recvBuf, sizeof(recvBuf), 0))
+	if (SOCKET_ERROR == recv(sHost, recvBuf, BUFLEN, 0))
 	{
 		//closesocket(sHost);
 		//WSACleanup();
 		return FALSE;
 	}
-	recvBuf[BUFLEN] = '\0';
 
 	return string(recvBuf);
 }

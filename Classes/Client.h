@@ -3,12 +3,12 @@
 
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
-#include<iostream>  
-#include<WinSock2.h>
-//#include <ctime>
-//客户端  单例模式
 
 #pragma comment(lib,"WS2_32.lib")  
+#pragma comment(lib,"wsock32.lib")
+#include<WinSock2.h>
+
+#include<iostream>
 using namespace std;
 
 #define PORT 9999

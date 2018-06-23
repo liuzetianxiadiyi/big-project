@@ -10,6 +10,8 @@ int main()
 	thread connectThread = thread([&] {server.AcceptClients(); });
 	connectThread.detach();
 
+	//server->
+
 	char c;
 	cin >> c;
 

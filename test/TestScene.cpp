@@ -16,10 +16,12 @@ bool TestScene::init()
 {
 	Client* client = Client::getInstance();
 	string information = client->recv_Cli();
-	JsonParser* Json = JsonParser::createWithC_str(information.c_str());
+	log("%s", information);
+	/*JsonParser* Json = JsonParser::createWithC_str(information.c_str());
 	Json->decode_WaitingData();
 
 	ValueMap temp = Json->getList()[0].asValueMap()[SWAITINGSCENEDATA].asValueMap();
 	log("AddRoom:%d", temp[ADDROOM].asInt());
-	log("Deleted:%d", temp[DELETED].asBool());
+	log("Deleted:%d", temp[DELETED].asBool());*/
+	client->send_Cli("");
 }

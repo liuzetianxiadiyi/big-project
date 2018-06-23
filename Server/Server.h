@@ -41,19 +41,30 @@ using namespace std;
 class Server
 {
 private:
+
 	WSADATA wsaData;
 	SOCKET sServer;
 	SOCKADDR_IN addrServer;
-
+	//need lock
 	vector<SOCKET> wClients;
+	//need lock
 	unordered_map<int,vector<SOCKET>>  rClients;
 	unordered_map<int, vector<string>> rClient_names;
+	//neeed lock
 	unordered_map<int, SOCKET> rOwner;
 	vector<vector<SOCKET>> gameClients;
 
-	//Information information;
-	//string Room_Nums_Data;
-	ValueVector WaitingData;
+	//need lock
+	// WaitingData;
+	int addroom;
+	ValueVector vLabel;
+	bool deleted;
+	ValueVector dLabel;
+
+	recursive_mutex waitingLock;
+	recursive_mutex OwnerLock;
+	recursive_mutex RoomLock;
+	recursive_mutex GameLock;
 public:
 	bool init();
 	Server();
@@ -66,9 +77,9 @@ public:
 	void EnterGame_Data_Thread();
 	void GameData_Thread();
 
-	/*vector<SOCKET>& GetwClients();
-	vector<vector<SOCKET>>& GetClient_inGame_Vector();
-	unordered_map<int, Room_Client>& GetrClients();*/
+	//vector<SOCKET>& GetwClients();
+	//vector<vector<SOCKET>>& GetClient_inGame_Vector();
+	//unordered_map<int, Room_Client>& GetrClients();
 };
 
 #endif

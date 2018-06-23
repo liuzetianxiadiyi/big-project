@@ -6,7 +6,11 @@
 #include "Construction.h"
 #include "FindWay.h"
 #include <queue>
+#include <string>
+#include "Client.h"
+#include <mutex>
 
+using std::string;
 USING_NS_CC;
 
 class GameScene:public cocos2d::Layer
@@ -14,13 +18,17 @@ class GameScene:public cocos2d::Layer
 private:
 	cocos2d::TMXTiledMap* _tileMap;
 	cocos2d::TMXLayer* _collidable;
-	vector<Military*> uVector;
-	vector<Military*> sVector;
+	vector<Military*> unselectedMilitary;
+	vector<Military*> selectedMilitary;
 	vector<Construction*>  MyConstructions;
 	Vec2 ViewPosition;
 	const int ViewChangeSpeed = 50;	//´ýµ÷Õû
 	vector<MyTile> closeTile;
 	vector<MyTile> openTile;
+	//string sendBuf;
+	string recvbuf;
+	static Client* client;
+	mutex mtx;
 
 public:
 	static cocos2d::Scene* createScene();
@@ -38,8 +46,14 @@ public:
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
 
 	//friend class Tile;
-	vector<MyTile*> FindWay(Vec2 start, Vec2 goal);
+	vector<Vec2> FindWay(Vec2 start, Vec2 goal);
 	bool ColsCheck(Vec2 pos);
+	bool ConstructionCheck(Vec2 pos);
+
+	void SendDataThread();
+	void RecvDataThread();
+	void updateMilitary(ValueVector& valuevector,int type);
+	void updateConstruction(ValueVector& valuevector, int type);
 
 	CREATE_FUNC(GameScene);
 };

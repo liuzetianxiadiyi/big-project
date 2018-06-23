@@ -77,7 +77,7 @@ string enJsonParser::encode_WaitingRoomData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 
-	rapidjson::Value v_map;
+	rapidjson::Value v_map(rapidjson::kObjectType);
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
@@ -115,7 +115,7 @@ string enJsonParser::encode_EnterGameData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 
-	rapidjson::Value v_map;
+	rapidjson::Value v_map(rapidjson::kObjectType);
 
 	for (auto& v : listData)
 	{
@@ -146,7 +146,7 @@ string enJsonParser::encode_MilitaryData()
 	document.SetObject();		//初始化document
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 	//放置object
-	rapidjson::Value object;
+	rapidjson::Value object(rapidjson::kObjectType);
 
 	for (auto& v : listData)
 	{
@@ -184,7 +184,7 @@ string enJsonParser::encode_MilitaryData()
 			for (auto& dv : temp_data)	//dv为ValueMap代表一个兵的信息
 			{
 				ValueMap temp_map = dv.asValueMap();
-				rapidjson::Value json_map;
+				rapidjson::Value json_map(rapidjson::kObjectType);
 
 				rapidjson::Value v_hp;
 				v_hp.SetInt(temp_map[HEALTHPOINT].asInt());
@@ -214,7 +214,11 @@ string enJsonParser::encode_MilitaryData()
 				v_ct.SetInt(temp_map[COUNTRY].asInt());
 				json_map.AddMember(COUNTRY, v_ct, allocator);
 
-				temp_array.PushBack(temp_map, allocator);
+				rapidjson::Value v_tg;
+				v_tg.SetInt(temp_map[STAG].asInt());
+				json_map.AddMember(STAG, v_tg, allocator);
+
+				temp_array.PushBack(json_map, allocator);
 			}
 			if (i == Dog_Data)
 			{
@@ -310,7 +314,11 @@ string enJsonParser::encode_ConstructionData()
 				v_ct.SetInt(temp_map[COUNTRY].asInt());
 				json_map.AddMember(COUNTRY, v_ct, allocator);
 
-				temp_array.PushBack(temp_map, allocator);
+				rapidjson::Value v_tg;
+				v_tg.SetInt(temp_map[STAG].asInt());
+				json_map.AddMember(STAG, v_tg, allocator);
+
+				temp_array.PushBack(json_map, allocator);
 			}
 			if (i == Bar_Data)
 			{

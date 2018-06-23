@@ -12,12 +12,14 @@ USING_NS_CC_EXT;
 using namespace std;
 using namespace cocos2d::ui;
 
-class RoomScene:public cocos2d::Layer，public EditBoxDelegate,public ScrollViewDelegate
+class RoomScene:public cocos2d::Layer
 {
 public:
 	static Scene* createScene();
 
 	bool init();
+
+	void recvThread();
 
 	void menuStartGameCallback(cocos2d::Ref* pSender);
 	void menuDeleteRoomCallback(cocos2d::Ref* pSender);
