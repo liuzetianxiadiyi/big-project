@@ -164,48 +164,4 @@ public:
 	}
 };
 
-void Barracks::createBar(Barracks * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Warfactory::createBar(Warfactory * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Mine::createBar(Mine * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Base::createBar(Base * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
 #endif
