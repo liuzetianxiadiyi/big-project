@@ -261,7 +261,7 @@ void GameScene::onMouseUp(Event* event)
 		{
 			v->setSelected(true);
 		}
-
+	}
 }
 
 bool GameScene::ConstructionCheck(Vec2 pos)
@@ -274,6 +274,7 @@ bool GameScene::ConstructionCheck(Vec2 pos)
 		}
 	}
 	return true;
+
 }
 
 vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
