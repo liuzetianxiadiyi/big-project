@@ -1,4 +1,4 @@
-﻿#ifndef __MILITARY_H__
+#ifndef __MILITARY_H__
 #define __MILITARY_H__
 
 #include "cocos2d.h"
@@ -77,7 +77,7 @@ public:
 	}
 
 
-	static Military* create(string& filename);
+	static Military* create(const string filename);
 
 	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position,Vec2 _destination , Action* _move);
 	/*static Military* create(string & filename);

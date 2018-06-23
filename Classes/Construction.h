@@ -60,7 +60,7 @@ public:
 
 	static int money;
 
-	static Construction* create(string & filename);
+	static Construction* create(const string filename);
 	static Construction* create(const std::string & filename, const Rect & rect);
 	static Construction* createWithTexture(Texture2D * texture);
 	static Construction* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);

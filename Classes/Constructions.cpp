@@ -1,4 +1,4 @@
-﻿#include "Constructions.h"
+#include "Constructions.h"
 #include "Soldiers.h"
 
 int Mine::money = 1000;
@@ -6,7 +6,7 @@ int Barracks::money = 2000;
 int Warfactory::money = 3000;
 int Base::money = 5000;
 
-Barracks* Barracks::create(string & filename)
+Barracks* Barracks::create(const string filename)
 {
 	Barracks* sprite = new Barracks();
 	if (sprite->initWithFile(filename))
@@ -22,7 +22,7 @@ Barracks* Barracks::create(string & filename)
 	return nullptr;
 }
 
-Warfactory* Warfactory::create(string & filename)
+Warfactory* Warfactory::create(const string filename)
 {
 	Warfactory* sprite = new Warfactory();
 	if (sprite->initWithFile(filename))
@@ -36,7 +36,7 @@ Warfactory* Warfactory::create(string & filename)
 	return nullptr;
 }
 
-Mine* Mine::create(string & filename)
+Mine* Mine::create(const string filename)
 {
 	Mine* sprite = new Mine();
 	if (sprite->initWithFile(filename))
@@ -50,7 +50,7 @@ Mine* Mine::create(string & filename)
 	return nullptr;
 }
 
-Base* Base::create(const string & filename)
+Base* Base::create(const string filename)
 {
 	Base* sprite = new Base();
 	if (sprite->initWithFile(filename))
@@ -115,4 +115,38 @@ void Barracks::CreateEngineer()
 	engineer->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
 	target->addChild(engineer, 2);
+}
+
+void Warfactory::CreateTank()
+{
+	string filename = "filename";
+	Tank* tank = Tank::create(filename);
+	tank->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(tank->getSpeed(), tank->getDestination()));
+	tank->setPosition(Vec2(0, 0));
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(tank, 2);
+}
+
+void Warfactory::CreateTankCallback(Ref* pSender)
+{
+	auto delay = DelayTime::create(Tank::delay);
+	auto seq = Sequence::create(delay, [&] {this->CreateTank(); }, nullptr);
+	this->runAction(seq);
+}
+
+void Mine::CreateMiningcar()
+{
+	string filename = "filename";
+	Miningcar* miningcar = Miningcar::create(filename);
+	miningcar->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(miningcar->getSpeed(), miningcar->getDestination()));
+	miningcar->setPosition(Vec2(0, 0));
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(miningcar, 2);
+}
+
+void Mine::CreateMiningcarCallback(Ref* pSender)
+{
+	auto delay = DelayTime::create(Miningcar::delay);
+	auto seq = Sequence::create(delay, [&] {this->CreateMiningcar(); }, nullptr);
+	this->runAction(seq);
 }
