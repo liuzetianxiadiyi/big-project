@@ -35,8 +35,6 @@ public:
 		auto soldierItem = MenuItemSprite::create(createsoldier, createsoldier, CC_CALLBACK_1(Barracks::CreateSoldierCallback, this));
 		auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
 	}
-	static int money;
-	static int max_hp;
 
 	virtual void None() {};
 
@@ -82,10 +80,6 @@ public:
 	virtual Menu* createMenu() {
 		auto tankItem = MenuItemSprite::create(createtank, createtank, CC_CALLBACK_1(Warfactory::CreateTankCallback, this));
 	}
-	//*******************
-
-	static int money;
-	static int max_hp;
 
 	virtual void None() {};
 
@@ -122,10 +116,6 @@ public:
 	virtual Menu* createMenu() {
 		auto miningcarItem = MenuItemSprite::create(createminingcar, createminingcar, CC_CALLBACK_1(Mine::CreateMiningcarCallback, this));
 	}
-	//*******************
-
-	static int money;
-	static int max_hp;
 
 	virtual void None() {};
 	Sprite* getminingcar()
@@ -154,9 +144,6 @@ public:
 	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
-
-	static int money;
-	static int max_hp;
 
 	static void createBar(Base * a);
 
