@@ -56,7 +56,7 @@ bool GameScene::init()
 
 	_tileMap = TMXTiledMap::create(".tmx");
 	addChild(_tileMap, 0);
-	//´ýµ÷Õû
+	//Â´Ã½ÂµÃ·Ã•Ã»
 	TMXObjectGroup* group = _tileMap->getObjectGroup("objects");
 	ValueMap spawnPoint = group->getObject("born");
 
@@ -75,7 +75,7 @@ bool GameScene::init()
 	Set->setScale9Enabled(true);
 	Set->setPosition(Vec2(visibleSize.width - 100, 50));
 
-	//ÉèÖÃbuttonµÄ¼àÌýÆ÷
+	//Ã‰Ã¨Ã–ÃƒbuttonÂµÃ„Â¼Ã ÃŒÃ½Ã†Ã·
 	Set->addClickEventListener(CC_CALLBACK_1(GameScene::ButtonSettingCallback, this));
 	this->addChild(Set, 3);
 
@@ -179,6 +179,8 @@ void GameScene::setViewpointCenter(Vec2 position)
 
 bool GameScene::onMouseDown(Event* event)
 {
+		EventMouse* em = dynamic_cast<EventMouse*> (event);
+	Vec2   BeginLocation = em->getLocationInView();
 	log("onMouseDown");
 }
 
@@ -189,6 +191,7 @@ void GameScene::onMouseMove(Event* event)
 
 void GameScene::onMouseScroll(Event* event)
 {
+	
 	log("onMouseScroll");
 }
 
@@ -242,6 +245,23 @@ void GameScene::onMouseUp(Event* event)
 			}
 		}
 	}
+	auto EndLocation_x = pos.x;
+	auto EndLocation_y = pos.y;
+
+	auto BeginLocation_x = BeginLocation.x;
+	auto BeginLocation_y = BeginLocation.y;
+
+	Rect rect = Rect(BeginLocation.x, EndLocation_y, EndLocation_x - BeginLocation.x, BeginLocation.y - EndLocation_y);
+
+	for (auto& v : sVector)
+	{
+		Vec2 spritePos = v->getPosition();
+
+		if (rect.containsPoint(spritePos))
+		{
+			v->setSelected(true);
+		}
+
 }
 
 bool GameScene::ConstructionCheck(Vec2 pos)
