@@ -22,9 +22,14 @@ Barracks* Barracks::create(const string filename)
 	return nullptr;
 }
 
-Sprite* Barracks::getsolder()
+Menu* Barracks::createMenu()
 {
-	return createsoldier;
+	auto dogItem = MenuItemSprite::create(createdog, createdog, CC_CALLBACK_1(Barracks::CreateDogCallback, this));
+	auto soldierItem = MenuItemSprite::create(createsoldier, createsoldier, CC_CALLBACK_1(Barracks::CreateSoldierCallback, this));
+	auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
+	auto menu = Menu::create(dogItem, soldierItem, engineerItem, NULL);
+	menu->setPosition(Vec2(100, 100));
+	return menu;
 }
 
 Sprite* Barracks::getdog()
@@ -32,9 +37,65 @@ Sprite* Barracks::getdog()
 	return createdog;
 }
 
+Sprite* Barracks::getsolder()
+{
+	return createsoldier;
+}
+
 Sprite* Barracks::getengineer()
 {
 	return createengineer;
+}
+
+void Barracks::CreateDogCallback(Ref* pSender)
+{
+	auto delay = DelayTime::create(Dog::delay);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
+	this->runAction(seq);
+}
+
+void Barracks::CreateSoldierCallback(Ref* pSender)
+{
+	auto delay = DelayTime::create(Soldier::delay);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
+	this->runAction(seq);
+}
+
+void Barracks::CreateEngineerCallback(Ref* pSender)
+{
+	auto delay = DelayTime::create(Engineer::delay);
+	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
+	this->runAction(seq);
+}
+
+void Barracks::CreateDog()
+{
+	string filename = "filename";
+	Dog* dog = Dog::create(filename);
+	dog->init(100, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(dog->getSpeed(), dog->getDestination()));
+	dog->setPosition(Vec2(0, 0));
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(dog, 2);
+}
+
+void Barracks::CreateSoldier()
+{
+	string filename = "filename";
+	Soldier* soldier = Soldier::create(filename);
+	soldier->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(soldier->getSpeed(), soldier->getDestination()));
+	soldier->setPosition(Vec2(0, 0));
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(soldier, 2);
+}
+
+void Barracks::CreateEngineer()
+{
+	string filename = "filename";
+	Engineer* engineer = Engineer::create(filename);
+	engineer->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(engineer->getSpeed(), engineer->getDestination()));
+	engineer->setPosition(Vec2(0, 0));
+	auto target = Director::getInstance()->getRunningScene();
+	target->addChild(engineer, 2);
 }
 
 Warfactory* Warfactory::create(const string filename)
@@ -70,10 +131,20 @@ Mine* Mine::create(const string filename)
 	return nullptr;
 }
 
+Menu* Mine::createMenu()
+{
+	auto miningcarItem = MenuItemSprite::create(createminingcar, createminingcar, CC_CALLBACK_1(Mine::CreateMiningcarCallback, this));
+	auto menu = Menu::create(miningcarItem, NULL);
+	menu->setPosition(Vec2(100, 100));
+	return menu;
+}
+
 Sprite* Mine::getminingcar()
 {
 	return createminingcar;
 }
+
+
 
 Base* Base::create(const string filename)
 {
@@ -106,56 +177,6 @@ Sprite* Base::getmine()
 	return createmine;
 }
 
-void Barracks::CreateDogCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Dog::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Barracks::CreateSoldierCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Soldier::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Barracks::CreateEngineerCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Engineer::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Barracks::CreateDog()
-{
-	string filename = "filename";
-	Dog* dog = Dog::create(filename);
-	dog->init(100,  false, false, Vec2(300, 300),Vec2(0,0),MoveBy::create(dog->getSpeed(), dog->getDestination()));
-	dog->setPosition(Vec2(0,0));
-	auto target=  Director::getInstance()->getRunningScene();
-	target->addChild(dog, 2); 
-}
-
-void Barracks::CreateSoldier()
-{
-	string filename = "filename";
-	Soldier* soldier = Soldier::create(filename);
-	soldier->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(soldier->getSpeed(), soldier->getDestination()));
-	soldier->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(soldier, 2);
-}
-
-void Barracks::CreateEngineer()
-{
-	string filename = "filename";
-	Engineer* engineer = Engineer::create(filename);
-	engineer->init(200, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(engineer->getSpeed(), engineer->getDestination()));
-	engineer->setPosition(Vec2(0, 0));
-	auto target = Director::getInstance()->getRunningScene();
-	target->addChild(engineer, 2);
-}
 
 void Warfactory::CreateTank()
 {
@@ -191,6 +212,7 @@ void Mine::CreateMiningcarCallback(Ref* pSender)
 	this->runAction(seq);
 }
 
+
 void Barracks::createBar(Barracks * a)
 {
 	Sprite *hpSprite = Sprite::create("hp-con.png");
@@ -199,7 +221,7 @@ void Barracks::createBar(Barracks * a)
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
 	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
+	hp->setPercentage((a->gethp() / Barracks::max_hp) * 100);
 }
 
 void Warfactory::createBar(Warfactory * a)
@@ -210,7 +232,7 @@ void Warfactory::createBar(Warfactory * a)
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
 	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
+	hp->setPercentage((a->gethp() / Warfactory::max_hp) * 100);
 }
 
 void Mine::createBar(Mine * a)
@@ -221,7 +243,7 @@ void Mine::createBar(Mine * a)
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
 	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
+	hp->setPercentage((a->gethp() / Mine::max_hp) * 100);
 }
 
 void Base::createBar(Base * a)
@@ -232,5 +254,5 @@ void Base::createBar(Base * a)
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
 	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
+	hp->setPercentage((a->gethp() / Base::max_hp) * 100);
 }
