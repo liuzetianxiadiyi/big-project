@@ -1,13 +1,12 @@
 #include "HelloWorldScene.h"
 #include "WaitingScene.h"
-#include "RoomScene.h"
 #include "GameData.h"
 #include "Client.h"
 #include "JsonParser.h"
 #include "enJsonParser.h"
 #include "SystemHeader.h"
 #include <mutex>
-
+#include "GameScene.h"
 #include <string>
 
 #define ROOMBUTTONWIDTH 60
@@ -38,7 +37,7 @@ bool WaitingScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	thread roomThread(this->roomDataThread);
+	thread roomThread([&] {this->roomDataThread(); });
 	roomThread.detach();
 
 	auto EnterItem = MenuItemImage::create(
@@ -81,7 +80,7 @@ bool WaitingScene::init()
 	slider->setRotation(90);
 
 	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	slider->addEventListener(CC_CALLBACK_2(WaitingScene::onChangedSlider, this));
 	this->addChild(slider, 1);
 
 	return true;
@@ -125,7 +124,7 @@ void WaitingScene::roomDataThread()
 					roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
 					roomButton->setTitleFontSize(35);
 					roomButton->setContentSize(Size(100, 20));
-					roomButton->setPosition(Vec2(visibleSize.width - 100, 50));
+					roomButton->setPosition(Vec2(100, 50));
 
 					roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
 
@@ -135,7 +134,6 @@ void WaitingScene::roomDataThread()
 			}
 
 		}
-		Sleep(2*TIME_LAG);
 	}
 	mtx.unlock();
 }
@@ -150,7 +148,6 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 		ValueVector plistdata = GameData::WaitingData(false, SelectedRoomTag, defaults->getStringForKey(PLAYERNAME));
 
 		mtx.lock();
-		replace = true;
 
 		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
 		string sendbuf = enJson->encode_WaitingRoomData();
@@ -159,7 +156,7 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 
 		mtx.unlock();
 		//Scene changes
-		auto scene = RoomScene::createScene();
+		auto scene = GameScene::createScene();
 		auto reScene = TransitionJumpZoom::create(1.0f, scene);
 		Director::getInstance()->replaceScene(reScene);
 		if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
@@ -171,11 +168,6 @@ void WaitingScene::menuEnterCallback(Ref* pSender)
 
 void WaitingScene::createRoomCallback(Ref* pSender)
 {
-	mtx.lock();
-
-	replace = true;
-
-	mtx.unlock();
 
 	UserDefault* defaults = UserDefault::getInstance();
 	defaults->setBoolForKey(OWNER, true);
@@ -193,7 +185,7 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 
 	mtx.unlock();
 
-	auto scene = RoomScene::createScene(); 
+	auto scene = GameScene::createScene(); 
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->replaceScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
@@ -204,9 +196,6 @@ void WaitingScene::createRoomCallback(Ref* pSender)
 
 void WaitingScene::menuReturnCallback(Ref* pSender)
 {
-	mtx.lock();
-	replace = true;
-	mtx.unlock();
 
 	auto scene = HelloWorld::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);

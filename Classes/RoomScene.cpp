@@ -504,6 +504,7 @@ void RoomScene::menuStartGameCallback(Ref* pSender)
 	string sendBuf = enJson->encode_EnterGameData();
 	client->send_Cli(sendBuf);
 
+	WaitingScene::replace = true;
 	auto scene = GameScene::createScene();	//´ý¶¨
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
@@ -522,7 +523,6 @@ void RoomScene::menuDeleteRoomCallback(Ref* pSender)
 	client->send_Cli(sendBuf);
 
 	auto scene = WaitingScene::createScene();	//´ý¶¨
-	WaitingScene::replace = false;
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
 	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))

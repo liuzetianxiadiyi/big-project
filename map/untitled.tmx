@@ -6,7 +6,7 @@
    eJztzqENADAMA7Bcsfz/aXnppI0YmLtJCgAAAAAAAAAAAAAAAAAAAAA8d5bfHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4M4AuxQOCA==
   </data>
  </layer>
- <layer name="Collidable" width="120" height="120" visible="0">
+ <layer name="collidable" width="120" height="120">
   <properties>
    <property name="Collidable" type="bool" value="true"/>
   </properties>
