@@ -22,6 +22,21 @@ Barracks* Barracks::create(const string filename)
 	return nullptr;
 }
 
+Sprite* Barracks::getsolder()
+{
+	return createsoldier;
+}
+
+Sprite* Barracks::getdog()
+{
+	return createdog;
+}
+
+Sprite* Barracks::getengineer()
+{
+	return createengineer;
+}
+
 Warfactory* Warfactory::create(const string filename)
 {
 	Warfactory* sprite = new Warfactory();
@@ -34,6 +49,11 @@ Warfactory* Warfactory::create(const string filename)
 	}
 	CC_SAFE_DELETE(sprite);
 	return nullptr;
+}
+
+Sprite* Warfactory::gettank()
+{
+	return createtank;
 }
 
 Mine* Mine::create(const string filename)
@@ -50,6 +70,11 @@ Mine* Mine::create(const string filename)
 	return nullptr;
 }
 
+Sprite* Mine::getminingcar()
+{
+	return createminingcar;
+}
+
 Base* Base::create(const string filename)
 {
 	Base* sprite = new Base();
@@ -64,6 +89,21 @@ Base* Base::create(const string filename)
 	}
 	CC_SAFE_DELETE(sprite);
 	return nullptr;
+}
+
+Sprite* Base::getbarracks()
+{
+	return createbarracks;
+}
+
+Sprite* Base::getwarfactory()
+{
+	return createwarfactory;
+}
+
+Sprite* Base::getmine()
+{
+	return createmine;
 }
 
 void Barracks::CreateDogCallback(Ref* pSender)
@@ -149,4 +189,48 @@ void Mine::CreateMiningcarCallback(Ref* pSender)
 	auto delay = DelayTime::create(Miningcar::delay);
 	auto seq = Sequence::create(delay, [&] {this->CreateMiningcar(); }, nullptr);
 	this->runAction(seq);
+}
+
+void Barracks::createBar(Barracks * a)
+{
+	Sprite *hpSprite = Sprite::create("hp-con.png");
+	auto hp = ProgressTimer::create(hpSprite);
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(32, 100));
+	hp->setPercentage((a->health_point / a->max_hp) * 100);
+}
+
+void Warfactory::createBar(Warfactory * a)
+{
+	Sprite *hpSprite = Sprite::create("hp-con.png");
+	auto hp = ProgressTimer::create(hpSprite);
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(32, 100));
+	hp->setPercentage((a->health_point / a->max_hp) * 100);
+}
+
+void Mine::createBar(Mine * a)
+{
+	Sprite *hpSprite = Sprite::create("hp-con.png");
+	auto hp = ProgressTimer::create(hpSprite);
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(32, 100));
+	hp->setPercentage((a->health_point / a->max_hp) * 100);
+}
+
+void Base::createBar(Base * a)
+{
+	Sprite *hpSprite = Sprite::create("hp-con.png");
+	auto hp = ProgressTimer::create(hpSprite);
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(32, 100));
+	hp->setPercentage((a->health_point / a->max_hp) * 100);
 }
