@@ -3,19 +3,38 @@
 int Soldier::money = 500;
 int Dog::money = 300;
 int Engineer::money = 800;
+int Tank::money = 1000;
+//int Miningcar::money = 100;
+
+int Soldier::speed = 10;
+int Dog::speed = 15;
+int Engineer::speed = 10;
+int Tank::speed = 20;
+int Miningcar::speed = 20;
+
+int Soldier::delay = 5;
+int Dog::delay = 8;
+int Engineer::delay = 10;
+int Tank::delay = 15;
+int Miningcar::delay = 20;
+
+int Soldier::power = 15;
+int Dog::power = 15;
+int Engineer::power = 0;
+int Tank::power = 30;
+int Miningcar::money = 0;
+
 int Engineer::cure = 10;
 
-Soldier* Soldier::create(string & filename)
+Soldier* Soldier::create(const string  filename)
 {
 	Soldier* sprite = new Soldier();
 
 	if (sprite->initWithFile(filename))
 	{
 		sprite->autorelease();
-
-
-		sprite->init( 200,false,false, Vec2(300, 300),Vec2(0,0), MoveBy::create(sprite->getSpeed(), sprite->getDestination()));
-		 createBar(sprite);
+		sprite->init( 200,false,false, Vec2(300, 300),Vec2(0,0));
+		createBar(sprite);
 		return sprite;
 	}
 
@@ -23,7 +42,7 @@ Soldier* Soldier::create(string & filename)
 	return nullptr;
 };
 
-Dog* Dog::create(string & filename)
+Dog* Dog::create(const string filename)
 {
 	Dog* sprite = new Dog();
 
@@ -31,7 +50,7 @@ Dog* Dog::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->init( 100, false, false, Vec2(300, 300), Vec2(0, 0), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
+		sprite->init( 100, false, false, Vec2(300, 300), Vec2(0, 0));
 		createBar(sprite);
 		return sprite;
 	}
@@ -41,7 +60,7 @@ Dog* Dog::create(string & filename)
 }
 
 
-Engineer* Engineer::create(string & filename)
+Engineer* Engineer::create(const string filename)
 {
 	Engineer* sprite = new Engineer();
 
@@ -49,7 +68,7 @@ Engineer* Engineer::create(string & filename)
 	{
 		sprite->autorelease();
 
-		sprite->init( 350,  false, false, Vec2(300, 300), Vec2(300, 300), MoveBy::create(sprite->getSpeed(),sprite->getDestination()));
+		sprite->init( 350,  false, false, Vec2(300, 300), Vec2(300, 300));
 		createBar(sprite);
 		return sprite;
 	}
@@ -58,15 +77,38 @@ Engineer* Engineer::create(string & filename)
 	return nullptr;
 };
 
-/*
-Sprite *hpSprite = Sprite::create("hp.png");
-auto hp = ProgressTimer::create(hpSprite);
-hp->setType(ProgressTimer::Type::BAR);//鏉″舰
-hp->setMidpoint(Point(0, 0));//琛€鏉¤捣濮嬬偣
-hp->setBarChangeRate(Point(1, 0));//琛€鏉℃敼鍙樼殑鏄痻鏂瑰悜
-hp->setPosition(Vec2(32, 67));//琛€鏉＄浉瀵圭簿鐏电殑浣嶇疆
-hp->setPercentage(100);//璁剧疆鍊?
+Tank* Tank::create(const string filename)
+{
+	Tank* sprite = new Tank();
 
-pSprite->addChild(hp, 1, 1);//鎶婅鏉＄粦瀹氬湪绮剧伒涓?
-*/
+	if (sprite->initWithFile(filename))
+	{
+		sprite->autorelease();
+
+		sprite->init(500, false, false, Vec2(300, 300), Vec2(300, 300));
+		createBar(sprite);
+		return sprite;
+	}
+
+	CC_SAFE_DELETE(sprite);
+	return nullptr;
+};
+
+Miningcar* Miningcar::create(const string filename)
+{
+	Miningcar* sprite = new Miningcar();
+
+	if (sprite->initWithFile(filename))
+	{
+		sprite->autorelease();
+
+		sprite->init(500, false, false, Vec2(300, 300), Vec2(300, 300));
+		createBar(sprite);
+		return sprite;
+	}
+
+	CC_SAFE_DELETE(sprite);
+	return nullptr;
+};
+
 

@@ -1,47 +1,34 @@
-#include "Military.h"
-
-Military* Military::create(string& filename)
+﻿#include "Military.h"
+#include"soldiers.h"
+Military* Military::create(const string filename)
 {
 	Military* sprite = new Military();
 
 	if (sprite->initWithFile(filename))
 	{
+		auto visibleSize = Director::getInstance()->getVisibleSize();
+		Vec2 origin = Director::getInstance()->getVisibleOrigin();
 		sprite->autorelease();
-		sprite->create = Sprite::create("filename");
-		Sprite *hpSprite = Sprite::create("hp.png");
-		
-		Sprite *bgSprite = Sprite::create("hpk.png");
-		bgSprite->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-		sprite->addChild(bgSprite, 1, 1);
-
-		auto progressTimer = ProgressTimer::create(hpSprite);
-		progressTimer->setType(ProgressTimer::Type::BAR);//条形
-		progressTimer->setMidpoint(Point(0, 0));//血条起始点
-		progressTimer->setBarChangeRate(Point(1, 0));//血条改变的是x方向
-		progressTimer->setPosition(Vec2(32, 67));//血条相对精灵的位置
-		progressTimer->setPercentage(100);//设置值
-
-		sprite->addChild(progressTimer, 1, 1);//把血条绑定在精灵上
-
-
 		return sprite;
 	}
 
 	CC_SAFE_DELETE(sprite);
 	return nullptr;
-};
+}
 
-void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, float _destinationX,float _destinationY, Action* _move)
+void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination)
 {
-	name = _name;
 	health_point = _health_point;
 	max_hp= _health_point;
 	dead = _dead;
 	Selected = _Selected;
 	position = _position;
-	destinationX = _destinationX;
-	destinationY = _destinationY;
-	move = _move;
+	destination = _destination;
+}
+
+void Military::setPosition(Vec2 vec)
+{
+	position = vec;
 }
 
 void Military::sethp(int damage)
@@ -51,7 +38,7 @@ void Military::sethp(int damage)
 
 void Military::setDestination(Vec2 v)
 {
-	position = v;
+	destination = v;
 }
 
 void Military::setdead()
@@ -64,25 +51,25 @@ void Military::setSelected(bool b)
 	Selected = b;
 }
 
-void Military::createBar(Sprite * a)
+void Military::createBar(Military * a)
 {
 	Sprite *hpSprite = Sprite::create("hp.png");
 	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);//条形
-	hp->setMidpoint(Point(0, 0));//血条起始点
-	hp->setBarChangeRate(Point(1, 0));//血条改变的是x方向
-	hp->setPosition(Vec2(32, 67));//血条相对精灵的位置
-	hp->setPercentage((health_point / max_hp) * 100);//设置值
-	a->addChild(hp, 1);//把血条绑定在精灵上
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(32, 67));
+	hp->setPercentage((a->health_point / a->max_hp) * 100);
 }
-
 void Military::attack(Military* sprite)
 {
-	sprite->sethp(power);
-}
+	int pTemp;
+	if (typeid(*this) == typeid(Soldier))
+		pTemp = Soldier::power;
+	else if (typeid(*this) == typeid(Dog))
+		pTemp = Dog::power;
+	else if (typeid(*this) == typeid(Engineer))
+		pTemp = Engineer::power;
+	sprite->sethp(pTemp);
 
-int Military::gethp()
-{
-	return health_point;
 }
-

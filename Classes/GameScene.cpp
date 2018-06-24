@@ -1,4 +1,4 @@
-#include "GameScene.h"
+ï»¿#include "GameScene.h"
 #include "Constructions.h"
 #include "SystemHeader.h"
 #include "ui/CocosGUI.h"
@@ -8,8 +8,10 @@
 #include "enJsonParser.h"
 #include "JsonParser.h"
 #include <thread>
+#include"Soldiers.h"
+#include "FindWay.h"
 //#include <mutex>
-
+int tag = 1000;
 using namespace cocos2d::ui;
 using std::find;
 using std::reverse;
@@ -19,7 +21,7 @@ Client* GameScene::client = Client::getInstance();
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
-	auto layer = Layer::create();
+	auto layer = GameScene::create();
 	scene->addChild(layer);
 	return scene;
 }
@@ -54,37 +56,38 @@ bool GameScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	_tileMap = TMXTiledMap::create(".tmx");
+	_tileMap = TMXTiledMap::create("untitled.tmx");
 	addChild(_tileMap, 0);
-	//´ýµ÷Õû
+	//å¾…è°ƒæ•´
 	TMXObjectGroup* group = _tileMap->getObjectGroup("objects");
-	ValueMap spawnPoint = group->getObject("born");
+	ValueMap spawnPoint = group->getObject("born1");
 
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
 
-	Base* sprite = Base::create("filename");
+	Sprite* sprite = Sprite::create("Base.png");
 	sprite->setPosition(Vec2(x, y));
 
-	addChild(sprite, 2);
+	this->addChild(sprite, 2);
 
-	_collidable = _tileMap->getLayer("collodable");
+	_collidable = _tileMap->getLayer("collidable");
 	_collidable->setVisible(false);
+
 
 	Button* Set = Button::create("button.png", "buttonHighlight.png");
 	Set->setScale9Enabled(true);
 	Set->setPosition(Vec2(visibleSize.width - 100, 50));
 
-	//ÉèÖÃbuttonµÄ¼àÌýÆ÷
+	//è®¾ç½®buttonçš„ç›‘å¬å™¨
 	Set->addClickEventListener(CC_CALLBACK_1(GameScene::ButtonSettingCallback, this));
 	this->addChild(Set, 3);
 
-	Sprite* MenuBar = Sprite::create("filename");
+	Sprite* MenuBar = Sprite::create("MenuBar.png");
 
-	thread SendThread = thread([&] {this->SendDataThread(); });
+	/*thread SendThread = thread([&] {this->SendDataThread(); });
 	SendThread.detach();
 	thread RecvThread = thread([&] {this->RecvDataThread(); });
-	RecvThread.detach();
+	RecvThread.detach();*/
 
 	this->addChild(MenuBar,3);
 
@@ -93,19 +96,19 @@ bool GameScene::init()
 
 void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_KP_RIGHT)
+	if (keyCode == EventKeyboard::KeyCode::KEY_D)
 	{
 		ViewPosition.x += ViewChangeSpeed;
 	}
-	else if (keyCode == EventKeyboard::KeyCode::KEY_KP_LEFT)
+	else if (keyCode == EventKeyboard::KeyCode::KEY_A)
 	{
 		ViewPosition.x -= ViewChangeSpeed;
 	}
-	else if (keyCode == EventKeyboard::KeyCode::KEY_KP_UP)
+	else if (keyCode == EventKeyboard::KeyCode::KEY_W)
 	{
 		ViewPosition.y -= ViewChangeSpeed;
 	}
-	else if (keyCode == EventKeyboard::KeyCode::KEY_KP_DOWN)
+	else if (keyCode == EventKeyboard::KeyCode::KEY_S)
 	{
 		ViewPosition.y += ViewChangeSpeed;
 	}
@@ -180,6 +183,7 @@ void GameScene::setViewpointCenter(Vec2 position)
 bool GameScene::onMouseDown(Event* event)
 {
 	log("onMouseDown");
+	return true;
 }
 
 void GameScene::onMouseMove(Event* event)
@@ -225,7 +229,7 @@ void GameScene::onMouseUp(Event* event)
 					y = -y;
 				}
 			}
-			v->runAction(MoveBy::create(v->getSpeed(), Vec2(x, y)));
+			/*v->runAction(MoveBy::create(v->getSpeed(), Vec2(x, y)));*/
 		}
 	}
 	else if (ButtonTag == EventMouse::MouseButton::BUTTON_LEFT)
@@ -237,7 +241,7 @@ void GameScene::onMouseUp(Event* event)
 			if (c->getBoundingBox().containsPoint(pos))
 			{
 				Menu* menu = c->createMenu();
-				menu->setPosition();
+				menu->setPosition(Vec2(100,100));
 				this->addChild(menu, 3);
 			}
 		}
@@ -256,12 +260,13 @@ bool GameScene::ConstructionCheck(Vec2 pos)
 	return true;
 }
 
-vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
+vector<Position> GameScene::FindWay(Position start, Position goal)
 {
 	//create start Tile
 	MyTile* sta = MyTile::create(NULL, start, goal);
+
 	closeTile.push_back(*sta);
-	Vec2 pos = start;
+	Position pos = start;
 	//count use to juggle if the Tile is added newly
 	int count = 0;
 	while (pos != goal)
@@ -290,11 +295,11 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 				flag_y = -1;
 				break;
 			}
-			Vec2 temp;
+			Position temp;
 			temp.x = pos.x + flag_x;
 			temp.y = pos.y + flag_y;
 			//Check collision
-			if (ColsCheck(temp)&&ConstructionCheck(temp))
+			if (ColsCheck(Vec2(temp.x,temp.y)) && ConstructionCheck(Vec2(temp.x, temp.y)))
 			{
 				MyTile* nextWay = MyTile::create(&openTile[0], temp, goal);
 				vector<MyTile>::iterator iter;
@@ -319,12 +324,12 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 				}
 			}
 		}
-		//if flag==true ,it means that this way is available
-		//if not , it means that there is no way to use
-		//so keep the impasse in closeTile
-		//and the make pos = the position of the Tile whose child is added in closeTile latest
-		//(because the added in closeTile latest one is impasse)
-		//and then find again
+		/*if flag==true ,it means that this way is available
+		if not , it means that there is no way to use
+		so keep the impasse in closeTile
+		and the make pos = the position of the Tile whose child is added in closeTile latest
+		(because the added in closeTile latest one is impasse)
+		and then find again*/
 		if (flag)
 		{
 			sort(openTile.begin(), openTile.end());
@@ -342,7 +347,7 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 		}
 	}
 	//put the finded way in a vector
-	vector<Vec2> Way;
+	vector<Position> Way;
 	Way.push_back(goal);
 	MyTile* temp = &closeTile[closeTile.size() - 1];
 	do
@@ -351,35 +356,36 @@ vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 		temp = temp->GetParent();
 	} while (temp!= NULL);
 
-	reverse(Way.cbegin(), Way.cend());
+	reverse(Way.begin(), Way.end());
 
 	return Way;
 }
 
-pair<Vec2, Vec2> Position::GetLocation(Vec2 point)
-{
-	return make_pair(Vec2(int(point.x) % CHECKNUMS, int(point.y) % CHECKNUMS), Vec2(point.x / CHECKNUMS, point.y / CHECKNUMS));
-}
-
-Vec2 Position::GetTopleft(Vec2 cpoint)
-{
-	return Vec2(cpoint.x*TILENUMS, cpoint.y*TILENUMS);
-}
-
-Vec2 Position::GetBelowleft(Vec2 cpoint)
-{
-	return Vec2(cpoint.x*TILENUMS, (cpoint.y + 1)*TILENUMS - 1);
-}
-
-Vec2 Position::GetTopright(Vec2 cpoint)
-{
-	return Vec2((cpoint.x + 1)*TILENUMS - 1, cpoint.y*TILENUMS);
-}
-
-Vec2 Position::GetBelowright(Vec2 cpoint)
-{
-	return Vec2((cpoint.x + 1)*TILENUMS - 1, (cpoint.y + 1)*TILENUMS - 1);
-}
+//
+//pair<Vec2, Vec2> Position::GetLocation(Vec2 point)
+//{
+//	return make_pair(Vec2(int(point.x) % CHECKNUMS, int(point.y) % CHECKNUMS), Vec2(point.x / CHECKNUMS, point.y / CHECKNUMS));
+//}
+//
+//Vec2 Position::GetTopleft(Vec2 cpoint)
+//{
+//	return Vec2(cpoint.x*TILENUMS, cpoint.y*TILENUMS);
+//}
+//
+//Vec2 Position::GetBelowleft(Vec2 cpoint)
+//{
+//	return Vec2(cpoint.x*TILENUMS, (cpoint.y + 1)*TILENUMS - 1);
+//}
+//
+//Vec2 Position::GetTopright(Vec2 cpoint)
+//{
+//	return Vec2((cpoint.x + 1)*TILENUMS - 1, cpoint.y*TILENUMS);
+//}
+//
+//Vec2 Position::GetBelowright(Vec2 cpoint)
+//{
+//	return Vec2((cpoint.x + 1)*TILENUMS - 1, (cpoint.y + 1)*TILENUMS - 1);
+//}
 
 void GameScene::SendDataThread()
 {
@@ -464,18 +470,18 @@ void GameScene::updateMilitary(ValueVector& valuevector,int type)
 		{
 			if (type == Dog_Data)
 			{
-				sprite = Dog::create("");	//filename modify to staitc member variable
+				sprite = Dog::create("Dog.png");	//filename modify to staitc member variable
 			}
 			else if (type == Soldier_Data)
 			{
-				sprite = Soldier::create("");
+				sprite = Soldier::create("Soldier.png");
 			}
 			else if (type == Engineer_Data)
 			{
-				sprite = Engineer::create("");
+				sprite = Engineer::create("Engineer.png");
 			}
-			sprite->init();
-			this->addChild(sprite, tag, z);
+			//sprite->init();
+			this->addChild(sprite, tag, 3);
 		}
 	}
 }
@@ -497,22 +503,22 @@ void GameScene::updateConstruction(ValueVector& valuevector, int type)
 		{
 			if (type == Bar_Data)
 			{
-				sprite = Barracks::create("");	//filename modify to staitc member variable
+				sprite = Barracks::create("Barrscks.png");	//filename modify to staitc member variable
 			}
 			else if (type == War_Data)
 			{
-				sprite = Warfactory::create("");
+				sprite = Warfactory::create("Warfactory.png");
 			}
 			else if (type == Min_Data)
 			{
-				sprite = Mine::create("");
+				sprite = Mine::create("Mine.png");
 			}
 			else if (type == Bas_Data)
 			{
-				sprite = Base::create("");
+				sprite = Base::create("Base.png");
 			}
-			sprite->init();
-			this->addChild(sprite, tag, z);
+			//sprite->init();
+			this->addChild(sprite, tag, 3);
 		}
 	}
 }

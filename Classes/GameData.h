@@ -1,47 +1,49 @@
-#ifndef __GAMEDATA_H__
+ï»¿#ifndef __GAMEDATA_H__
 #define __GAMEDATA_H__
 
 #include <iostream>
 #include "cocos2d.h"
 #include <initializer_list>
 #include <vector>
-//#include "Military.h"
-//#include "Construction.h"
-//ÕâÀï¿ÉÒÔÔÙË½ÓĞ±äÁ¿ÖĞ¼ÓÒ»¸öº¯ÊıÖ¸Õë£¬Í¨¹ıº¯ÊıÖ¸ÕëÀ´µ÷ÓÃ²»Í¬º¯Êı£¬µ«ÊÇÎÒ²»ÄÜÕıÈ·¸³Öµ
+#include"Soldiers.h"
+#include"Constructions.h"
+#include "Military.h"
+#include "Construction.h"
+//è¿™é‡Œå¯ä»¥å†ç§æœ‰å˜é‡ä¸­åŠ ä¸€ä¸ªå‡½æ•°æŒ‡é’ˆï¼Œé€šè¿‡å‡½æ•°æŒ‡é’ˆæ¥è°ƒç”¨ä¸åŒå‡½æ•°ï¼Œä½†æ˜¯æˆ‘ä¸èƒ½æ­£ç¡®èµ‹å€¼
 USING_NS_CC;
 using std::vector;
 
-#define WAITINGSCENEDATA "WaitingSceneData"	//Waiting½çÃæ·¢ËÍÊı¾İµÄ±êÊ¶
-#define ROOMNUMS "RoomNums"			//·¿¼äÊıÁ¿
-#define ADDROOM "AddRoom"		//ÊÇ·ñÌí¼Ó·¿¼ä
-#define ROOMLABEL "RoomLabel"		//¼ÓÈëµÄ·¿¼äµÄTag
-#define DELETED "Deleted"		//ÊÇ·ñÉ¾³ıÁË·¿¼ä
-#define DELETEDROOM "DeletedRoom"	//É¾³ı·¿¼äµÄTag
-#define PLAYERNAME "playername"		//Íæ¼ÒĞÕÃû
-#define ADDNAME "addName"  //¼ÓÈëÍæ¼ÒµÄĞÕÃû
-#define OWNER "owner"		//·¿Ö÷
-#define MEMBER "member"		//³ÉÔ±
+#define WAITINGSCENEDATA "WaitingSceneData"	//Waitingç•Œé¢å‘é€æ•°æ®çš„æ ‡è¯†
+#define ROOMNUMS "RoomNums"			//æˆ¿é—´æ•°é‡
+#define ADDROOM "AddRoom"		//æ˜¯å¦æ·»åŠ æˆ¿é—´
+#define ROOMLABEL "RoomLabel"		//åŠ å…¥çš„æˆ¿é—´çš„Tag
+#define DELETED "Deleted"		//æ˜¯å¦åˆ é™¤äº†æˆ¿é—´
+#define DELETEDROOM "DeletedRoom"	//åˆ é™¤æˆ¿é—´çš„Tag
+#define PLAYERNAME "playername"		//ç©å®¶å§“å
+#define ADDNAME "addName"  //åŠ å…¥ç©å®¶çš„å§“å
+#define OWNER "owner"		//æˆ¿ä¸»
+#define MEMBER "member"		//æˆå‘˜
 
-#define ROOMSCENEDATA "RoomSceneData"		//Room ½çÃæ·¢ËÍÊı¾İ±êÊ¶
+#define ROOMSCENEDATA "RoomSceneData"		//Room ç•Œé¢å‘é€æ•°æ®æ ‡è¯†
 #define ISSTART "isStart" 
 
-#define SENTERROOMDATA "sEnterRoomData"		//½øÈëÓÎÏ·
+#define SENTERROOMDATA "sEnterRoomData"		//è¿›å…¥æ¸¸æˆ
 
-#define MILITARYDATA "MilitaryData"	//±øÖÖĞÅÏ¢
+#define MILITARYDATA "MilitaryData"	//å…µç§ä¿¡æ¯
 #define DOGDATA "DogData"
 #define SOLDIERDATA "SoldierData"
 #define ENGINEERDATA "EngineerData"
-#define HEALTHPOINT "HealhPoint"	//ÑªÁ¿
-#define DESTINATIONX "destinationX"	//Ä¿µÄµØ
+#define HEALTHPOINT "HealhPoint"	//è¡€é‡
+#define DESTINATIONX "destinationX"	//ç›®çš„åœ°
 #define DESTINATIONY "destinationY"
-#define POSITIONX "PositionX"		//ËùÔÚµØ
+#define POSITIONX "PositionX"		//æ‰€åœ¨åœ°
 #define POSITIONY "PositionY"
-#define STATUS "Status"	//×´Ì¬
-#define STAG "SpriteTag"	//¾«Áé±êÇ©
+#define STATUS "Status"	//çŠ¶æ€
+#define STAG "SpriteTag"	//ç²¾çµæ ‡ç­¾
 #define ISFIGHTING "isFighting"
 #define ISMOVING "isMoving"
 #define NOTHING "nothing"
-#define COUNTRY "Country"	//Ê¿±øËùÊô¹ú¼Ò
+#define COUNTRY "Country"	//å£«å…µæ‰€å±å›½å®¶
 
 #define CONSTRUCTIONDATA "ConstructionData"
 #define BARRACKSDATA "BarracksData"
@@ -49,7 +51,7 @@ using std::vector;
 #define MINEDATA "MineData"
 #define BASEDATA "BaseData"
 
-#define SWAITINGSCENEDATA "sWaitingSceneData"		//·şÎñÆ÷¶Ë
+#define SWAITINGSCENEDATA "sWaitingSceneData"		//æœåŠ¡å™¨ç«¯
 #define SROOMSCENEDATA "sRoomSceneData"
 
 using std::string;
@@ -117,8 +119,8 @@ public:
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted);
 
 	static ValueVector sRoomData(ValueVector nmember);
-	/*static ValueVector ConstructionData(vector<Construction*> il);
-	static ValueVector MilitaryData(vector<Military*> il);*/
+	static ValueVector ConstructionData(vector<Construction*> il);
+	static ValueVector MilitaryData(vector<Military*> il);
 };
 
 #endif

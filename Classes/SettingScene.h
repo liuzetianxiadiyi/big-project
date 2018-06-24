@@ -1,4 +1,4 @@
-#ifndef __SETTING_SCENE_H_
+﻿#ifndef __SETTING_SCENE_H_
 #define __SETTING_SCENE_H_
 
 #include "SystemHeader.h"
@@ -22,4 +22,4 @@ public:
 	CREATE_FUNC(Setting);
 };
 
-#endif
+#endif#pragma once

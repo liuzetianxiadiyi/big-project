@@ -1,4 +1,4 @@
-#ifndef __GAMESCENE_H__
+ï»¿#ifndef __GAMESCENE_H__
 #define __GAMESCENE_H__
 
 #include "cocos2d.h"
@@ -22,7 +22,7 @@ private:
 	vector<Military*> selectedMilitary;
 	vector<Construction*>  MyConstructions;
 	Vec2 ViewPosition;
-	const int ViewChangeSpeed = 50;	//´ýµ÷Õû
+	const int ViewChangeSpeed = 50;	//å¾…è°ƒæ•´
 	vector<MyTile> closeTile;
 	vector<MyTile> openTile;
 	//string sendBuf;
@@ -46,7 +46,7 @@ public:
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
 
 	//friend class Tile;
-	vector<Vec2> FindWay(Vec2 start, Vec2 goal);
+	vector<Position> FindWay(Position start, Position goal);
 	bool ColsCheck(Vec2 pos);
 	bool ConstructionCheck(Vec2 pos);
 

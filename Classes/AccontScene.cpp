@@ -1,19 +1,22 @@
-#include "AccontScene.h"
+ï»¿#include "AccontScene.h"
 #include "SystemHeader.h"
-#include "Client.h"
-#include "WaitingScene.h"
+//#include "Client.h"
+//#include "WaitingScene.h"
 #include "Information.h"
-#include "enJsonParser.h"
-#include "GameData.h"
-
+//#include "enJsonParser.h"
+//#include "GameData.h"
+////////////////////////////
+#include"GameScene.h"
 #include <iostream>
 
 using std::string;
 
+//Information information;
+
 Scene* AccontScene::createScene()
 {
 	auto scene = Scene::create();
-	auto layer = Layer::create();
+	auto layer = AccontScene::create();
 	scene->addChild(layer);
 	return scene;
 }
@@ -28,23 +31,23 @@ bool AccontScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	Sprite * Accont_back = Sprite::create("Accont-back.png");
+	Sprite * Accont_back = Sprite::create("accont-back.png");
 
 	Accont_back->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
 	this->addChild(Accont_back, 1);
 
-	//ÕËºÅ¿ò
+	//è´¦å·æ¡†
 	auto editbox = EditBox::create(Size(200, 35), Scale9Sprite::create("editbox.png"));
 	editbox->setAnchorPoint(Point(0, 0));
 	editbox->setPosition(Point(visibleSize.width *0.3, visibleSize.height*0.55));
-	editbox->setPlaceHolder("name:");//Õ¼Î»×Ö·û  
-	editbox->setMaxLength(8);
-	editbox->setFontColor(Color3B::BLACK);//ÉèÖÃÊäÈë×ÖÌåµÄÑÕÉ«  
+	editbox->setPlaceHolder("name:");//å ä½å­—ç¬¦  
+	editbox->setMaxLength(8000);
+	editbox->setFontColor(Color3B::BLACK);//è®¾ç½®è¾“å…¥å­—ä½“çš„é¢œè‰²  
 	editbox->setText("player");
 	editbox->setTag(1);
 	this->addChild(editbox, 2);
 
-	//´´½¨Button
+	//åˆ›å»ºButton
 	auto button = Button::create("button.png", "buttonHighlight.png");
 	
 	button->setScale9Enabled(true);
@@ -53,7 +56,7 @@ bool AccontScene::init()
 	button->setContentSize(Size(100,20));
 	button->setPosition(Vec2(visibleSize.width - 100, 50));
 
-	//ÉèÖÃbuttonµÄ¼àÌýÆ÷
+	//è®¾ç½®buttonçš„ç›‘å¬å™¨
 	button->addClickEventListener(CC_CALLBACK_1(AccontScene::buttonOkCallback, this));
 
 	this->addChild(button, 2);
@@ -73,31 +76,35 @@ void AccontScene::buttonOkCallback(Ref* pSender)
 
 	string text = string(editbox->getText());
 	int len = text.length();
-	if (len == 0)
-	{
-		this->removeChildByTag(3);
-		auto label1 = Label::createWithSystemFont("Ãû×Ö²»¿ÉÎª¿Õ£¡", "Arial", 15);
-		label1->setPosition(Vec2(origin.x + visibleSize.width / 2,
-			origin.y + visibleSize.height + 200));					//ÕâÖÖÎ»ÖÃµÄ¶«Î÷Âé·³ÃÀ¹¤Á¿Ò»ÏÂ£¬Ð»Ð»
-		label1->setTag(2);
-		label1->addChild(label1, 2);
-		this->addChild(label1, 3);
-	}
-	else if (len < 4)
-	{
-		this->removeChildByTag(2);
-		auto label2 = Label::createWithSystemFont("ÖÁÉÙÐèÒª4¸ö×Ö·û£¡", "Arial", 15);
-		label2->setPosition(Vec2(origin.x + visibleSize.width / 2,
-			origin.y + visibleSize.height + 200));					
-		label2->setTag(3);
-		this->addChild(label2, 3);
-	}
-	else
-	{
-		UserDefault * defaults = UserDefault::getInstance();
-		defaults->setStringForKey(PLAYERNAME, text);
-		auto scene = WaitingScene::createScene();
-		auto reScene = TransitionJumpZoom::create(1.0f, scene);
-		Director::getInstance()->replaceScene(reScene);
-	}
+
+	auto scene = GameScene::createScene();
+	auto reScene = TransitionJumpZoom::create(1.0f, scene);
+	Director::getInstance()->pushScene(reScene);
+	//if (len == 0)
+	//{
+	//	this->removeChildByTag(3);
+	//	auto label1 = Label::createWithSystemFont("åå­—ä¸å¯ä¸ºç©ºï¼", "Arial", 15);
+	//	label1->setPosition(Vec2(origin.x + visibleSize.width / 2,
+	//		origin.y + visibleSize.height / 3));					//è¿™ç§ä½ç½®çš„ä¸œè¥¿éº»çƒ¦ç¾Žå·¥é‡ä¸€ä¸‹ï¼Œè°¢è°¢
+	//	label1->setTag(2);
+	//	label1->addChild(label1, 2);
+	//	this->addChild(label1, 3);
+	//}
+	//else if (len < 4)
+	//{
+	//	this->removeChildByTag(2);
+	//	auto label2 = Label::createWithSystemFont("è‡³å°‘éœ€è¦4ä¸ªå­—ç¬¦ï¼", "Arial", 15);
+	//	label2->setPosition(Vec2(origin.x + visibleSize.width / 2,
+	//		origin.y + visibleSize.height /3));					
+	//	label2->setTag(3);
+	//	this->addChild(label2, 3);
+	//}
+	//else
+	//{
+	//	/*UserDefault * defaults = UserDefault::getInstance();
+	//	defaults->setStringForKey(PLAYERNAME, text);
+	//	auto scene = WaitingScene::createScene();
+	//	auto reScene = TransitionJumpZoom::create(1.0f, scene);
+	//	Director::getInstance()->replaceScene(reScene);*/
+	//}
 }

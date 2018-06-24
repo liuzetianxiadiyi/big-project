@@ -9,7 +9,7 @@ using std::string;
 
 /*enum 
 {
-	//寰呭畬鍠?};*/
+	//瀵板懎鐣崰?};*/
 
 class Military : public Sprite
 {
@@ -26,9 +26,9 @@ private:
 
 	static int power;
 	static string name;
-	static int speed;
+	//static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 
 	//ValueVector data;
@@ -41,18 +41,19 @@ public:
 	void Military::attack(Military* sprite);
 	void setSelected(bool b);
 	static void createBar(Military *a);
-	Action* getMoveAction()
+	/*Action* getMoveAction()
 	{
 		return move;
-	}
-	float getSpeed()
+	}*/
+	/*float getSpeed()
 	{
 		return speed;
-	}
+	}*/
 	Vec2 getDestination()
 	{
 		return destination;
 	}
+
 	Vec2 getPosition()
 	{
 		return position;
@@ -77,9 +78,9 @@ public:
 	}
 
 
-	static Military* create(string& filename);
+	static Military* create(const string filename);
 
-	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position,Vec2 _destination , Action* _move);
+	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position,Vec2 _destination);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);
 	static Military* createWithTexture(Texture2D * texture);
