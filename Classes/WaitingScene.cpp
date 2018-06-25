@@ -36,8 +36,8 @@ bool WaitingScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	//thread roomThread([&] {this->roomDataThread(); });
-	//roomThread.detach();
+	thread roomThread([&] {this->roomDataThread(); });
+	roomThread.detach();
 
 	auto EnterItem = MenuItemImage::create(
 		"EnterNormal.png",
@@ -81,7 +81,7 @@ Slider* slider = Slider::create();
 	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
 	//slider->addEventListener(CC_CALLBACK_2(WaitingScene::onChangedSlider, this));
 	this->addChild(slider, 1);
-	//room_nums = 10;
+	room_nums = 10;
 	for (int i = 0; i < room_nums; ++i)
 	{
 		auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -90,9 +90,9 @@ Slider* slider = Slider::create();
 		//美工
 		roomButton->setScale9Enabled(true);
 		roomButton->setTitleText(to_string(i));
-		roomButton->setTitleFontSize(35);
+		roomButton->setTitleFontSize(20);
 		roomButton->setContentSize(Size(100, 20));
-		roomButton->setPosition(Vec2(visibleSize.width - 100 * i, 50));
+		roomButton->setPosition(Vec2(visibleSize.width-300 , 50+i*25));
 
 		roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
 
