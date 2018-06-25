@@ -71,7 +71,6 @@ bool GameScene::init()
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	_tileMap = TMXTiledMap::create("untitled.tmx");
-	addChild(_tileMap, 0);
 	//待调整
 	TMXObjectGroup* group = _tileMap->getObjectGroup("objects");
 	ValueMap spawnPoint = group->getObject("born1");
@@ -79,8 +78,15 @@ bool GameScene::init()
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
 
-	Sprite* sprite = Sprite::create("Base.png");
+	log("mapPosition x= %f,y=%f", _tileMap->getPosition().x, _tileMap->getPosition().y);
+	addChild(_tileMap, 0);
+
+	Base* sprite = Base::create("Base.png");
 	sprite->setPosition(Vec2(x, y));
+	MyConstructions.push_back(sprite);
+	log("Base position x=%f.=%f", sprite->getPosition().x, sprite->getPosition().y);
+	Rect rec = sprite->getBoundingBox();
+	log("BaseBound maxx=%f,maxy=%f,minx=%f,miny=%f", rec.getMaxX(), rec.getMaxY(), rec.getMinX(), rec.getMinY());
 
 	this->addChild(sprite, 2);
 
@@ -88,68 +94,96 @@ bool GameScene::init()
 	_collidable->setVisible(false);
 
 
-	Button* Set = Button::create("button.png", "buttonHighlight.png");
-	Set->setScale9Enabled(true);
-	Set->setPosition(Vec2(visibleSize.width - 100, 50));
+	//Button* Set = Button::create("button.png", "buttonHighlight.png");
+	//Set->setScale9Enabled(true);
+	//Set->setPosition(Vec2(visibleSize.width - 100, 50));
 
-	//设置button的监听器
-	Set->addClickEventListener(CC_CALLBACK_1(GameScene::ButtonSettingCallback, this));
-	this->addChild(Set, 3);
+	////设置button的监听器
+	//Set->addClickEventListener(CC_CALLBACK_1(GameScene::ButtonSettingCallback, this));
+	//this->addChild(Set, 3);
 
-	Sprite* MenuBar = Sprite::create("MenuBar.png");
+	//Sprite* MenuBar = Sprite::create("MenuBar.png");
 
-	/*thread SendThread = thread([&] {this->SendDataThread(); });
-	SendThread.detach();
-	thread RecvThread = thread([&] {this->RecvDataThread(); });
-	RecvThread.detach();*/
+	///*thread SendThread = thread([&] {this->SendDataThread(); });
+	//SendThread.detach();
+	//thread RecvThread = thread([&] {this->RecvDataThread(); });
+	//RecvThread.detach();*/
 
-	this->addChild(MenuBar,3);
+	//this->addChild(MenuBar,3);
 
-	smap = Sprite::create("untitle.png");
-	smap->setPosition(Vec2(visibleSize.width, visibleSize.height));
+	//smap = Sprite::create("untitle.png");
+	//smap->setPosition(Vec2(visibleSize.width, visibleSize.height));
 
-	addChild(smap, 3);
-
-
-	//聊天框
-	auto MessageItem = MenuItemImage::create(
-		"pastmessage.png",
-		"pastmessage.png",
-		CC_CALLBACK_1(GameScene::messageCallback, this)
-	);
-
-	if (MessageItem == nullptr ||
-		MessageItem->getContentSize().width <= 0 ||
-		MessageItem->getContentSize().height <= 0)
-	{
-		
-	}
-	else
-	{
-		float x = visibleSize.width - 2 * (MessageItem->getContentSize().width);
-		float y = 2 * MessageItem->getContentSize().height - 50;
-		MessageItem->setPosition(Vec2(x, y));
-	}
-
-	// create menu, it's an autorelease object
-	auto menu2 = Menu::create(MessageItem, NULL);
-	menu2->setPosition(Vec2::ZERO);
-	this->addChild(menu2, 1);
-
-	auto pEditBox_name = EditBox::create(CCSizeMake(250, 50), Scale9Sprite::create("text2.png"));
-	pEditBox_name->setPosition(ccp(visibleSize.width * 1 / 3, visibleSize.height * 1 / 5));
-	pEditBox_name->setFontColor(Color3B(0, 0, 0));//设置字体颜色  
-	pEditBox_name->setFont("Arial", 20);
-	pEditBox_name->setPlaceHolder("Input: ");//设置预置文本    
-	pEditBox_name->setMaxLength(160);//设置最大长度    
-	pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);//可以输入任何，但是不包括换行   
-	pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//设置输入标志位    
-	pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//设置返回类型    
-	pEditBox_name->setDelegate(this);//当前类继承CCEditBoxDelegate类    
-	pEditBox_name->setTag(101);
-	this->addChild(pEditBox_name, 2);
+	//addChild(smap, 3);
 
 
+	////聊天框
+	//auto MessageItem = MenuItemImage::create(
+	//	"pastmessage.png",
+	//	"pastmessage.png",
+	//	CC_CALLBACK_1(GameScene::messageCallback, this)
+	//);
+
+	//if (MessageItem == nullptr ||
+	//	MessageItem->getContentSize().width <= 0 ||
+	//	MessageItem->getContentSize().height <= 0)
+	//{
+	//	
+	//}
+	//else
+	//{
+	//	float x = visibleSize.width - 2 * (MessageItem->getContentSize().width);
+	//	float y = 2 * MessageItem->getContentSize().height - 50;
+	//	MessageItem->setPosition(Vec2(x, y));
+	//}
+
+	//// create menu, it's an autorelease object
+	//auto menu2 = Menu::create(MessageItem, NULL);
+	//menu2->setPosition(Vec2::ZERO);
+	//this->addChild(menu2, 1);
+
+	//auto pEditBox_name = EditBox::create(CCSizeMake(250, 50), Scale9Sprite::create("text2.png"));
+	//pEditBox_name->setPosition(ccp(visibleSize.width * 1 / 3, visibleSize.height * 1 / 5));
+	//pEditBox_name->setFontColor(Color3B(0, 0, 0));//设置字体颜色  
+	//pEditBox_name->setFont("Arial", 20);
+	//pEditBox_name->setPlaceHolder("Input: ");//设置预置文本    
+	//pEditBox_name->setMaxLength(160);//设置最大长度    
+	//pEditBox_name->setInputMode(cocos2d::ui::EditBox::InputMode::ANY);//可以输入任何，但是不包括换行   
+	//pEditBox_name->setInputFlag(cocos2d::ui::EditBox::InputFlag::INITIAL_CAPS_WORD);//设置输入标志位    
+	//pEditBox_name->setReturnType(cocos2d::ui::EditBox::KeyboardReturnType::DONE);//设置返回类型    
+	//pEditBox_name->setDelegate(this);//当前类继承CCEditBoxDelegate类    
+	//pEditBox_name->setTag(101);
+	//this->addChild(pEditBox_name, 2);
+
+	//Sprite * Accont_back = Sprite::create("accont-back.png");
+
+	//Accont_back->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2));
+	//this->addChild(Accont_back, 1);
+
+	//账号框
+	//auto editbox = EditBox::create(Size(200, 35), Scale9Sprite::create("editbox.png"));
+	//editbox->setAnchorPoint(Point(0, 0));
+	//editbox->setPosition(Point(visibleSize.width *0.3, visibleSize.height*0.55));
+	//editbox->setPlaceHolder("name:");//占位字符  
+	//editbox->setMaxLength(8000);
+	//editbox->setFontColor(Color3B::BLACK);//设置输入字体的颜色  
+	//editbox->setText("player");
+	//editbox->setTag(1);
+	//this->addChild(editbox, 2);
+
+	////创建Button
+	//auto button = Button::create("button.png", "buttonHighlight.png");
+
+	//button->setScale9Enabled(true);
+	//button->setTitleText("OK");
+	//button->setTitleFontSize(35);
+	//button->setContentSize(Size(100, 20));
+	//button->setPosition(Vec2(visibleSize.width - 100, 50));
+
+	////设置button的监听器
+	////button->addClickEventListener(CC_CALLBACK_1(AccontScene::buttonOkCallback, this));
+
+	//this->addChild(button, 2);
 	return true;
 }
 
@@ -363,11 +397,11 @@ void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	if (keyCode == EventKeyboard::KeyCode::KEY_D)
 	{
-		ViewPosition.x += ViewChangeSpeed;
+		ViewPosition.x -= ViewChangeSpeed;
 	}
 	else if (keyCode == EventKeyboard::KeyCode::KEY_A)
 	{
-		ViewPosition.x -= ViewChangeSpeed;
+		ViewPosition.x += ViewChangeSpeed;
 	}
 	else if (keyCode == EventKeyboard::KeyCode::KEY_W)
 	{
@@ -431,7 +465,7 @@ Vec2 GameScene::tileCoordFromPosition(Vec2 pos)
 
 void GameScene::setViewpointCenter(Vec2 position)
 {
-	Size visibleSize = Director::getInstance()->getVisibleSize();
+	/*Size visibleSize = Director::getInstance()->getVisibleSize();
 	int x = MAX(position.x, visibleSize.width / 2);
 	int y = MAX(position.y, visibleSize.height / 2);
 	x = MIN(x, (_tileMap->getMapSize().width*_tileMap->getTileSize().width) - visibleSize.width / 2);
@@ -440,9 +474,25 @@ void GameScene::setViewpointCenter(Vec2 position)
 	Vec2 pointA = Vec2(visibleSize.width / 2, visibleSize.height / 2);
 	Vec2 pointB = Vec2(x, y);
 
-	Vec2 offset = pointA - pointB;
-
-	this->setPosition(offset);
+	Vec2 offset = pointA - pointB;*/
+	if (position.x > 0)
+	{
+		position.x = 0;
+	}
+	else if (position.x < -1632)
+	{
+		position.x = -1632;
+	}
+	if (position.y > 0)
+	{
+		position.y = 0;
+	}
+	else if(position.y<-1824)
+	{
+		position.y = -1824;
+	}
+	log("view x=%f,y=%f", position.x, position.y);
+	this->setPosition(position);
 }
 
 bool GameScene::onMouseDown(Event* event)
@@ -450,7 +500,7 @@ bool GameScene::onMouseDown(Event* event)
 
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
 
-	BeginLocation = em->getLocationInView();
+	BeginLocation = em->getLocation();
 
 	log("onMouseDown");
 	return true;
@@ -458,7 +508,7 @@ bool GameScene::onMouseDown(Event* event)
 
 void GameScene::onMouseMove(Event* event)
 {
-	log("onMouseMove");
+	//log("onMouseMove");
 }
 
 void GameScene::onMouseScroll(Event* event)
@@ -471,6 +521,7 @@ void GameScene::onMouseUp(Event* event)
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
 	EventMouse::MouseButton ButtonTag = em->getMouseButton();
 	Vec2 pos = em->getLocationInView();
+	log("click x =%f,y = %f", pos.x, pos.y);
 	bool sFlag = false;
 	//wait to add click can move area
 	if (ButtonTag == EventMouse::MouseButton::BUTTON_RIGHT)
@@ -505,7 +556,8 @@ void GameScene::onMouseUp(Event* event)
 	}
 	else if (ButtonTag == EventMouse::MouseButton::BUTTON_LEFT)
 	{
-		while (int i = 1)
+		int i = 1;
+		while (i)
 		{
 			Vec2 EndLocation = pos;
 
@@ -514,7 +566,7 @@ void GameScene::onMouseUp(Event* event)
 				break;
 			}
 
-			Rect rect = Rect(BeginLocation.x, EndLocation.y, EndLocation.x - BeginLocation.x, BeginLocation.y - EndLocation_y);
+			Rect rect = Rect(BeginLocation.x, EndLocation.y, EndLocation.x - BeginLocation.x, BeginLocation.y - EndLocation.y);
 
 
 
@@ -546,21 +598,22 @@ void GameScene::onMouseUp(Event* event)
 				if (c->getBoundingBox().containsPoint(pos))
 				{
 					sFlag = true;
+					log("click a construction");
 					Menu* menu = c->createMenu();
 					menu->setPosition(Vec2(100, 100));
 					this->addChild(menu, 3);
 				}
 			}
-			if (smap->getBoundingBox().containsPoint(pos))
-			{
-				sFlag = true;
-				Vec2 mapPos = smap->getPosition();
-				int x = pos.x - mapPos.x;
-				int y = pos.y - mapPos.y;
-				double xx = x / length;
-				double yy = y / length;
-				setViewpointCenter(Vec2(xx*(_tileMap->getMapSize().width*_tileMap->getTileSize().width), yy*(_tileMap->getMapSize().height*_tileMap->getTileSize().height)));
-			}
+		//	if (smap->getBoundingBox().containsPoint(pos))
+		//	{
+		//		sFlag = true;
+		//		Vec2 mapPos = smap->getPosition();
+		//		int x = pos.x - mapPos.x;
+		//		int y = pos.y - mapPos.y;
+		//		/*double xx = x / length;
+		//		double yy = y / length;
+		//		setViewpointCenter(Vec2(xx*(_tileMap->getMapSize().width*_tileMap->getTileSize().width), yy*(_tileMap->getMapSize().height*_tileMap->getTileSize().height)));
+		//*/	}
 		}
 	}
 

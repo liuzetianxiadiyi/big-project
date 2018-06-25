@@ -30,7 +30,7 @@ private:
 	vector<Military*> selectedMilitary;
 	vector<Construction*>  MyConstructions;
 	Vec2 ViewPosition;
-	const int ViewChangeSpeed = 50;	//待调整
+	const int ViewChangeSpeed = 32;	//待调整
 	vector<MyTile> closeTile;
 	vector<MyTile> openTile;
 	//string sendBuf;
