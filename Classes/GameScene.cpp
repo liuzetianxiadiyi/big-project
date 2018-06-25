@@ -209,7 +209,7 @@ void GameScene::messageCallback(Ref* pSender)
 	auto closeItem = MenuItemImage::create(
 		"CloseNormal.png",
 		"CloseSelected.png",
-		CC_CALLBACK_1(GameScene::messageCallback, this));
+		CC_CALLBACK_1(GameScene::messageCloseCallback, this));
 
 	if (closeItem == nullptr ||
 		closeItem->getContentSize().width <= 0 ||
@@ -274,6 +274,16 @@ void GameScene::messageCallback(Ref* pSender)
 	this->addChild(slider, 1, 499);
 
 }
+
+void HelloWorld::messageCloseCallback(Ref* pSender)
+{
+	//Close the cocos2d-x game scene and quit the application
+	for (int j = 497; j < labelcount; j++)
+	{
+		this->removeChildByTag(j);
+	}
+}
+
 //聊天框发送信息
 void GameScene::editBoxReturn(EditBox *editBox)
 {
