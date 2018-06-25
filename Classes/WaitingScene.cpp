@@ -81,7 +81,7 @@ bool WaitingScene::init()
 	slider->setRotation(90);
 
 	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(HelloWorld::onChangedSlider, this));
+	slider->addEventListener(CC_CALLBACK_2(WaitingScene::onChangedSlider, this));
 	this->addChild(slider, 1);
 
 	return true;
@@ -119,6 +119,8 @@ void WaitingScene::roomDataThread()
 
 				for (int i = 0; i < room_nums; ++i)
 				{
+					auto visibleSize = Director::getInstance()->getVisibleSize();
+					Vec2 origin = Director::getInstance()->getVisibleOrigin();
 					auto roomButton = Button::create("room.png", "roomHighlight.png");
 					//美工
 					roomButton->setScale9Enabled(true);

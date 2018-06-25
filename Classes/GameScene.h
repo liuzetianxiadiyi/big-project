@@ -5,15 +5,23 @@
 #include "Military.h"
 #include "Construction.h"
 #include "FindWay.h"
+
+#include"ui/CocosGUI.h"
+#include"cocos-ext.h"
+
+#include<vector>
 #include <queue>
 #include <string>
 #include "Client.h"
 #include <mutex>
 
 using std::string;
+using namespace std;
+using namespace cocos2d::ui;
 USING_NS_CC;
+USING_NS_CC_EXT;
 
-class GameScene:public cocos2d::Layer
+class GameScene:public cocos2d::Layer, EditBoxDelegate
 {
 private:
 	cocos2d::TMXTiledMap* _tileMap;
@@ -30,6 +38,8 @@ private:
 	static Client* client;
 	mutex mtx;
 
+	Vec2 BeginLocation;
+
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
@@ -44,6 +54,14 @@ public:
 	virtual void onMouseScroll(cocos2d::Event* event);
 	void ButtonSettingCallback(Ref* pSender);
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
+
+	void messageCallback(cocos2d::Ref* pSender);
+
+	virtual void editBoxEditingDidBegin(cocos2d::extension::EditBox* editBox);
+	virtual void editBoxEditingDidEnd(cocos2d::extension::EditBox* editBox);
+	virtual void editBoxTextChanged(cocos2d::extension::EditBox* editBox, const std::string &text);
+	virtual void editBoxReturn(cocos2d::extension::EditBox *editBox);
+	void onChangedSlider2(Ref* pSender, Slider::EventType type);
 
 	//friend class Tile;
 	vector<Position> FindWay(Position start, Position goal);
