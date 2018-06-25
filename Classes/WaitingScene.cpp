@@ -49,7 +49,7 @@ bool WaitingScene::init()
 	auto createRoomItem = MenuItemImage::create(
 		"createRoomNormal.png",
 		"createRoomSelected.png",
-		CC_CALLBACK_1(WaitingScene::menuReturnCallback, this)
+		CC_CALLBACK_1(WaitingScene::createRoomCallback, this)
 	);
 	createRoomItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2));
 
