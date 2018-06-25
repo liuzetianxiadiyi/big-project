@@ -57,6 +57,7 @@ public:
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
 
 	void messageCallback(cocos2d::Ref* pSender);
+	void messageCloseCallback(cocos2d::Ref* pSender);
 
 	virtual void editBoxEditingDidBegin(cocos2d::extension::EditBox* editBox);
 	virtual void editBoxEditingDidEnd(cocos2d::extension::EditBox* editBox);
