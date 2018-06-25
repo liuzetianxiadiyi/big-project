@@ -1,349 +1,153 @@
-#include "enJsonParser.h"
-#include "GameData.h"
+#ifndef __CONSTRUCTIONS_H__
+#define __CONSTRUCTIONS_H__
+#include "Construction.h"
 
-USING_NS_CC;
-
-enJsonParser * enJsonParser::createWithArray(ValueVector pListData)
+class Barracks:public Construction
 {
-	enJsonParser * pRef = new enJsonParser();
+private:
+	
+	//use to create menu
+	Sprite * createdog;
+	Sprite * createsoldier;
+	Sprite * createengineer;
 
-	if (pRef->initWithArray(pListData))
+public:
+	static int money;
+	static int delay;
+	static int max_hp;
+	static Barracks* create(const string filename);
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
+
+	void CreateDogCallback(Ref* pSender);
+	void CreateSoldierCallback(Ref* pSender);
+	void CreateEngineerCallback(Ref* pSender);
+
+	void CreateDog();
+	void CreateSoldier();
+	void CreateEngineer();
+
+	void createBar(Barracks * a);
+
+	virtual Menu* createMenu();
+
+	virtual void None() {};
+
+	Sprite* getdog();
+	Sprite* getsolder();
+	Sprite* getengineer();
+
+};
+
+class Warfactory :public Construction
+{
+public:
+	static int money;
+	static int delay;
+	static int max_hp;
+	//button
+	Sprite * createtank;
+
+public:
+
+	static Warfactory* create(const string filename);
+
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
+
+	void CreateTankCallback(Ref* pSender);
+	void CreateTank();
+
+	void createBar(Warfactory * a);
+
+	virtual Menu* createMenu() 
 	{
-		pRef->autorelease();
-		return pRef;
-	}
-	CC_SAFE_DELETE(pRef);
-	return nullptr;
-}
-
-bool enJsonParser::initWithArray(ValueVector pListData)
-{
-	listData = pListData;
-	return true;
-}
-//
-//void enJsonParser::encode(Information message,string order)		//这里换成message防止直接使用全局变量information造成未知的bug
-//{
-//	rapidjson::Document document;
-//	document.SetObject();		//初始化document
-//	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-//
-//	rapidjson::Value array(rapidjson::kArrayType);
-//
-//	for (auto& v : listData)
-//	{
-//		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
-//
-//		rapidjson::Value object(rapidjson::kObjectType);
-//		if (order == ENTERROOMDATA)
-//		{
-//			ValueMap row = temp[ENTERROOMDATA].asValueMap();
-//			rapidjson::Value v_map(rapidjson::kObjectType);
-//
-//			rapidjson::Value v_add;
-//			v_add.SetBool(row[ADDROOM].asBool());
-//			v_map.AddMember(ADDROOM, v_add, allocator);
-//
-//			rapidjson::Value v_rTag;
-//			v_rTag.SetInt(row[ROOMLABEL].asInt());
-//			v_map.AddMember(ROOMLABEL, v_rTag, allocator);
-//
-//			rapidjson::Value v_name;
-//			v_name.SetString(row[PLAYERNAME].asString().c_str(), allocator);
-//			v_map.AddMember(PLAYERNAME, v_name, allocator);
-//
-//			object.AddMember(SWAITINGSCENEDATA, v_map, allocator);
-//		}
-//
-//		array.PushBack(object, allocator);
-//	}
-//
-//	//document.AddMember("change", true, allocator);
-//	document.AddMember("Record", array, allocator);
-//
-//	rapidjson::StringBuffer buffer;
-//	rapidjson::Writer < rapidjson:: StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-//
-//	document.Accept(writer);	//通过write将数据写入buffer
-//	
-//	message.setSendBuf(buffer.GetString());
-//	//log("out: %s", out);
-//}
-
-//or return string
-string enJsonParser::encode_WaitingRoomData()
-{
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-
-	rapidjson::Value v_map(rapidjson::kObjectType);
-	for (auto& v : listData)
-	{
-		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
-
-		ValueMap row = temp[WAITINGSCENEDATA].asValueMap();
-
-		rapidjson::Value v_add;
-		v_add.SetBool(row[ADDROOM].asBool());
-		v_map.AddMember(ADDROOM, v_add, allocator);
-
-		rapidjson::Value v_rTag;
-		v_rTag.SetInt(row[ROOMLABEL].asInt());
-		v_map.AddMember(ROOMLABEL, v_rTag, allocator);
-
-		rapidjson::Value v_name;
-		v_name.SetString(row[PLAYERNAME].asString().c_str(), allocator);
-		v_map.AddMember(PLAYERNAME, v_name, allocator);
+		auto tankItem = MenuItemSprite::create(createtank, createtank, CC_CALLBACK_1(Warfactory::CreateTankCallback, this));
+		auto menu = Menu::create(tankItem, NULL);
+		menu->setPosition(Vec2(100, 100));
+		return menu;
 	}
 
-	//document.AddMember("change", true, allocator);
-	document.AddMember(WAITINGSCENEDATA, v_map, allocator);
+	virtual void None() {};
 
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
+	Sprite* gettank();
+};
 
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	return string(buffer.GetString());
-	//log("out: %s", out);
-}
-
-string enJsonParser::encode_EnterGameData()
+class Mine :public Construction
 {
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
 
-	rapidjson::Value v_map(rapidjson::kObjectType);
+public:
+	static int money;
+	static int delay;
+	static int max_hp;
+	//button
+	Sprite * createminingcar;
+public:
 
-	for (auto& v : listData)
-	{
-		ValueMap temp = v.asValueMap();				//这里的v就是map，Value是一种包装类，可以把很多数据类型包装成类
+	static Mine* create(const string filename);
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-		ValueMap row = temp[ROOMSCENEDATA].asValueMap();
+	void CreateMiningcarCallback(Ref* pSender);
+	void CreateMiningcar();
 
-		rapidjson::Value v_sta;
-		v_sta.SetBool(row[ISSTART].asBool());
-		v_map.AddMember(ISSTART, v_sta, allocator);
-	}
+	void createBar(Mine * a);
 
-	//document.AddMember("change", true, allocator);
-	document.AddMember(ROOMSCENEDATA, v_map, allocator);
+	virtual Menu* createMenu();
 
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
+	virtual void None() {};
+	Sprite* getminingcar();
+};
 
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	return string(buffer.GetString());
-}
-
-string enJsonParser::encode_MilitaryData()
+class Base :public Construction
 {
-	using namespace encode_MilitaryData;
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-	//放置object
-	rapidjson::Value object(rapidjson::kObjectType);
 
-	for (auto& v : listData)
-	{
-		ValueMap temp = v.asValueMap();
-		//放置三种兵种的信息
-		ValueMap row = temp[MILITARYDATA].asValueMap();
+public:
+	static int money;
+	static int delay;
+	static int max_hp;
+	//button
+	Sprite * createbarracks;// = Sprite::create("Barracks.png");
+	Sprite * createwarfactory;// = Sprite::create("Warfactory.png");
+	Sprite * createmine;// = Sprite::create("Mine.png");
 
-		ValueVector DogData = row[DOGDATA].asValueVector();
-		ValueVector SoldierData = row[SOLDIERDATA].asValueVector();
-		ValueVector EngineerData = row[ENGINEERDATA].asValueVector();
+public:
 
-		rapidjson::Value dog_array(rapidjson::kArrayType);
-		rapidjson::Value soldier_array(rapidjson::kArrayType);
-		rapidjson::Value engineer_array(rapidjson::kArrayType);
+	static Base* create(const string filename);
 
-		ValueVector& temp_data = DogData;
-		rapidjson::Value& temp_array = dog_array;
-		for (int i = Dog_Data; i <= Engineer_Data; ++i)
-		{
-			if (i == Dog_Data)
-			{
-				temp_array = dog_array;
-				temp_data = DogData;
-			}
-			else if (i == Soldier_Data)
-			{
-				temp_array = soldier_array;
-				temp_data = SoldierData;
-			}
-			else if (i == Engineer_Data)
-			{
-				temp_array = engineer_array;
-				temp_data = EngineerData;
-			}
-			for (auto& dv : temp_data)	//dv为ValueMap代表一个兵的信息
-			{
-				ValueMap temp_map = dv.asValueMap();
-				rapidjson::Value json_map(rapidjson::kObjectType);
+	/*static Barracks* create(const std::string & filename, const Rect & rect);
+	static Barracks* createWithTexture(Texture2D * texture);
+	static Barracks* createwithTexture(Texture2D * texture, const Rect & rect, bool rotated = false);
+	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
+	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-				rapidjson::Value v_hp;
-				v_hp.SetInt(temp_map[HEALTHPOINT].asInt());
-				json_map.AddMember(HEALTHPOINT, v_hp, allocator);
+	void createBar(Base * a);
 
-				rapidjson::Value v_px;
-				v_px.SetFloat(temp_map[POSITIONX].asFloat());
-				json_map.AddMember(POSITIONX, v_px, allocator);
+	virtual void None() {};
 
-				rapidjson::Value v_py;
-				v_py.SetFloat(temp_map[POSITIONY].asFloat());
-				json_map.AddMember(POSITIONY, v_py, allocator);
+	virtual Menu* createMenu();
+	
 
-				rapidjson::Value v_dx;
-				v_dx.SetFloat(temp_map[DESTINATIONX].asFloat());
-				json_map.AddMember(DESTINATIONX, v_dx, allocator);
+	void CreateMineCallback(Ref* pSender);
+	void CreateWarfactoryCallback(Ref* pSender);
+	void CreateBarracksCallback(Ref* pSender);
 
-				rapidjson::Value v_dy;
-				v_dy.SetFloat(temp_map[DESTINATIONY].asFloat());
-				json_map.AddMember(DESTINATIONY, v_dy, allocator);
+	void CreateMine();
+	void CreateBarracks();
+	void CreateWarfactory();
 
-				rapidjson::Value v_st;
-				v_st.SetString(temp_map[STATUS].asString().c_str(), allocator);
-				json_map.AddMember(STATUS, v_st, allocator);
+	Sprite* getbarracks();
+	Sprite* getwarfactory();
+	Sprite* getmine();
+};
 
-				rapidjson::Value v_ct;
-				v_ct.SetInt(temp_map[COUNTRY].asInt());
-				json_map.AddMember(COUNTRY, v_ct, allocator);
-
-				rapidjson::Value v_tg;
-				v_tg.SetInt(temp_map[STAG].asInt());
-				json_map.AddMember(STAG, v_tg, allocator);
-
-				temp_array.PushBack(json_map, allocator);
-			}
-			if (i == Dog_Data)
-			{
-				object.AddMember(DOGDATA, temp_array, allocator);
-			}
-			else if (i == Soldier_Data)
-			{
-				object.AddMember(SOLDIERDATA, temp_array, allocator);
-			}
-			else if (i == Engineer_Data)
-			{
-				object.AddMember(ENGINEERDATA, temp_array, allocator);
-			}
-		}
-	}
-	document.AddMember(MILITARYDATA, object, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	return string(buffer.GetString());
-}
-
-string enJsonParser::encode_ConstructionData()
-{
-	using namespace encode_ConstructionData;
-	rapidjson::Document document;
-	document.SetObject();		//初始化document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//获得内存分配器，包括了分配和销毁内存的方法
-																					//放置object																		//放置object
-	rapidjson::Value object(rapidjson::kObjectType);
-
-	for (auto& v : listData)
-	{
-		ValueMap temp = v.asValueMap();
-
-		ValueMap row = temp[CONSTRUCTIONDATA].asValueMap();
-
-		ValueVector barData = row[BARRACKSDATA].asValueVector();
-		ValueVector warData = row[WARFACTORYDATA].asValueVector();
-		ValueVector minData = row[MINEDATA].asValueVector();
-		ValueVector basData = row[BASEDATA].asValueVector();
-
-		rapidjson::Value bar_array(rapidjson::kArrayType);
-		rapidjson::Value war_array(rapidjson::kArrayType);
-		rapidjson::Value min_array(rapidjson::kArrayType);
-		rapidjson::Value bas_array(rapidjson::kArrayType);
-
-		ValueVector& temp_data = barData;
-		rapidjson::Value& temp_array = bar_array;
-		for (int i = Bar_Data; i <= Bas_Data; ++i)
-		{
-			if (i == Bar_Data)
-			{
-				temp_array = bar_array;
-				temp_data = barData;
-			}
-			else if (i == War_Data)
-			{
-				temp_array = war_array;
-				temp_data = warData;
-			}
-			else if (i == Min_Data)
-			{
-				temp_array = min_array;
-				temp_data = minData;
-			}
-			else if (i == Bas_Data)
-			{
-				temp_array = bas_array;
-				temp_data = basData;
-			}
-			for (auto& dv : temp_data)	//dv为ValueMap代表一个兵的信息
-			{
-				ValueMap temp_map = dv.asValueMap();
-				rapidjson::Value json_map(rapidjson::kObjectType);
-
-				rapidjson::Value v_hp;
-				v_hp.SetInt(temp_map[HEALTHPOINT].asInt());
-				json_map.AddMember(HEALTHPOINT, v_hp, allocator);
-
-				rapidjson::Value v_px;
-				v_px.SetFloat(temp_map[POSITIONX].asFloat());
-				json_map.AddMember(POSITIONX, v_px, allocator);
-
-				rapidjson::Value v_py;
-				v_py.SetFloat(temp_map[POSITIONY].asFloat());
-				json_map.AddMember(POSITIONY, v_py, allocator);
-
-				rapidjson::Value v_ct;
-				v_ct.SetInt(temp_map[COUNTRY].asInt());
-				json_map.AddMember(COUNTRY, v_ct, allocator);
-
-				rapidjson::Value v_tg;
-				v_tg.SetInt(temp_map[STAG].asInt());
-				json_map.AddMember(STAG, v_tg, allocator);
-
-				temp_array.PushBack(json_map, allocator);
-			}
-			if (i == Bar_Data)
-			{
-				object.AddMember(BARRACKSDATA, temp_array, allocator);
-			}
-			else if (i == War_Data)
-			{
-				object.AddMember(WARFACTORYDATA, temp_array, allocator);
-			}
-			else if (i == Min_Data)
-			{
-				object.AddMember(MINEDATA, temp_array, allocator);
-			}
-			else if (i == Bas_Data)
-			{
-				object.AddMember(BASEDATA, temp_array, allocator);
-			}
-		}
-	}
-	document.AddMember(CONSTRUCTIONDATA, object, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//声明writer对象，将数据保存到buffer里
-
-	document.Accept(writer);	//通过write将数据写入buffer
-
-	return string(buffer.GetString());
-}
+#endif
