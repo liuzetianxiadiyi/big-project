@@ -39,6 +39,7 @@ private:
 	mutex mtx;
 
 	Vec2 BeginLocation;
+	Sprite* smap;
 
 public:
 	static cocos2d::Scene* createScene();

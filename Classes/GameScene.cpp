@@ -105,7 +105,10 @@ bool GameScene::init()
 
 	this->addChild(MenuBar,3);
 
+	smap = Sprite::create("untitle.png");
+	smap->setPosition(Vec2(visibleSize.width, visibleSize.height));
 
+	addChild(smap, 3);
 
 
 	//聊天框
@@ -468,6 +471,7 @@ void GameScene::onMouseUp(Event* event)
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
 	EventMouse::MouseButton ButtonTag = em->getMouseButton();
 	Vec2 pos = em->getLocationInView();
+	bool sFlag = false;
 	//wait to add click can move area
 	if (ButtonTag == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
@@ -501,49 +505,62 @@ void GameScene::onMouseUp(Event* event)
 	}
 	else if (ButtonTag == EventMouse::MouseButton::BUTTON_LEFT)
 	{
-		unselectedMilitary.insert(unselectedMilitary.end(), selectedMilitary.begin(), selectedMilitary.end());
-		selectedMilitary.clear();
-		for (auto& c : MyConstructions)
+		while (int i = 1)
 		{
-			if (c->getBoundingBox().containsPoint(pos))
+			Vec2 EndLocation = pos;
+
+			if (abs(EndLocation.x-BeginLocation.x)<10&& abs(EndLocation.y - BeginLocation.y))
 			{
-				Menu* menu = c->createMenu();
-				menu->setPosition(Vec2(100,100));
-				this->addChild(menu, 3);
+				break;
 			}
+
+			Rect rect = Rect(BeginLocation.x, EndLocation.y, EndLocation.x - BeginLocation.x, BeginLocation.y - EndLocation_y);
+
+
+
+			for (auto& v : unselectedMilitary)
+
+			{
+
+				Vec2 spritePos = v->getPosition();
+
+
+
+				if (rect.containsPoint(spritePos))
+
+				{
+
+					v->setSelected(true);
+					selectedMilitary.push_back(v);
+				}
+
+			}
+			--i;
 		}
-		auto EndLocation_x = pos.x;
-
-		auto EndLocation_y = pos.y;
-
-
-
-		auto BeginLocation_x = BeginLocation.x;
-
-		auto BeginLocation_y = BeginLocation.y;
-
-
-
-		Rect rect = Rect(BeginLocation.x, EndLocation_y, EndLocation_x - BeginLocation.x, BeginLocation.y - EndLocation_y);
-
-
-
-		for (auto& v : unselectedMilitary)
-
+		if (i)
 		{
-
-			Vec2 spritePos = v->getPosition();
-
-
-
-			if (rect.containsPoint(spritePos))
-
+			unselectedMilitary.insert(unselectedMilitary.end(), selectedMilitary.begin(), selectedMilitary.end());
+			selectedMilitary.clear();
+			for (auto& c : MyConstructions)
 			{
-
-				v->setSelected(true);
-				selectedMilitary.push_back(v);
+				if (c->getBoundingBox().containsPoint(pos))
+				{
+					sFlag = true;
+					Menu* menu = c->createMenu();
+					menu->setPosition(Vec2(100, 100));
+					this->addChild(menu, 3);
+				}
 			}
-
+			if (smap->getBoundingBox().containsPoint(pos))
+			{
+				sFlag = true;
+				Vec2 mapPos = smap->getPosition();
+				int x = pos.x - mapPos.x;
+				int y = pos.y - mapPos.y;
+				double xx = x / length;
+				double yy = y / length;
+				setViewpointCenter(Vec2(xx*(_tileMap->getMapSize().width*_tileMap->getTileSize().width), yy*(_tileMap->getMapSize().height*_tileMap->getTileSize().height)));
+			}
 		}
 	}
 
