@@ -1,4 +1,4 @@
-﻿#include "GameScene.h"
+#include "GameScene.h"
 #include "Constructions.h"
 #include "SystemHeader.h"
 #include "ui/CocosGUI.h"
@@ -10,7 +10,6 @@
 #include <thread>
 #include"Soldiers.h"
 #include "FindWay.h"
-
 #include "time.h"
 #include <vector>
 #include <string>
@@ -24,6 +23,7 @@ int flag = 1;
 int labelcount = 500;
 vector<string> news;
 
+//gamescene layer tag = 1
 //#include <mutex>
 int tag = 1000;
 using namespace cocos2d::ui;
@@ -36,7 +36,7 @@ Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
-	scene->addChild(layer);
+	scene->addChild(layer,1,1);
 	return scene;
 }
 
@@ -47,7 +47,7 @@ void GameScene::onEnter()
 
 	auto Mouselistener = EventListenerMouse::create();
 
-	Mouselistener->onMouseDown = CC_CALLBACK_1(GameScene::onMouseDown,this);
+	Mouselistener->onMouseDown = CC_CALLBACK_1(GameScene::onMouseDown, this);
 	Mouselistener->onMouseUp = CC_CALLBACK_1(GameScene::onMouseUp, this);
 	Mouselistener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMove, this);
 	Mouselistener->onMouseScroll = CC_CALLBACK_1(GameScene::onMouseScroll, this);
@@ -196,7 +196,7 @@ void GameScene::messageCallback(Ref* pSender)
 	sprite->setTag(498);
 	if (sprite == nullptr)
 	{
-		
+
 	}
 	else
 	{
@@ -215,7 +215,7 @@ void GameScene::messageCallback(Ref* pSender)
 		closeItem->getContentSize().width <= 0 ||
 		closeItem->getContentSize().height <= 0)
 	{
-		
+
 	}
 	else
 	{
@@ -242,7 +242,7 @@ void GameScene::messageCallback(Ref* pSender)
 		auto label = Label::createWithTTF(*iter1, "fonts/Marker Felt.ttf", 24);
 		if (label == nullptr)
 		{
-			
+
 		}
 		else
 		{
@@ -256,8 +256,6 @@ void GameScene::messageCallback(Ref* pSender)
 		++labelcount;
 	}
 	++flag;
-
-
 
 	//创建滑块控件
 	Slider* slider = Slider::create();
@@ -313,7 +311,7 @@ void GameScene::editBoxReturn(EditBox *editBox)
 		auto label = Label::createWithTTF(words, "fonts/Marker Felt.ttf", 24);
 		if (label == nullptr)
 		{
-			
+
 		}
 		else
 		{
@@ -327,7 +325,7 @@ void GameScene::editBoxReturn(EditBox *editBox)
 		auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
 		if (label2 == nullptr)
 		{
-			
+
 		}
 		else
 		{
@@ -416,7 +414,7 @@ void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
 
 void GameScene::ButtonSettingCallback(Ref* pSender)
 {
-	
+
 	auto scene = Setting::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->pushScene(reScene);
@@ -470,10 +468,8 @@ void GameScene::setViewpointCenter(Vec2 position)
 	int y = MAX(position.y, visibleSize.height / 2);
 	x = MIN(x, (_tileMap->getMapSize().width*_tileMap->getTileSize().width) - visibleSize.width / 2);
 	y = MIN(y, (_tileMap->getMapSize().height*_tileMap->getTileSize().height) - visibleSize.height / 2);
-
 	Vec2 pointA = Vec2(visibleSize.width / 2, visibleSize.height / 2);
 	Vec2 pointB = Vec2(x, y);
-
 	Vec2 offset = pointA - pointB;*/
 	if (position.x > 0)
 	{
@@ -487,7 +483,7 @@ void GameScene::setViewpointCenter(Vec2 position)
 	{
 		position.y = 0;
 	}
-	else if(position.y<-1824)
+	else if (position.y<-1824)
 	{
 		position.y = -1824;
 	}
@@ -530,7 +526,6 @@ void GameScene::onMouseUp(Event* event)
 		for (auto& v : selectedMilitary)
 		{
 			Vec2 spritePos = v->getPosition();
-
 			Vec2 diff = pos - spritePos;
 			if (abs(diff.x) > abs(diff.y))
 			{
@@ -560,32 +555,19 @@ void GameScene::onMouseUp(Event* event)
 		while (i)
 		{
 			Vec2 EndLocation = pos;
-
-			if (abs(EndLocation.x-BeginLocation.x)<10&& abs(EndLocation.y - BeginLocation.y))
+			if (abs(EndLocation.x - BeginLocation.x)<10 && abs(EndLocation.y - BeginLocation.y))
 			{
 				break;
 			}
-
 			Rect rect = Rect(BeginLocation.x, EndLocation.y, EndLocation.x - BeginLocation.x, BeginLocation.y - EndLocation.y);
-
-
-
 			for (auto& v : unselectedMilitary)
-
 			{
-
 				Vec2 spritePos = v->getPosition();
-
-
-
 				if (rect.containsPoint(spritePos))
-
 				{
-
 					v->setSelected(true);
 					selectedMilitary.push_back(v);
 				}
-
 			}
 			--i;
 		}
@@ -604,19 +586,18 @@ void GameScene::onMouseUp(Event* event)
 					this->addChild(menu, 3);
 				}
 			}
-		//	if (smap->getBoundingBox().containsPoint(pos))
-		//	{
-		//		sFlag = true;
-		//		Vec2 mapPos = smap->getPosition();
-		//		int x = pos.x - mapPos.x;
-		//		int y = pos.y - mapPos.y;
-		//		/*double xx = x / length;
-		//		double yy = y / length;
-		//		setViewpointCenter(Vec2(xx*(_tileMap->getMapSize().width*_tileMap->getTileSize().width), yy*(_tileMap->getMapSize().height*_tileMap->getTileSize().height)));
-		//*/	}
+			//	if (smap->getBoundingBox().containsPoint(pos))
+			//	{
+			//		sFlag = true;
+			//		Vec2 mapPos = smap->getPosition();
+			//		int x = pos.x - mapPos.x;
+			//		int y = pos.y - mapPos.y;
+			//		/*double xx = x / length;
+			//		double yy = y / length;
+			//		setViewpointCenter(Vec2(xx*(_tileMap->getMapSize().width*_tileMap->getTileSize().width), yy*(_tileMap->getMapSize().height*_tileMap->getTileSize().height)));
+			//*/	}
 		}
 	}
-
 }
 
 bool GameScene::ConstructionCheck(Vec2 pos)
@@ -670,7 +651,7 @@ vector<Position> GameScene::FindWay(Position start, Position goal)
 			temp.x = pos.x + flag_x;
 			temp.y = pos.y + flag_y;
 			//Check collision
-			if (ColsCheck(Vec2(temp.x,temp.y)) && ConstructionCheck(Vec2(temp.x, temp.y)))
+			if (ColsCheck(Vec2(temp.x, temp.y)) && ConstructionCheck(Vec2(temp.x, temp.y)))
 			{
 				MyTile* nextWay = MyTile::create(&openTile[0], temp, goal);
 				vector<MyTile>::iterator iter;
@@ -725,7 +706,7 @@ vector<Position> GameScene::FindWay(Position start, Position goal)
 	{
 		Way.push_back(temp->GetPosition());
 		temp = temp->GetParent();
-	} while (temp!= NULL);
+	} while (temp != NULL);
 
 	reverse(Way.begin(), Way.end());
 
@@ -797,9 +778,9 @@ void GameScene::RecvDataThread()
 		soldierdata = MilitaryVector[SOLDIERDATA].asValueVector();
 		engineerdata = MilitaryVector[ENGINEERDATA].asValueVector();
 
-		this->updateMilitary(dogdata,Dog_Data);
-		this->updateMilitary(soldierdata,Soldier_Data);
-		this->updateMilitary(engineerdata,Engineer_Data);
+		this->updateMilitary(dogdata, Dog_Data);
+		this->updateMilitary(soldierdata, Soldier_Data);
+		this->updateMilitary(engineerdata, Engineer_Data);
 
 		ValueVector bardata;
 		ValueVector wardata;
@@ -820,7 +801,7 @@ void GameScene::RecvDataThread()
 	}
 }
 
-void GameScene::updateMilitary(ValueVector& valuevector,int type)
+void GameScene::updateMilitary(ValueVector& valuevector, int type)
 {
 	//in GameData.h
 	using namespace encode_MilitaryData;
@@ -852,7 +833,7 @@ void GameScene::updateMilitary(ValueVector& valuevector,int type)
 				sprite = Engineer::create("Engineer.png");
 			}
 			//sprite->init();
-			this->addChild(sprite, tag, 3);
+			this->addChild(sprite, 3, tag);
 		}
 	}
 }
@@ -889,7 +870,7 @@ void GameScene::updateConstruction(ValueVector& valuevector, int type)
 				sprite = Base::create("Base.png");
 			}
 			//sprite->init();
-			this->addChild(sprite, tag, 3);
+			this->addChild(sprite, 3,tag);
 		}
 	}
 }
