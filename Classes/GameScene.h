@@ -1,4 +1,4 @@
-﻿#ifndef __GAMESCENE_H__
+#ifndef __GAMESCENE_H__
 #define __GAMESCENE_H__
 
 #include "cocos2d.h"
@@ -21,7 +21,7 @@ using namespace cocos2d::ui;
 USING_NS_CC;
 USING_NS_CC_EXT;
 
-class GameScene:public cocos2d::Layer, EditBoxDelegate
+class GameScene :public cocos2d::Layer, EditBoxDelegate
 {
 private:
 	cocos2d::TMXTiledMap* _tileMap;
@@ -48,7 +48,7 @@ public:
 
 	cocos2d::Vec2 tileCoordFromPosition(cocos2d::Vec2 position);
 	void setViewpointCenter(Vec2 position);
-	
+
 	virtual bool onMouseDown(cocos2d::Event * event);
 	virtual void onMouseUp(cocos2d::Event* event);
 	virtual void onMouseMove(cocos2d::Event* event);
@@ -71,7 +71,7 @@ public:
 
 	void SendDataThread();
 	void RecvDataThread();
-	void updateMilitary(ValueVector& valuevector,int type);
+	void updateMilitary(ValueVector& valuevector, int type);
 	void updateConstruction(ValueVector& valuevector, int type);
 
 	CREATE_FUNC(GameScene);

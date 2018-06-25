@@ -1,4 +1,4 @@
-﻿#ifndef __CONSTRUCTIONS_H__
+#ifndef __CONSTRUCTIONS_H__
 #define __CONSTRUCTIONS_H__
 #include "Construction.h"
 
@@ -97,7 +97,6 @@ public:
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-	//*******************
 	void CreateMiningcarCallback(Ref* pSender);
 	void CreateMiningcar();
 
@@ -117,9 +116,9 @@ public:
 	static int delay;
 	static int max_hp;
 	//button
-	Sprite * createbarracks;
-	Sprite * createwarfactory;
-	Sprite * createmine;
+	Sprite * createbarracks;// = Sprite::create("Barracks.png");
+	Sprite * createwarfactory;// = Sprite::create("Warfactory.png");
+	Sprite * createmine;// = Sprite::create("Mine.png");
 
 public:
 
@@ -134,10 +133,20 @@ public:
 	void createBar(Base * a);
 
 	virtual void None() {};
+
+	virtual Menu* createMenu();
+	
+
+	void CreateMineCallback(Ref* pSender);
+	void CreateWarfactoryCallback(Ref* pSender);
+	void CreateBarracksCallback(Ref* pSender);
+
+	void CreateMine();
+	void CreateBarracks();
+	void CreateWarfactory();
+
 	Sprite* getbarracks();
-
 	Sprite* getwarfactory();
-
 	Sprite* getmine();
 };
 
