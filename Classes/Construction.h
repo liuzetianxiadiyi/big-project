@@ -1,4 +1,4 @@
-#ifndef __CONSTRUCTION_H__
+﻿#ifndef __CONSTRUCTION_H__
 #define __CONSTRUCTION_H__
 
 #include "cocos2d.h"
@@ -67,7 +67,11 @@ public:
 	static Construction* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Construction* createWithSpriteFrameName(const std::string & spriteFrameName);
 
-	virtual Menu* createMenu();
+	virtual Menu* createMenu()
+	{
+		Menu* menu;
+		return menu;
+	}
 
 	void init(string _name, int _health_point, int _view,Vec2 _location,bool _destroy,bool _Selected,int _sLevel,int _delay)
 	{

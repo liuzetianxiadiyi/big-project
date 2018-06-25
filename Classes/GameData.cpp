@@ -1,4 +1,4 @@
-#include "GameData.h"
+﻿#include "GameData.h"
 
 ValueVector GameData::toValueVector(initializer_list<Value> il)
 {
@@ -78,6 +78,17 @@ ValueVector GameData::sWaitngData(int addroom, ValueVector rLable, bool deleted)
 	return plistdata;
 }
 
+ValueVector GameData::RoomData(bool start)
+{
+	pair<string, Value> temp_pair0 = make_pair(ISSTART, Value(start));
+
+	ValueMap temp_map = GameData::toValueMap(temp_pair0);
+	pair<string, Value> temp_pair = make_pair(ROOMSCENEDATA, Value(temp_map));
+	ValueVector plistdata = GameData::toValueVector(Value(GameData::toValueMap(temp_pair)));
+
+	return plistdata;
+}
+
 ValueVector GameData::sRoomData(ValueVector nmember)
 {
 	//pair<string, Value> temp_pair0 = make_pair(OWNER, Value(nowner));
@@ -118,13 +129,13 @@ ValueVector GameData::MilitaryData(vector<Military*> il)
 
 		pair<string, Value> temp_pair2 = make_pair(POSITIONY, Value(v->getPositionY()));
 
-		pair<string, Value> temp_pair3 = make_pair(DESTINATIONX, Value(v->getDestinationX()));
+		pair<string, Value> temp_pair3 = make_pair(DESTINATIONX, Value(v->getDestination().x));
 
-		pair<string, Value> temp_pair4 = make_pair(DESTINATIONY, Value(v->getDestinationY()));
+		pair<string, Value> temp_pair4 = make_pair(DESTINATIONY, Value(v->getDestination().y));
 
 		pair<string, Value> temp_pair5 = make_pair(STATUS, Value(v->getStatus()));
 
-		pair<string, Value> temp_pair6 = make_pair(COUNTRY, Value(v->getCountry));
+		pair<string, Value> temp_pair6 = make_pair(COUNTRY, Value(v->getCountry()));
 
 		pair<string, Value> temp_pair7 = make_pair(STAG, Value(v->getTag()));
 

@@ -1,4 +1,4 @@
-#ifndef __SOLDIERS_H__
+﻿#ifndef __SOLDIERS_H__
 #define __SOLDIERS_H__
 #include"Military.h"
 #include"Construction.h"
@@ -16,7 +16,7 @@ public:
 	static string name;
 	static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 	static int power;
 
@@ -31,7 +31,7 @@ public:
 	static string name;
 	static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 	static int power;
 
@@ -47,7 +47,7 @@ public:
 	static string name;
 	static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 	static int cure;
 	static int power;
@@ -63,7 +63,7 @@ public:
 	static string name;
 	static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 	static int cure;
 	static int power;
@@ -79,7 +79,7 @@ public:
 	static string name;
 	static int speed;
 	static int delay;
-	static Action* move;
+	//static Action* move;
 	static int money;
 	static int cure;
 	static int power;

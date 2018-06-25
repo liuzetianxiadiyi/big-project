@@ -1,8 +1,9 @@
-#ifndef __FINDWAY_H__
+﻿#ifndef __FINDWAY_H__
 #define __FINDWAY_H__
 
 #include <iostream>
 #include <vector>
+#include<string>
 #include "cocos2d.h"
 
 USING_NS_CC;
@@ -20,11 +21,27 @@ using std::string;
 class Position
 {
 public:
-	static pair<Vec2, Vec2> GetLocation(Vec2 point);
-	static Vec2 GetTopright(Vec2 tpoint);
-	static Vec2 GetTopleft(Vec2 tpoint);
-	static Vec2 GetBelowright(Vec2 tpoint);
-	static Vec2 GetBelowleft(Vec2 tpoint);
+	int x;
+	int y;
+public:
+	friend bool operator!= (Position a, Position b)
+	{
+		return !(a.x == b.x&&a.y == b.y);
+	}
+	Position()
+	{
+		x = -1;
+		y = -1;
+	}
+	Position(int _x, int _y)
+	{
+		x = _x;
+		y = _y;
+	}
+	friend bool operator==(Position a, Position b)
+	{
+		return a.x == b.x&&a.y == b.y;
+	}
 };
 
 class MyTile :public cocos2d::Ref
@@ -34,10 +51,10 @@ private:
 	int h_value;
 	int g_value;
 	MyTile* parent;
-	Vec2 pos;
-	Vec2 goal;
+	Position pos;
+	Position goal;
 public:
-	static MyTile* create(MyTile* _parent, Vec2 _pos, Vec2 _goal)
+	static MyTile* create(MyTile* _parent,const Position _pos,const Position _goal)
 	{
 		MyTile* tile = new MyTile();
 		tile->init(_parent, _pos, _goal);
@@ -50,7 +67,7 @@ public:
 		int temp_y = goal.y - pos.y;
 		h_value += (abs(temp_x) + abs(temp_y));
 	}
-	Vec2 GetPosition()
+	Position GetPosition()
 	{
 		return pos;
 	}
@@ -64,7 +81,7 @@ public:
 		f_value -= count;
 	}
 
-	void init(MyTile* _parent, Vec2 _pos, Vec2 _goal)
+	void init(MyTile* _parent,const Position _pos,const Position _goal)
 	{
 		parent = _parent;
 		pos = _pos;

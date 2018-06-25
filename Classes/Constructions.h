@@ -1,17 +1,20 @@
-#ifndef __CONSTRUCTIONS_H__
+﻿#ifndef __CONSTRUCTIONS_H__
 #define __CONSTRUCTIONS_H__
-
 #include "Construction.h"
 
 class Barracks:public Construction
 {
 private:
+	
 	//use to create menu
 	Sprite * createdog;
 	Sprite * createsoldier;
 	Sprite * createengineer;
 
 public:
+	static int money;
+	static int delay;
+	static int max_hp;
 	static Barracks* create(const string filename);
 	/*static Barracks* create(const std::string & filename, const Rect & rect);
 	static Barracks* createWithTexture(Texture2D * texture);
@@ -27,37 +30,24 @@ public:
 	void CreateSoldier();
 	void CreateEngineer();
 
-	static void createBar(Barracks * a);
+	void createBar(Barracks * a);
 
-	virtual Menu* createMenu()
-	{
-		auto dogItem = MenuItemSprite::create(createdog, createdog, CC_CALLBACK_1(Barracks::CreateDogCallback, this));
-		auto soldierItem = MenuItemSprite::create(createsoldier, createsoldier, CC_CALLBACK_1(Barracks::CreateSoldierCallback, this));
-		auto engineerItem = MenuItemSprite::create(createengineer, createengineer, CC_CALLBACK_1(Barracks::CreateEngineerCallback, this));
-	}
+	virtual Menu* createMenu();
 
 	virtual void None() {};
 
-	Sprite* getdog()
-	{
-		return createdog;
-	}
+	Sprite* getdog();
+	Sprite* getsolder();
+	Sprite* getengineer();
 
-	Sprite* getsolder()
-	{
-		return createsoldier;
-	}
-
-	Sprite* getengineer()
-	{
-		return createengineer;
-	}
 };
 
 class Warfactory :public Construction
 {
 public:
-
+	static int money;
+	static int delay;
+	static int max_hp;
 	//button
 	Sprite * createtank;
 
@@ -71,31 +61,31 @@ public:
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-	//*******************
 	void CreateTankCallback(Ref* pSender);
 	void CreateTank();
 
-	static void createBar(Warfactory * a);
+	void createBar(Warfactory * a);
 
-	virtual Menu* createMenu() {
+	virtual Menu* createMenu() 
+	{
 		auto tankItem = MenuItemSprite::create(createtank, createtank, CC_CALLBACK_1(Warfactory::CreateTankCallback, this));
+		auto menu = Menu::create(tankItem, NULL);
+		menu->setPosition(Vec2(100, 100));
+		return menu;
 	}
 
 	virtual void None() {};
 
-	Sprite* gettank()
-	{
-
-		return createtank;
-
-	}
+	Sprite* gettank();
 };
 
 class Mine :public Construction
 {
 
 public:
-
+	static int money;
+	static int delay;
+	static int max_hp;
 	//button
 	Sprite * createminingcar;
 public:
@@ -111,28 +101,24 @@ public:
 	void CreateMiningcarCallback(Ref* pSender);
 	void CreateMiningcar();
 
-	static void createBar(Mine * a);
+	void createBar(Mine * a);
 
-	virtual Menu* createMenu() {
-		auto miningcarItem = MenuItemSprite::create(createminingcar, createminingcar, CC_CALLBACK_1(Mine::CreateMiningcarCallback, this));
-	}
+	virtual Menu* createMenu();
 
 	virtual void None() {};
-	Sprite* getminingcar()
-	{
-		return createminingcar;
-	}
+	Sprite* getminingcar();
 };
 
 class Base :public Construction
 {
 
 public:
+	static int money;
+	static int delay;
+	static int max_hp;
 	//button
 	Sprite * createbarracks;
-
 	Sprite * createwarfactory;
-
 	Sprite * createmine;
 
 public:
@@ -145,67 +131,14 @@ public:
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-	static void createBar(Base * a);
+	void createBar(Base * a);
 
 	virtual void None() {};
-	Sprite* getbarracks()
-	{
-		return createbarracks;
-	}
+	Sprite* getbarracks();
 
-	Sprite* getwarfactory()
-	{
-		return createwarfactory;
-	}
+	Sprite* getwarfactory();
 
-	Sprite* getmine()
-	{
-		return createmine;
-	}
+	Sprite* getmine();
 };
-
-void Barracks::createBar(Barracks * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Warfactory::createBar(Warfactory * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Mine::createBar(Mine * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
-
-void Base::createBar(Base * a)
-{
-	Sprite *hpSprite = Sprite::create("hp-con.png");
-	auto hp = ProgressTimer::create(hpSprite);
-	hp->setType(ProgressTimer::Type::BAR);
-	hp->setMidpoint(Point(0, 0));
-	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
-}
 
 #endif

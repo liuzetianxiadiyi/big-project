@@ -1,3 +1,4 @@
+
 #include "JsonParser.h"
 #include "platform/CCFileUtils.h"
 #include "GameData.h"
@@ -96,14 +97,14 @@ ValueMap JsonParser::decode_RoomData()
 	{
 		const rapidjson::Value &temp = document[SROOMSCENEDATA];
 
-		const rapidjson::Value &val_own = temp[OWNER];
-		row[OWNER] = Value(val_own.GetString());
+		/*const rapidjson::Value &val_own = temp[OWNER];
+		row[OWNER] = Value(val_own.GetString());*/
 
 		ValueVector vName;
 		const rapidjson::Value &val_mem = temp[MEMBER];
 		for (auto& v : val_mem.GetArray())
 		{
-			vName.push_back(Value(v.GetInt()));
+			vName.push_back(Value(v.GetString()));
 		}
 		row[MEMBER] = Value(vName);
 	}
@@ -111,8 +112,9 @@ ValueMap JsonParser::decode_RoomData()
 	return row;
 }
 
-bool JsonParser::decode_EnterData()
+int JsonParser::decode_EnterData()
 {
+	using namespace RoomMessage;
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
@@ -126,12 +128,18 @@ bool JsonParser::decode_EnterData()
 		const rapidjson::Value &val_own = temp[ISSTART];
 		if (val_own.GetBool())
 		{
-			return true;
+			return 1;
 		}
 		else
 		{
-			return false;
+			return 0;
 		}
+	}
+	else if (document.HasMember(ADDNAME))
+	{
+		const rapidjson::Value& name = document[ADDNAME];
+		information = name.GetString();
+		return -1;
 	}
 
 	//list.push_back(Value(row));

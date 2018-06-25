@@ -1,4 +1,4 @@
-#include "Military.h"
+﻿#include "Military.h"
 #include"soldiers.h"
 Military* Military::create(const string filename)
 {
@@ -16,16 +16,19 @@ Military* Military::create(const string filename)
 	return nullptr;
 }
 
-void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination, Action* _move)
+void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination)
 {
-	name = _name;
 	health_point = _health_point;
 	max_hp= _health_point;
 	dead = _dead;
 	Selected = _Selected;
 	position = _position;
 	destination = _destination;
-	move = _move;
+}
+
+void Military::setPosition(Vec2 vec)
+{
+	position = vec;
 }
 
 void Military::sethp(int damage)
@@ -35,7 +38,7 @@ void Military::sethp(int damage)
 
 void Military::setDestination(Vec2 v)
 {
-	position = v;
+	destination = v;
 }
 
 void Military::setdead()

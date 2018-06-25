@@ -6,7 +6,7 @@ senJsonParser::senJsonParser(ValueVector pListData)
 }
 string senJsonParser::encode_WaitingData()		//’‚¿Ôªª≥…message∑¿÷π÷±Ω” π”√»´æ÷±‰¡øinformation‘Ï≥…Œ¥÷™µƒbug
 {
-	Json::Value object;
+	Json::Value object(Json::objectValue);
 
 	for (auto& v : listData)
 	{
@@ -47,7 +47,7 @@ string senJsonParser::encode_WaitingData()		//’‚¿Ôªª≥…message∑¿÷π÷±Ω” π”√»´æ÷±‰¡
 
 string senJsonParser::encode_RoomData()		//’‚¿Ôªª≥…message∑¿÷π÷±Ω” π”√»´æ÷±‰¡øinformation‘Ï≥…Œ¥÷™µƒbug
 {
-	Json::Value object;
+	Json::Value object(Json::objectValue);
 
 	for (auto& v : listData)
 	{
@@ -78,7 +78,7 @@ string senJsonParser::encode_RoomData()		//’‚¿Ôªª≥…message∑¿÷π÷±Ω” π”√»´æ÷±‰¡øin
 
 string senJsonParser::encode_EnterData()
 {
-	Json::Value object;
+	Json::Value object(Json::objectValue);
 
 	for (auto& v : listData)
 	{
@@ -90,6 +90,20 @@ string senJsonParser::encode_EnterData()
 		v_map[ISSTART] = row[ISSTART].asBool();
 
 		object[SROOMSCENEDATA] = v_map;
+	}
+
+	return object.toStyledString();
+}
+
+string senJsonParser::encode_aRoomData()
+{
+	Json::Value object(Json::objectValue);
+
+	for (auto& v : listData)
+	{
+		ValueMap temp = v.asValueMap();	
+
+		object[ADDNAME] = temp[ADDNAME].asString();
 	}
 
 	return object.toStyledString();
