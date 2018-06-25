@@ -1,4 +1,4 @@
-﻿#ifndef __CONSTRUCTION_H__
+#ifndef __CONSTRUCTION_H__
 #define __CONSTRUCTION_H__
 
 #include "cocos2d.h"
@@ -21,6 +21,11 @@ private:
 	int country;
 
 public:
+	virtual Rect getBoundingBox()
+	{
+		Rect m_box = Rect(0, 0, this->getContentSize().width, this->getContentSize().height);
+		return RectApplyAffineTransform(m_box, this->getNodeToWorldAffineTransform());
+	}
 	void sethp(int damage)
 	{
 		health_point -= damage;
