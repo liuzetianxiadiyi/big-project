@@ -1,4 +1,4 @@
-#ifndef __CONSTRUCTION_H__
+﻿#ifndef __CONSTRUCTION_H__
 #define __CONSTRUCTION_H__
 
 #include "cocos2d.h"

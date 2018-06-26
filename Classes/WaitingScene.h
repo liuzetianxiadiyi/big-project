@@ -2,6 +2,7 @@
 #define __WAITINGSCENE_H__
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
+#include <string>
 
 
 USING_NS_CC;
@@ -11,11 +12,12 @@ class WaitingScene : public cocos2d::Layer
 {
 public:
 	static Scene* createScene();
-	static int room_nums;
+	int room_nums;
 	static int SelectedRoomTag;
 	static bool replace;	//to jugde if WaitingScene is replaced
 
 	bool init();
+	void onEnterTransitionDidFinish();
 
 	void menuEnterCallback(cocos2d::Ref* pSender);
 	void createRoomCallback(cocos2d::Ref* pSender);
@@ -29,5 +31,7 @@ public:
 	void roomDataThread();
 
 	CREATE_FUNC(WaitingScene);
+private:
+	int SelectedRoomTags = -1;
 };
 #endif // !WaitingScene

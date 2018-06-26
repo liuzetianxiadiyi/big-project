@@ -74,7 +74,7 @@ bool HelloWorld::init()
 	this->addChild(menu, 1);
 
 	// add "HelloWorld" splash screen"
-	auto sprite = Sprite::create("background2.png");
+	auto sprite = Sprite::create("background.png");
 	if (sprite == nullptr)
 	{
 		problemLoading("'background.png'");
@@ -94,11 +94,11 @@ void HelloWorld::menuStartCallback(Ref* pSender)
 {
 	auto scene = AccontScene::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
-	Director::getInstance()->pushScene(reScene);
-	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playEffect("filename");
-	}
+	Director::getInstance()->replaceScene(reScene);
+	//if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
+	//{
+	//	SimpleAudioEngine::getInstance()->playEffect("filename");
+	//}
 }
 void HelloWorld::menuSettingCallback(Ref* pSender)
 {
@@ -132,15 +132,15 @@ void HelloWorld::onEnter()
 	log("HelloWorld onEnter");
 }
 
-/*void HelloWorld::onEnterTransitionDidFinish()
+void HelloWorld::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	log("HelloWorld onEnterTransitionDidFinish");
 	//播放
-	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playBackgroundMusic("filename.mp3", true);
-	}
+	//if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY))
+	//{
+	//	SimpleAudioEngine::getInstance()->playBackgroundMusic("filename.mp3", true);
+	//}
 }
 
 void HelloWorld::onExit()
@@ -162,4 +162,3 @@ void HelloWorld::cleanup()
 	//停止
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic("filename.mp3");
 }
-*/

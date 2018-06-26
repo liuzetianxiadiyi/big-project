@@ -130,10 +130,6 @@ bool RoomScene::init()
 		this->addChild(sendsprite, 0);
 	}
 
-
-  
-
-
 	return true;
 }
 

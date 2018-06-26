@@ -1,4 +1,4 @@
-#include "Constructions.h"
+﻿#include "Constructions.h"
 #include "Soldiers.h"
 
 int Mine::money = 1000;
@@ -83,10 +83,10 @@ void Barracks::CreateDog()
 	string filename = "dog.png";
 	Dog* dog = Dog::create(filename);
 	dog->init(100, false, false, Vec2(300, 300), Vec2(0, 0));
-	dog->setPosition(Vec2(100,100));
+	dog->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(dog, 2);
+	//Layer* = target->getChildByTag()
+	target->addChild(dog, 2);
 }
 
 void Barracks::CreateSoldier()
@@ -96,8 +96,7 @@ void Barracks::CreateSoldier()
 	soldier->init(200, false, false, Vec2(300, 300), Vec2(0, 0));
 	soldier->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(soldier, 2);
+	target->addChild(soldier, 2);
 }
 
 void Barracks::CreateEngineer()
@@ -107,8 +106,7 @@ void Barracks::CreateEngineer()
 	engineer->init(200, false, false, Vec2(300, 300), Vec2(0, 0));
 	engineer->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(engineer, 2);
+	target->addChild(engineer, 2);
 }
 
 Warfactory* Warfactory::create(const string filename)
@@ -157,69 +155,7 @@ Sprite* Mine::getminingcar()
 	return createminingcar;
 }
 
-Menu* Base::createMenu()
-{
-	auto barracksItem = MenuItemSprite::create(createbarracks, createbarracks, CC_CALLBACK_1(Base::CreateBarracksCallback, this));
-	auto mineItem = MenuItemSprite::create(createmine, createmine, CC_CALLBACK_1(Base::CreateMineCallback, this));
-	auto warfactoryItem = MenuItemSprite::create(createwarfactory, createwarfactory, CC_CALLBACK_1(Base::CreateWarfactoryCallback, this));
-	auto menu = Menu::create(barracksItem, mineItem, warfactoryItem, NULL);
-	menu->setPosition(Vec2(100, 100));
-	return menu;
-}
 
-void Base::CreateMineCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Mine::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateMine(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Base::CreateWarfactoryCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Warfactory::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateWarfactory(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Base::CreateBarracksCallback(Ref* pSender)
-{
-	auto delay = DelayTime::create(Barracks::delay);
-	auto seq = Sequence::create(delay, [&] {this->CreateBarracks(); }, nullptr);
-	this->runAction(seq);
-}
-
-void Base::CreateMine()
-{
-	string filename = "Mine.png";
-	Mine* mine = Mine::create(filename);
-	mine->init("Mine", 1600, 4, Vec2(150, 150), false, false, 1, 100);
-	mine->setPosition(Vec2(100, 100));
-	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(mine, 2);
-}
-
-void Base::CreateBarracks()
-{
-	string filename = "Barracks.png";
-	Barracks* barracks = Barracks::create(filename);
-	barracks->init("Barracks", 1600, 4, Vec2(150, 150), false, false, 1, 100);
-	barracks->setPosition(Vec2(100, 100));
-	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(barracks, 2);
-}
-
-void Base::CreateWarfactory()
-{
-	string filename = "Warfactory.png";
-	Warfactory* warfactory = Warfactory::create(filename);
-	warfactory->init("Warfactory", 1600, 4, Vec2(150, 150), false, false, 1, 100);
-	warfactory->setPosition(Vec2(100, 200));
-	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(warfactory, 2);
-}
 
 Base* Base::create(const string filename)
 {
@@ -227,9 +163,9 @@ Base* Base::create(const string filename)
 	if (sprite->initWithFile(filename))
 	{
 		sprite->autorelease();
-		sprite->createbarracks = Sprite::create("Barracks.png");
-		sprite->createwarfactory = Sprite::create("Warfactory.png");
-		sprite->createmine = Sprite::create("Mine.png");
+		sprite->createbarracks = Sprite::create("filename");
+		sprite->createwarfactory = Sprite::create("filename");
+		sprite->createmine = Sprite::create("filename");
 		sprite->init("Base", 5000, 8, Vec2(100, 100), false, false, 1, 100);
 		return sprite;
 	}
@@ -252,15 +188,15 @@ Sprite* Base::getmine()
 	return createmine;
 }
 
+
 void Warfactory::CreateTank()
 {
-	string filename = "tank.png";
+	string filename = "filename";
 	Tank* tank = Tank::create(filename);
 	tank->init(200, false, false, Vec2(300, 300), Vec2(0, 0));
 	tank->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(tank, 2);
+	target->addChild(tank, 2);
 }
 
 void Warfactory::CreateTankCallback(Ref* pSender)
@@ -272,13 +208,12 @@ void Warfactory::CreateTankCallback(Ref* pSender)
 
 void Mine::CreateMiningcar()
 {
-	string filename = "miningcar.png";
+	string filename = "filename";
 	Miningcar* miningcar = Miningcar::create(filename);
 	miningcar->init(200, false, false, Vec2(300, 300), Vec2(0, 0));
 	miningcar->setPosition(Vec2(0, 0));
 	auto target = Director::getInstance()->getRunningScene();
-	auto layer = target->getChildByTag(1);
-	layer->addChild(miningcar, 2);
+	target->addChild(miningcar, 2);
 }
 
 void Mine::CreateMiningcarCallback(Ref* pSender)
@@ -287,6 +222,7 @@ void Mine::CreateMiningcarCallback(Ref* pSender)
 	auto seq = Sequence::create(delay, [&] {this->CreateMiningcar(); }, nullptr);
 	this->runAction(seq);
 }
+
 
 void Barracks::createBar(Barracks * a)
 {
