@@ -1,13 +1,13 @@
 ﻿#include "AccontScene.h"
 #include "SystemHeader.h"
 //#include "Client.h"
-//#include "WaitingScene.h"
-#include "Information.h"
+#include "WaitingScene.h"
 //#include "enJsonParser.h"
 //#include "GameData.h"
 ////////////////////////////
 #include"GameScene.h"
 #include <iostream>
+#include "GameData.h"
 
 using std::string;
 
@@ -68,43 +68,43 @@ void AccontScene::buttonOkCallback(Ref* pSender)
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto defaults = UserDefault::getInstance();
-	if (defaults->getBoolForKey(SOUND_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playEffect("filename.wav");
-	}
+	//if (defaults->getBoolForKey(SOUND_KEY))
+	//{
+	//	SimpleAudioEngine::getInstance()->playEffect("filename.wav");
+	//}
 	auto editbox = dynamic_cast<EditBox*>(this->getChildByTag(1));
 
 	string text = string(editbox->getText());
 	int len = text.length();
 
-	auto scene = GameScene::createScene();
+	auto scene = WaitingScene::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
-	Director::getInstance()->pushScene(reScene);
-	//if (len == 0)
-	//{
-	//	this->removeChildByTag(3);
-	//	auto label1 = Label::createWithSystemFont("名字不可为空！", "Arial", 15);
-	//	label1->setPosition(Vec2(origin.x + visibleSize.width / 2,
-	//		origin.y + visibleSize.height / 3));					//这种位置的东西麻烦美工量一下，谢谢
-	//	label1->setTag(2);
-	//	label1->addChild(label1, 2);
-	//	this->addChild(label1, 3);
-	//}
-	//else if (len < 4)
-	//{
-	//	this->removeChildByTag(2);
-	//	auto label2 = Label::createWithSystemFont("至少需要4个字符！", "Arial", 15);
-	//	label2->setPosition(Vec2(origin.x + visibleSize.width / 2,
-	//		origin.y + visibleSize.height /3));					
-	//	label2->setTag(3);
-	//	this->addChild(label2, 3);
-	//}
-	//else
-	//{
-	//	/*UserDefault * defaults = UserDefault::getInstance();
-	//	defaults->setStringForKey(PLAYERNAME, text);
-	//	auto scene = WaitingScene::createScene();
-	//	auto reScene = TransitionJumpZoom::create(1.0f, scene);
-	//	Director::getInstance()->replaceScene(reScene);*/
-	//}
+	Director::getInstance()->replaceScene(reScene);
+	if (len == 0)
+	{
+		this->removeChildByTag(3);
+		auto label1 = Label::createWithSystemFont("名字不可为空！", "Arial", 15);
+		label1->setPosition(Vec2(origin.x + visibleSize.width / 2,
+			origin.y + visibleSize.height / 3));					//这种位置的东西麻烦美工量一下，谢谢
+		label1->setTag(2);
+		label1->addChild(label1, 2);
+		this->addChild(label1, 3);
+	}
+	else if (len < 4)
+	{
+		this->removeChildByTag(2);
+		auto label2 = Label::createWithSystemFont("至少需要4个字符！", "Arial", 15);
+		label2->setPosition(Vec2(origin.x + visibleSize.width / 2,
+			origin.y + visibleSize.height /3));					
+		label2->setTag(3);
+		this->addChild(label2, 3);
+	}
+	else
+	{
+		UserDefault * defaults = UserDefault::getInstance();
+		defaults->setStringForKey(PLAYERNAME, text);
+		auto scene = WaitingScene::createScene();
+		auto reScene = TransitionJumpZoom::create(1.0f, scene);
+		Director::getInstance()->replaceScene(reScene);
+	}
 }

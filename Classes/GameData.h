@@ -25,6 +25,7 @@ using std::vector;
 #define MEMBER "member"		//成员
 
 #define ROOMSCENEDATA "RoomSceneData"		//Room 界面发送数据标识
+#define SROOMNUMSDTATA "sRoomNumsData"
 #define ISSTART "isStart" 
 
 #define SENTERROOMDATA "sEnterRoomData"		//进入游戏

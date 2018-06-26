@@ -23,6 +23,7 @@ public:
 
 	bool initWithC_str(const char * data);
 
+	ValueMap decode_RoomNums();
 	ValueMap decode_WaitingData();
 	ValueMap decode_RoomData();
 	int decode_EnterData();

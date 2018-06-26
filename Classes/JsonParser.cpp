@@ -44,12 +44,39 @@ bool JsonParser::initWithC_str(const char * data)
 	return true;
 }
 
+ValueMap JsonParser::decode_RoomNums()
+{
+	rapidjson::Document document;
+	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
+
+	CC_ASSERT(document.IsObject() && document.HasMember(SROOMNUMSDTATA));
+
+	row = ValueMap();
+
+	if (document.HasMember(SROOMNUMSDTATA))
+	{
+		const rapidjson::Value &temp = document[SROOMNUMSDTATA];
+
+		const rapidjson::Value& val_nums = temp[ROOMNUMS];
+		row[ROOMNUMS] = val_nums.GetInt();
+
+		const rapidjson::Value &val_rLabel = temp[ROOMLABEL];
+		ValueVector rTemp;
+		for (auto& r : val_rLabel.GetArray())
+		{
+			rTemp.push_back(Value(r.GetInt()));
+		}
+		row[ROOMLABEL] = Value(rTemp);
+	}
+
+	return row;
+}
 ValueMap JsonParser::decode_WaitingData()
 {
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CC_ASSERT(document.IsObject());
+	CC_ASSERT(document.IsObject()&& document.HasMember(SWAITINGSCENEDATA));
 
 	row = ValueMap();
 
@@ -91,7 +118,7 @@ ValueMap JsonParser::decode_RoomData()
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CC_ASSERT(document.IsObject());
+	CC_ASSERT(document.IsObject() && document.HasMember(SROOMSCENEDATA));
 
 	if (document.HasMember(SROOMSCENEDATA))		//for server
 	{
@@ -118,7 +145,7 @@ int JsonParser::decode_EnterData()
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
 
-	CC_ASSERT(document.IsObject());
+	CC_ASSERT(document.IsObject() && document.HasMember(SENTERROOMDATA));
 	//取一条记录对象
 
 	if (document.HasMember(SENTERROOMDATA))		//for server
@@ -150,7 +177,7 @@ ValueMap JsonParser::decode_GameData()
 	rapidjson::Document document;
 	document.Parse<0>(content.c_str());
 
-	CC_ASSERT(document.IsArray());
+	CC_ASSERT(document.IsArray()&&document.HasMember(MILITARYDATA)&&document.HasMember(CONSTRUCTIONDATA));
 
 
 	row = ValueMap();

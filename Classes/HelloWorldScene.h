@@ -8,10 +8,10 @@ public:
 	//生命周期函数
 	virtual bool init();
 	virtual void onEnter();
-	//virtual void onEnterTransitionDidFinish();
-	//virtual void onExit();
-	//virtual void onExitTransitionDidStart();
-	//virtual void cleanup();
+	virtual void onEnterTransitionDidFinish();
+	virtual void onExit();
+	virtual void onExitTransitionDidStart();
+	virtual void cleanup();
 	// a selector callback
 	void menuExitCallback(cocos2d::Ref* pSender);
 	void menuStartCallback(cocos2d::Ref* pSender);
