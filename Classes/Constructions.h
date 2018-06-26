@@ -1,19 +1,20 @@
-﻿#ifndef __CONSTRUCTIONS_H__
+#ifndef __CONSTRUCTIONS_H__
 #define __CONSTRUCTIONS_H__
 #include "Construction.h"
 
 class Barracks:public Construction
 {
 private:
-	
+
+public:
+
 	//use to create menu
 	Sprite * createdog;
 	Sprite * createsoldier;
 	Sprite * createengineer;
 
-public:
 	static int money;
-	static int delay;
+	static float delay;
 	static int max_hp;
 	static Barracks* create(const string filename);
 	/*static Barracks* create(const std::string & filename, const Rect & rect);
@@ -46,13 +47,12 @@ class Warfactory :public Construction
 {
 public:
 	static int money;
-	static int delay;
+	static float delay;
 	static int max_hp;
+	
+public:
 	//button
 	Sprite * createtank;
-
-public:
-
 	static Warfactory* create(const string filename);
 
 	/*static Barracks* create(const std::string & filename, const Rect & rect);
@@ -70,7 +70,6 @@ public:
 	{
 		auto tankItem = MenuItemSprite::create(createtank, createtank, CC_CALLBACK_1(Warfactory::CreateTankCallback, this));
 		auto menu = Menu::create(tankItem, NULL);
-		menu->setPosition(Vec2(100, 100));
 		return menu;
 	}
 
@@ -84,7 +83,7 @@ class Mine :public Construction
 
 public:
 	static int money;
-	static int delay;
+	static float delay;
 	static int max_hp;
 	//button
 	Sprite * createminingcar;
@@ -97,7 +96,6 @@ public:
 	static Barracks* createWithSpritFrame(SpriteFrame* pSpriteFrame);
 	static Barracks* createWithSpriteFrameName(const std::string & spriteFrameName);*/
 
-	//*******************
 	void CreateMiningcarCallback(Ref* pSender);
 	void CreateMiningcar();
 
@@ -114,12 +112,12 @@ class Base :public Construction
 
 public:
 	static int money;
-	static int delay;
+	static float delay;
 	static int max_hp;
 	//button
-	Sprite * createbarracks;
-	Sprite * createwarfactory;
-	Sprite * createmine;
+	Sprite * createbarracks;// = Sprite::create("Barracks.png");
+	Sprite * createwarfactory;// = Sprite::create("Warfactory.png");
+	Sprite * createmine;// = Sprite::create("Mine.png");
 
 public:
 
@@ -134,10 +132,20 @@ public:
 	void createBar(Base * a);
 
 	virtual void None() {};
+
+	virtual Menu* createMenu();
+	
+
+	void CreateMineCallback(Ref* pSender);
+	void CreateWarfactoryCallback(Ref* pSender);
+	void CreateBarracksCallback(Ref* pSender);
+
+	void CreateMine();
+	void CreateBarracks();
+	void CreateWarfactory();
+
 	Sprite* getbarracks();
-
 	Sprite* getwarfactory();
-
 	Sprite* getmine();
 };
 
