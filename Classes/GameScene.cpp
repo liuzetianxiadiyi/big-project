@@ -13,9 +13,16 @@
 #include "time.h"
 #include <vector>
 #include <string>
+#include<Windows.h>
 USING_NS_CC;
 using std::string;
 using std::vector;
+
+extern bool GameflagNewConstructions;
+extern vector<Construction*>  GameNewConstruction;
+extern Vec2 Newpos;
+extern vector<Military*> unselectedMilitary;
+extern vector<Military*> selectedMilitary;
 
 string words;
 int i = 204;
@@ -88,7 +95,7 @@ bool GameScene::init()
 	Rect rec = sprite->getBoundingBox();
 	log("BaseBound maxx=%f,maxy=%f,minx=%f,miny=%f", rec.getMaxX(), rec.getMaxY(), rec.getMinX(), rec.getMinY());
 
-	this->addChild(sprite, 2);
+	this->addChild(sprite, 2,1001);
 
 	_collidable = _tileMap->getLayer("collidable");
 	_collidable->setVisible(false);
@@ -248,7 +255,6 @@ void GameScene::messageCallback(Ref* pSender)
 		{
 			// position the label on the center of the screen
 			label->setPosition(Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - count * 30));
-
 			// add the label as a child to this layer
 			this->addChild(label, 1, labelcount);
 		}
@@ -493,18 +499,32 @@ void GameScene::setViewpointCenter(Vec2 position)
 
 bool GameScene::onMouseDown(Event* event)
 {
-
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
-
 	BeginLocation = em->getLocation();
-
 	log("onMouseDown");
+	Newpos = em->getLocationInView();
+	if (GameflagNewConstructions == true)
+	{
+		GameflagNewConstructions = false;
+		MyConstructions.push_back(GameNewConstruction.front());
+		GameNewConstruction.pop_back();
+	}
 	return true;
 }
 
 void GameScene::onMouseMove(Event* event)
 {
 	//log("onMouseMove");
+	EventMouse* em = dynamic_cast<EventMouse*> (event);
+	EventMouse::MouseButton ButtonTag = em->getMouseButton();
+	Vec2 pos = em->getLocationInView();
+	//log("pos x=%f,y=%f", pos.x, pos.y);
+	if (GameflagNewConstructions == true)
+	{
+		//log("NewComstruction");
+		GameNewConstruction.front()->setPosition(pos);	
+	}
+	
 }
 
 void GameScene::onMouseScroll(Event* event)
@@ -581,9 +601,46 @@ void GameScene::onMouseUp(Event* event)
 				{
 					sFlag = true;
 					log("click a construction");
-					Menu* menu = c->createMenu();
-					menu->setPosition(Vec2(100, 100));
-					this->addChild(menu, 3);
+					if (typeid(*c) == typeid(Base))
+					{
+						auto f = static_cast<Base*>(c);
+						f->createbarracks = Sprite::create("Barracks.png");
+						f->createwarfactory = Sprite::create("Warfactory.png");
+						f->createmine = Sprite::create("Mine.png");
+						Menu* menu = f->createMenu();
+						menu->setScale(0.5);
+						menu->setPosition(c->getPosition()+Vec2(0,-150));
+						this->addChild(menu, 3);
+					}
+					else if(typeid(*c) == typeid(Barracks))
+					{
+						auto f = static_cast<Barracks*>(c);
+						f->createdog = Sprite::create("dog.png");
+						f->createsoldier = Sprite::create("soldier.png");
+						f->createengineer = Sprite::create("engineer.png");
+						Menu* menu = f->createMenu();
+						menu->setScale(0.5);
+						menu->setPosition(c->getPosition() + Vec2(0, -150));
+						this->addChild(menu, 3);
+					}
+					else if (typeid(*c) == typeid(Mine))
+					{
+						auto f = static_cast<Mine*>(c);
+						f->createminingcar = Sprite::create("miningcar.png");
+						Menu* menu = f->createMenu();
+						menu->setScale(0.5);
+						menu->setPosition(c->getPosition() + Vec2(0, -150));
+						this->addChild(menu, 3);
+					}
+					else if (typeid(*c) == typeid(Warfactory))
+					{
+						auto f = static_cast<Warfactory*>(c);
+						f->createtank = Sprite::create("tank.png");
+						Menu* menu = f->createMenu();
+						menu->setScale(0.5);
+						menu->setPosition(c->getPosition() + Vec2(0, -150));
+						this->addChild(menu, 3);
+					}
 				}
 			}
 			//	if (smap->getBoundingBox().containsPoint(pos))
