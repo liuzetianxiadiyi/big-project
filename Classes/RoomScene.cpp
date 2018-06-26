@@ -62,26 +62,11 @@ bool RoomScene::init()
 		StartGameItem->setEnabled(true);
 	}
 
-	/*auto DeleteRoomItem = MenuItemImage::create(
-		"DeleteRoomNormal.png",
-		"DeleteRoomSelected.png",
-		CC_CALLBACK_1(RoomScene::menuDeleteRoomCallback, this)
-	);
-	DeleteRoomItem->setPosition(125 + visibleSize.width / 2, visibleSize.height / 2);
-	if (DeleteRoomItem == nullptr ||
-		DeleteRoomItem->getContentSize().width <= 0 ||
-		DeleteRoomItem->getContentSize().height <= 0)
-	{
-		problemLoading("'DeleteRoomNormal.png' and 'DeleteRoomSelected.png'");
-	}
-	else
-	{
-		DeleteRoomItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2));
-	}*/
+	
 	auto CountryItem = MenuItemImage::create(
 		"CountryNormal.png",
 		"CountrySelected.png",
-		CC_CALLBACK_1(RoomScene::menuDeleteRoomCallback, this)
+		CC_CALLBACK_1(RoomScene::CountryButtonCallback, this)
 	);
 	CountryItem->setPosition(125 + visibleSize.width / 2-75, visibleSize.height / 2 - 60);
 	if (CountryItem == nullptr ||
@@ -305,20 +290,5 @@ void RoomScene::menuStartGameCallback(Ref* pSender)
 	//}
 }
 
-void RoomScene::menuDeleteRoomCallback(Ref* pSender)
-{
-	/*ValueVector plistdata = GameData::toValueVector(Value(GameData::toValueMap(GameData::toPair(ISSTART, Value(false)))));
-	Client* client = Client::getInstance();
-	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-	string sendBuf = enJson->encode_EnterGameData();
-	client->send_Cli(sendBuf);*/
 
-	auto scene = WaitingScene::createScene();	//´ý¶¨
-	auto reScene = TransitionJumpZoom::create(1.0f, scene);
-	Director::getInstance()->pushScene(reScene);
-	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
-	{
-		SimpleAudioEngine::getInstance()->playEffect("filename");
-	}
-}
 
