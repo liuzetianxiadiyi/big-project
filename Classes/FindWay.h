@@ -17,33 +17,6 @@ using std::pair;
 using std::make_pair;
 using std::string;
 
-
-class Position
-{
-public:
-	int x;
-	int y;
-public:
-	friend bool operator!= (Position a, Position b)
-	{
-		return !(a.x == b.x&&a.y == b.y);
-	}
-	Position()
-	{
-		x = -1;
-		y = -1;
-	}
-	Position(int _x, int _y)
-	{
-		x = _x;
-		y = _y;
-	}
-	friend bool operator==(Position a, Position b)
-	{
-		return a.x == b.x&&a.y == b.y;
-	}
-};
-
 class MyTile :public cocos2d::Ref
 {
 private:
@@ -51,10 +24,10 @@ private:
 	int h_value;
 	int g_value;
 	MyTile* parent;
-	Position pos;
-	Position goal;
+	Vec2 pos;
+	Vec2 goal;
 public:
-	static MyTile* create(MyTile* _parent,const Position _pos,const Position _goal)
+	static MyTile* create(MyTile* _parent,const Vec2 _pos,const Vec2 _goal)
 	{
 		MyTile* tile = new MyTile();
 		tile->init(_parent, _pos, _goal);
@@ -67,7 +40,7 @@ public:
 		int temp_y = goal.y - pos.y;
 		h_value += (abs(temp_x) + abs(temp_y));
 	}
-	Position GetPosition()
+	Vec2 GetPosition()
 	{
 		return pos;
 	}
@@ -81,7 +54,7 @@ public:
 		f_value -= count;
 	}
 
-	void init(MyTile* _parent,const Position _pos,const Position _goal)
+	void init(MyTile* _parent,const Vec2 _pos,const Vec2 _goal)
 	{
 		parent = _parent;
 		pos = _pos;

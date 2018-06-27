@@ -26,25 +26,40 @@ bool Client::init()
 		return FALSE;
 	}
 
+	int iMode = 1;
+	int retVal = ioctlsocket(sHost, FIONBIO, (u_long FAR*)&iMode);
+	if (retVal == SOCKET_ERROR)
+	{
+		printf("ioctlsocket failed!\n");
+		WSACleanup();
+		return -1;
+	}
+
 	//3 准备通信地址  
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_port = htons(PORT);
-	addrServer.sin_addr.s_addr = inet_addr("192.168.0.4");
+	addrServer.sin_addr.s_addr = inet_addr("192.168.0.6");
 	
 	return true;
 }
 
 BOOL Client::ConnectServer()
 {
-	if (SOCKET_ERROR == connect(sHost, (const sockaddr*)&addrServer, sizeof(addrServer)))
+	while(true)
 	{
+		int err = connect(sHost, (const sockaddr*)&addrServer, sizeof(addrServer));
 		//cout <<clock()-start;
-		closesocket(sHost);
-		WSACleanup();
-		log("can't connect Server!");
-		system("pause");
-		return FALSE;
+		//closesocket(sHost);
+		//WSACleanup();
+		if (err == SOCKET_ERROR)
+		{
+			log("can't connect Server!");
+		}
+		break;
+		//system("pause");
+		/*return FALSE;*/
 	}
+	log("connect!");
 	//char recvBuf[BUFLEN];
 	//ZeroMemory(recvBuf, sizeof(recvBuf));
 	//if (SOCKET_ERROR == recv(sHost, recvBuf, BUFLEN, 0))
@@ -58,6 +73,29 @@ BOOL Client::ConnectServer()
 	return TRUE;
 }
 
+bool Client::recvMessage(char recvBuf[])
+{
+	while (true)
+	{
+		ZeroMemory(recvBuf, sizeof(recvBuf));
+		if (SOCKET_ERROR == recv(sHost, recvBuf, BUFLEN, 0))
+		{
+			//cout << "in recieve!" << endl;
+			continue;
+		}
+		else
+		{
+			if (string(recvBuf) == string(RECIEVE))
+			{
+				cout << "client return!" << endl;
+				return true;
+			}
+			cout << "message error" << endl;
+			return false;
+		}
+	}
+}
+
 string Client::recv_Cli()
 {
 	char recvBuf[BUFLEN];
@@ -66,33 +104,29 @@ string Client::recv_Cli()
 	{
 		//closesocket(sHost);
 		//WSACleanup();
-		log("recv message false");
-		return FALSE;
+		//log("recv message false");
+		return "";
 	}
 	//log("message: %s", recvBuf);
 	log("string: %s", string(recvBuf).c_str());
+	log("end");
+	if (SOCKET_ERROR == send(sHost, RECIEVE, sizeof(RECIEVE), 0))
+	{
+		log("connect break off");
+	}
 	return std::string(recvBuf);
 }
 
 BOOL Client::send_Cli(string sendBuf)
 {
-	clock_t start = clock();
-	while (true)
+	if (SOCKET_ERROR == send(sHost, sendBuf.c_str(), sendBuf.length(), 0))
 	{
-		if (SOCKET_ERROR == send(sHost,sendBuf.c_str(), sendBuf.length(), 0))
-		{
-			//closesocket(sHost);
-			//WSACleanup();
-			if (clock() - start > TIMEOUTERROR)
-			{
-				log("send message %s fail,time out", sendBuf.c_str());
-				break;
-			}
-			Sleep(WAITTIME);
-			continue;
-		}
-		//information.clearSendBuf();
-		break;
+		log("GameScene Send Message false");
+	}
+	//information.clearSendBuf();
+	else
+	{
+		log("send success");
 	}
 	return TRUE;
 }

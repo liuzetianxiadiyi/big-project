@@ -241,7 +241,7 @@ string enJsonParser::encode_MilitaryData()
 
 	document.Accept(writer);	//通过write将数据写入buffer
 
-	return string(buffer.GetString());
+	return string(string(buffer.GetString()) + '|');
 }
 
 string enJsonParser::encode_ConstructionData()
@@ -345,5 +345,5 @@ string enJsonParser::encode_ConstructionData()
 
 	document.Accept(writer);	//通过write将数据写入buffer
 
-	return string(buffer.GetString());
+	return string(string(buffer.GetString())+'|');
 }

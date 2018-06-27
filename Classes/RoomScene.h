@@ -23,7 +23,7 @@ public:
 
 	void menuStartGameCallback(cocos2d::Ref* pSender);
 	void menuDeleteRoomCallback(cocos2d::Ref* pSender);
-	void CountryButtonCallback(cocos2d::Ref* pSender);	
+	//void CountryButtonCallback(cocos2d::Ref* pSender);	
     	
 	//国家的button
 	vector<Button*> hides;

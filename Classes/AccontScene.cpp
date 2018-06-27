@@ -77,9 +77,9 @@ void AccontScene::buttonOkCallback(Ref* pSender)
 	string text = string(editbox->getText());
 	int len = text.length();
 
-	auto scene = WaitingScene::createScene();
-	auto reScene = TransitionJumpZoom::create(1.0f, scene);
-	Director::getInstance()->replaceScene(reScene);
+	//auto scene = WaitingScene::createScene();
+	//auto reScene = TransitionJumpZoom::create(1.0f, scene);
+	//Director::getInstance()->replaceScene(reScene);
 	if (len == 0)
 	{
 		this->removeChildByTag(3);

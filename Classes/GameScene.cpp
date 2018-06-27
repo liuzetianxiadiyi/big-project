@@ -30,8 +30,6 @@ using namespace cocos2d::ui;
 using std::find;
 using std::reverse;
 
-Client* GameScene::client = Client::getInstance();
-
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
@@ -79,7 +77,9 @@ bool GameScene::init()
 	float y = spawnPoint["y"].asFloat();
 
 	log("mapPosition x= %f,y=%f", _tileMap->getPosition().x, _tileMap->getPosition().y);
+	//_tileMap->setPosition(Vec2(-x + visibleSize.width / 2, -y + visibleSize.height / 2));
 	addChild(_tileMap, 0);
+	setViewpointCenter(Vec2(-320, -1600));
 
 	Base* sprite = Base::create("Base.png");
 	sprite->setPosition(Vec2(x, y));
@@ -93,7 +93,8 @@ bool GameScene::init()
 	_collidable = _tileMap->getLayer("collidable");
 	_collidable->setVisible(false);
 
-
+	//this->schedule(schedule_selector(GameScene::SendDataThread), 1, -1, 2);
+	//this->schedule(schedule_selector(GameScene::RecvDataThread), 1, -1, 2);
 	//Button* Set = Button::create("button.png", "buttonHighlight.png");
 	//Set->setScale9Enabled(true);
 	//Set->setPosition(Vec2(visibleSize.width - 100, 50));
@@ -511,7 +512,6 @@ void GameScene::onMouseScroll(Event* event)
 {
 	log("onMouseScroll");
 }
-
 void GameScene::onMouseUp(Event* event)
 {
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
@@ -519,6 +519,8 @@ void GameScene::onMouseUp(Event* event)
 	Vec2 pos = em->getLocationInView();
 	log("click x =%f,y = %f", pos.x, pos.y);
 	bool sFlag = false;
+	vector<Vec2> way;
+	Vec2 start, goal;
 	//wait to add click can move area
 	if (ButtonTag == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
@@ -546,7 +548,27 @@ void GameScene::onMouseUp(Event* event)
 					y = -y;
 				}
 			}
-			/*v->runAction(MoveBy::create(v->getSpeed(), Vec2(x, y)));*/
+			float speed;
+			if (typeid(*v) == typeid(Dog))
+			{
+				speed = Dog::speed;
+			}
+			else if (typeid(*v) == typeid(Soldier))
+			{
+				speed = Soldier::speed;
+			}
+			else if (typeid(*v) == typeid(Engineer))
+			{
+				speed = Engineer::speed;
+			}
+			start = tileCoordFromPosition(v->getPosition());
+			goal = tileCoordFromPosition(pos);
+			way = FindWay(start, goal);
+			for (auto w : way)
+			{
+				v->runAction(MoveBy::create(speed, w));
+			}
+			
 		}
 	}
 	else if (ButtonTag == EventMouse::MouseButton::BUTTON_LEFT)
@@ -612,13 +634,13 @@ bool GameScene::ConstructionCheck(Vec2 pos)
 	return true;
 }
 
-vector<Position> GameScene::FindWay(Position start, Position goal)
+vector<Vec2> GameScene::FindWay(Vec2 start, Vec2 goal)
 {
 	//create start Tile
 	MyTile* sta = MyTile::create(NULL, start, goal);
 
 	closeTile.push_back(*sta);
-	Position pos = start;
+	Vec2 pos = start;
 	//count use to juggle if the Tile is added newly
 	int count = 0;
 	while (pos != goal)
@@ -647,7 +669,7 @@ vector<Position> GameScene::FindWay(Position start, Position goal)
 				flag_y = -1;
 				break;
 			}
-			Position temp;
+			Vec2 temp;
 			temp.x = pos.x + flag_x;
 			temp.y = pos.y + flag_y;
 			//Check collision
@@ -699,7 +721,7 @@ vector<Position> GameScene::FindWay(Position start, Position goal)
 		}
 	}
 	//put the finded way in a vector
-	vector<Position> Way;
+	vector<Vec2> Way;
 	Way.push_back(goal);
 	MyTile* temp = &closeTile[closeTile.size() - 1];
 	do
@@ -739,32 +761,39 @@ vector<Position> GameScene::FindWay(Position start, Position goal)
 //	return Vec2((cpoint.x + 1)*TILENUMS - 1, (cpoint.y + 1)*TILENUMS - 1);
 //}
 
-void GameScene::SendDataThread()
+void GameScene::SendDataThread(float td)
 {
-	while (true)
-	{
-		mtx.lock();
+	Client* client = Client::getInstance();
+	
+	enJsonParser* json = enJsonParser::createWithArray(GameData::MilitaryData(unselectedMilitary));
+	string sendBuf = json->encode_MilitaryData();
+	client->send_Cli(sendBuf);
 
-		enJsonParser* json = enJsonParser::createWithArray(GameData::MilitaryData(unselectedMilitary));
-		string sendBuf = json->encode_MilitaryData();
-		GameScene::client->send_Cli(sendBuf);
+	enJsonParser* json2 = enJsonParser::createWithArray(GameData::ConstructionData(MyConstructions));
+	string sendBuf2 = json->encode_ConstructionData();
+	client->send_Cli(sendBuf2);
 
-		mtx.unlock();
-		Sleep(TIME_LAG);
-	}
 }
 
-void GameScene::RecvDataThread()
+void GameScene::RecvDataThread(float td)
 {
 	using namespace encode_MilitaryData;
 	using namespace encode_ConstructionData;
-	while (true)
+
+	Client* client = Client::getInstance();
+	//receive message
+	string recvBuf = client->recv_Cli();
+	//parser message
+	int pos = 0;
+	int begin;
+	while (pos != -1)
 	{
-		mtx.lock();
-		//receive message
-		string recvBuf = client->recv_Cli();
-		//parser message
-		JsonParser* json = JsonParser::createWithC_str(recvBuf.c_str());
+		begin = pos;
+		pos = recvBuf.find('|',pos);
+		string substr = recvBuf.substr(begin, pos);
+		cout << "recvBuf's substr = "<< substr << endl;
+		++pos;
+		JsonParser* json = JsonParser::createWithC_str(substr.c_str());
 		ValueMap Gamedata = json->decode_GameData();
 
 		ValueMap MilitaryVector = Gamedata[MILITARYDATA].asValueMap();
@@ -797,8 +826,8 @@ void GameScene::RecvDataThread()
 		this->updateConstruction(mindata, Min_Data);
 		this->updateConstruction(basdata, Bas_Data);
 
-		mtx.unlock();
 	}
+
 }
 
 void GameScene::updateMilitary(ValueVector& valuevector, int type)

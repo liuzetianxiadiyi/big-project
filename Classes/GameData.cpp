@@ -101,7 +101,7 @@ ValueVector GameData::sRoomData(ValueVector nmember)
 	return plistdata;
 }
 
-ValueVector GameData::MilitaryData(vector<Military*> il)
+ValueVector GameData::MilitaryData(vector<Military*> mil)
 
 {
 
@@ -119,7 +119,7 @@ ValueVector GameData::MilitaryData(vector<Military*> il)
 
 
 
-	for (auto v : il)
+	for (auto v : mil)
 
 	{
 
@@ -178,7 +178,6 @@ ValueVector GameData::MilitaryData(vector<Military*> il)
 	return GameData::toValueVector(Value(GameData::toValueMap(make_pair(MILITARYDATA, Value(MilitaryMap)))));
 
 }
-
 
 
 ValueVector GameData::ConstructionData(vector<Construction*> il)

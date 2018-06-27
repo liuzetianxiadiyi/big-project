@@ -17,6 +17,7 @@ public:
 
 	senJsonParser(ValueVector pListData);
 
+	string encode_RoonNums();
 	string encode_WaitingData();
 	string encode_RoomData();
 	string encode_EnterData();

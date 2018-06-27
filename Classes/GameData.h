@@ -121,7 +121,6 @@ public:
 
 	static ValueVector sRoomData(ValueVector nmember);
 	static ValueVector ConstructionData(vector<Construction*> il);
-	static ValueVector MilitaryData(vector<Military*> il);
-};
+	static ValueVector MilitaryData(vector<Military*> mil);
 
 #endif

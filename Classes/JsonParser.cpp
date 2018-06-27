@@ -41,16 +41,16 @@ JsonParser * JsonParser::createWithC_str(const char * data)
 bool JsonParser::initWithC_str(const char * data)
 {
 	content = data;
+	document.Parse<0>(content.c_str());
+	CC_ASSERT(document.IsObject());
 	return true;
 }
-
+bool JsonParser::RoomNumsJuggle()
+{
+	return document.HasMember(SROOMNUMSDTATA);
+}
 ValueMap JsonParser::decode_RoomNums()
 {
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
-
-	CC_ASSERT(document.IsObject() && document.HasMember(SROOMNUMSDTATA));
-
 	row = ValueMap();
 
 	if (document.HasMember(SROOMNUMSDTATA))
@@ -71,13 +71,12 @@ ValueMap JsonParser::decode_RoomNums()
 
 	return row;
 }
+bool JsonParser::WaitingDataJuggle()
+{
+	return document.HasMember(SWAITINGSCENEDATA);
+}
 ValueMap JsonParser::decode_WaitingData()
 {
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
-
-	CC_ASSERT(document.IsObject()&& document.HasMember(SWAITINGSCENEDATA));
-
 	row = ValueMap();
 
 	if (document.HasMember(SWAITINGSCENEDATA))		//for server
@@ -112,14 +111,12 @@ ValueMap JsonParser::decode_WaitingData()
 
 	return row;
 }
-
+bool JsonParser::RoomDataJuggle()
+{
+	return document.HasMember(SROOMSCENEDATA);
+}
 ValueMap JsonParser::decode_RoomData()
 {
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
-
-	CC_ASSERT(document.IsObject() && document.HasMember(SROOMSCENEDATA));
-
 	if (document.HasMember(SROOMSCENEDATA))		//for server
 	{
 		const rapidjson::Value &temp = document[SROOMSCENEDATA];
@@ -138,14 +135,13 @@ ValueMap JsonParser::decode_RoomData()
 
 	return row;
 }
-
+bool JsonParser::EnterDataJuggle()
+{
+	return document.HasMember(SENTERROOMDATA);
+}
 int JsonParser::decode_EnterData()
 {
 	using namespace RoomMessage;
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());		//解码，0为解析标识（默认值）
-
-	CC_ASSERT(document.IsObject() && document.HasMember(SENTERROOMDATA));
 	//取一条记录对象
 
 	if (document.HasMember(SENTERROOMDATA))		//for server
@@ -171,15 +167,12 @@ int JsonParser::decode_EnterData()
 
 	//list.push_back(Value(row));
 }
-
+bool JsonParser::GameDataJuggle()
+{
+	return document.HasMember(MILITARYDATA) && document.HasMember(CONSTRUCTIONDATA);
+}
 ValueMap JsonParser::decode_GameData()
 {
-	rapidjson::Document document;
-	document.Parse<0>(content.c_str());
-
-	CC_ASSERT(document.IsArray()&&document.HasMember(MILITARYDATA)&&document.HasMember(CONSTRUCTIONDATA));
-
-
 	row = ValueMap();
 	ValueMap Military_map;
 

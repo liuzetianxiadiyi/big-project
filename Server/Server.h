@@ -15,11 +15,12 @@
 #include "senJsonParser.h"
 
 #define PORT 9999
-#define TIME_LAG 500		//发送和接收信息的时间间隔
+#define TIME_LAG 10		//发送和接收信息的时间间隔
 #define WAITTIME 100		//发送失败后等待时间
 #define TIMEOUTERROR 5000	//超时时间
 #define BUFLEN 1024
 #define MAXCLIENTS 8
+#define RECIEVE "recieve"
 
 #define WAITINGSCENEDATA "WaitingSceneData"
 #define ROOMNUMS "RoomNums"
@@ -38,6 +39,22 @@
 //recursive_mutex rmtx;
 using namespace std;
 
+struct SocketWithFlag
+{
+	SOCKET client;
+	bool isDeleted;
+
+	SocketWithFlag(SOCKET c, bool d)
+	{
+		client = c;
+		isDeleted = d;
+	}
+	SocketWithFlag()
+	{
+		client = NULL;
+	}
+};
+
 class Server
 {
 private:
@@ -46,14 +63,15 @@ private:
 	SOCKET sServer;
 	SOCKADDR_IN addrServer;
 	//need lock
-	vector<SOCKET> wClients;
+	vector<SocketWithFlag> wClients;
 	//need lock
-	unordered_map<int,vector<SOCKET>>  rClients;
+	unordered_map<int,vector<SocketWithFlag>>  rClients;
 	unordered_map<int, vector<string>> rClient_names;
 	//neeed lock
-	unordered_map<int, SOCKET> rOwner;
-	vector<vector<SOCKET>> gameClients;
-
+	unordered_map<int, SocketWithFlag> rOwner;
+	vector<vector<SocketWithFlag>> gameClients;
+	int room_nums;
+	ValueVector roomTag;
 	//need lock
 	// WaitingData;
 	int addroom;
@@ -61,7 +79,10 @@ private:
 	bool deleted;
 	ValueVector dLabel;
 
-	recursive_mutex waitingLock;
+	bool thread_end;
+
+	recursive_mutex waitingDataLock;
+	recursive_mutex wVectorLock;
 	recursive_mutex OwnerLock;
 	recursive_mutex RoomLock;
 	recursive_mutex GameLock;
@@ -70,9 +91,10 @@ public:
 	Server();
 	~Server();
 
-	BOOL AcceptClients();
-	BOOL send_Ser(SOCKET sClient,string message);
+	bool sSend(string sendBuf,SocketWithFlag client,char recvBuf[]);
+	bool sRecv(SocketWithFlag client);
 
+	BOOL AcceptClients();
 	void RoomNums_Data_Thread();
 	void EnterGame_Data_Thread();
 	void GameData_Thread();

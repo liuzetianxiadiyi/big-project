@@ -4,6 +4,34 @@ senJsonParser::senJsonParser(ValueVector pListData)
 {
 	listData = pListData;
 }
+
+string senJsonParser::encode_RoonNums()
+{
+	Json::Value object(Json::objectValue);
+
+	for (auto& v : listData)
+	{
+		ValueMap temp = v.asValueMap();
+
+		ValueMap row = temp[SROOMNUMSDATA].asValueMap();
+		Json::Value v_map;
+
+		v_map[ROOMNUMS] = row[ROOMNUMS].asInt();
+
+		Json::Value v_rTag(Json::arrayValue);
+		ValueVector TagVector = row[ROOMLABEL].asValueVector();
+		for (auto& tv : TagVector)
+		{
+			v_rTag.append(tv.asInt());
+		}
+		v_map[ROOMLABEL] = v_rTag;
+
+		object[SROOMNUMSDATA] = v_map;
+	}
+
+	return object.toStyledString();
+	//log("out: %s", out);
+}
 string senJsonParser::encode_WaitingData()		//这里换成message防止直接使用全局变量information造成未知的bug
 {
 	Json::Value object(Json::objectValue);

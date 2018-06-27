@@ -16,6 +16,7 @@ using namespace std;
 #define WAITTIME 100		//发送失败后等待时间
 #define TIMEOUTERROR 5000	//超时时间
 #define BUFLEN 1024
+#define RECIEVE "recieve"
 
 //mutex rmtx;
 
@@ -37,7 +38,7 @@ public:
 	}
 
 	static Client* getInstance();
-
+	bool recvMessage(char recv[]);
 	BOOL ConnectServer();
 	string recv_Cli();
 	BOOL send_Cli(string sendBuf);

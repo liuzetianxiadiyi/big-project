@@ -3,11 +3,14 @@
 #include "senJsonParser.h"
 #include "sJsonParser.h"
 #include "GameData.h"
-
+#include <string>
+using std::cout;
 Server::Server()
 {
 	addroom = 0;
 	deleted = false;
+	room_nums = 0;
+	thread_end = true;
 	int create = init();
 	//log("create %d", create);
 }
@@ -64,6 +67,45 @@ bool Server::init()		//如果init返回False，用return退出程序
 	return TRUE;
 }
 
+bool Server::sSend(string sendBuf,SocketWithFlag client,char recvBuf[])
+{
+	if (SOCKET_ERROR == send(client.client, sendBuf.c_str(), sendBuf.length(), 0))
+	{
+		client.isDeleted = true;
+		cout << "send error for " <<sendBuf<< endl;
+		return false;
+	}
+	while (true)
+	{
+		if (SOCKET_ERROR == recv(client.client, recvBuf, BUFLEN, 0))
+		{
+			//cout << "in recieve!" << endl;
+			continue;
+		}
+		else
+		{
+			if (string(recvBuf) == string(RECIEVE))
+			{
+				cout << "client return!" << endl;
+				return true;
+			}
+			cout << "message error" << endl;
+			return false;
+		}
+	}
+}
+
+bool Server::sRecv(SocketWithFlag client)
+{
+	if (SOCKET_ERROR == send(client.client, RECIEVE, sizeof(RECIEVE), 0))
+	{
+		client.isDeleted = true;
+		cout << "send error for recieve" << endl;
+		return false;
+	}
+	return true;
+}
+
 BOOL Server::AcceptClients()
 {
 	sockaddr_in addrClient;
@@ -78,21 +120,24 @@ BOOL Server::AcceptClients()
 		sClient = accept(sServer, (sockaddr *)&addrClient, &addrClientLen);
 		if (INVALID_SOCKET != sClient)
 		{
-			//printf("connect %s\n", inet_ntoa(addrClient.sin_addr));
-			waitingLock.lock();
-			wClients.push_back(sClient);
+			printf("connect %s\n", inet_ntoa(addrClient.sin_addr));
+			waitingDataLock.lock();
 
-			senJsonParser Json = senJsonParser(GameData::sWaitngData(addroom, vLabel, deleted, dLabel));
-			waitingLock.unlock();
-			string sendBuf = Json.encode_WaitingData();
-			cout << sendBuf << endl;
-			if (SOCKET_ERROR == send(sClient, sendBuf.c_str(), sendBuf.length(), 0))
+			senJsonParser Json = senJsonParser(GameData::RoomNumsData(room_nums, roomTag));
+			waitingDataLock.unlock();
+			string sendBuf = Json.encode_RoonNums();
+			cout <<"first sendBuf=" <<sendBuf << endl;
+			char recvBuf[BUFLEN];
+			ZeroMemory(recvBuf,sizeof(recvBuf));
+			if (sSend(sendBuf, SocketWithFlag(sClient, false),recvBuf))
 			{
-				printf("send waiting data false for %s\n", inet_ntoa(addrClient.sin_addr));
+				wVectorLock.lock();
+				wClients.push_back(SocketWithFlag(sClient, false));
+				wVectorLock.unlock();
+				printf("send success\n");
 			}
 		}
-		//printf("end\n");
-		//Sleep(TIME_LAG);
+		Sleep(TIME_LAG);
 	}
 	//++num_Clients;
 	return TRUE;
@@ -103,21 +148,21 @@ void Server::EnterGame_Data_Thread()
 	while (true)
 	{
 		//rmtx.lock();
-
 		char recvBuf[BUFLEN];
-		vector < unordered_map<int, SOCKET>::iterator> deleteds;
+		char recvBuf2[BUFLEN];
 		OwnerLock.lock();
-		for (unordered_map<int, SOCKET>::iterator it = rOwner.begin();it!=rOwner.end();++it)
+		for (auto it = rOwner.begin(); it != rOwner.end(); ++it)
 		{
 			ZeroMemory(recvBuf, sizeof(recvBuf));
+			ZeroMemory(recvBuf2, sizeof(recvBuf2));
 			//if recieve message,according to the messge put client in waitingvector or gamevector respectively
 			//and then erase them in roomvector
-			if (SOCKET_ERROR != recv(it->second, recvBuf, BUFLEN, 0))
+			if (SOCKET_ERROR != recv(it->second.client, recvBuf, BUFLEN, 0))
 			{
 				RoomLock.lock();
 				for (auto rc : rClients[it->first])
 				{
-					if (SOCKET_ERROR == send(rc, recvBuf, sizeof(recvBuf), 0))
+					if (!sSend(recvBuf,rc, recvBuf2))
 					{
 						printf("send enter data false for %d\n", rc);
 					}
@@ -133,42 +178,59 @@ void Server::EnterGame_Data_Thread()
 				}
 				else
 				{
-					waitingLock.lock();
+					waitingDataLock.lock();
+					deleted = true;
+					dLabel.push_back(MyValue(it->first));
+					wVectorLock.lock();
 					wClients.insert(wClients.end(), rClients[it->first].begin(), rClients[it->first].end());
-					waitingLock.unlock();
+					wVectorLock.unlock();
+					waitingDataLock.unlock();
 				}
 				rClients[it->first].clear();
 				RoomLock.unlock();
-				deleteds.push_back(it);
+				it->second.isDeleted = true;
 			}
 		}
-		for (auto d : deleteds)
+		for (auto it = rOwner.begin(); it != rOwner.end(); ++it)
 		{
-			rOwner.erase(d);
+			if (it->second.isDeleted)
+			{
+				rOwner.erase(it--);
+			}
 		}
 
 		OwnerLock.unlock();
+
+		Sleep(TIME_LAG);
 	}
 }
 
 void Server::RoomNums_Data_Thread()
 {
+	cout << "in RoomNumsData" << endl;
 	while (true)
 	{
 		//added room label vector
 		ValueVector PlayerName;
 		char recvBuf[BUFLEN];
-		vector<SOCKET>::iterator it;
-		vector<vector<SOCKET>::iterator> deleteds;
-		waitingLock.lock();
-		addroom = 0;
-		for (it = wClients.begin();it!= wClients.end();++it)
+		wVectorLock.lock();
+		waitingDataLock.lock();
+		senJsonParser eJson = senJsonParser(GameData::sWaitngData(addroom, vLabel, deleted, dLabel));
+		waitingDataLock.unlock();
+		string sendBuf = eJson.encode_WaitingData();
+		for (auto it = wClients.begin(); it != wClients.end(); ++it)
 		{
 			ZeroMemory(recvBuf, sizeof(recvBuf));
-			if (SOCKET_ERROR != recv(*it, recvBuf, BUFLEN, 0))
+			if (sSend(sendBuf,*it,recvBuf))
 			{
-				recvBuf[BUFLEN] = '\0';
+				cout << "client return recieve" << endl;
+				continue;
+			}
+			else
+			{
+				cout << "in RoomNumsData recv succsses " << "message :" << recvBuf << endl;
 				sJsonParser json = sJsonParser(recvBuf);
+
 				json.decode_WaitingData();
 
 				string pName = json.getRow()[PLAYERNAME].asString();
@@ -197,41 +259,75 @@ void Server::RoomNums_Data_Thread()
 					{
 						PlayerName.push_back(MyValue(s));
 					}
-					senJsonParser enJson = senJsonParser( GameData::sRoomData(PlayerName));
+					senJsonParser enJson = senJsonParser(GameData::sRoomData(PlayerName));
 					string sendBuf = enJson.encode_RoomData();
-					if (SOCKET_ERROR == send(*it, sendBuf.c_str(), sendBuf.length(), 0))
+					//传输已有玩家姓名
+					ZeroMemory(recvBuf, sizeof(recvBuf));
+					if (!sSend(sendBuf, *it,recvBuf))
 					{
-						printf("send room data false for %d\n",*it);
+						printf("send room data false \n");
 					}
 					RoomLock.lock();
+					//传输新加入玩家姓名
 					for (auto& c : rClients[rLabel])
 					{
-						senJsonParser _enJson = senJsonParser(GameData::toValueVector(MyValue(GameData::toValueMap(make_pair(ADDROOM,MyValue(pName))))));
+						senJsonParser _enJson = senJsonParser(GameData::toValueVector(MyValue(GameData::toValueMap(make_pair(ADDROOM, MyValue(pName))))));
 						string _sendBuf = _enJson.encode_aRoomData();
-						if (SOCKET_ERROR == send(*it, _sendBuf.c_str(), _sendBuf.length(), 0))
+						ZeroMemory(recvBuf, sizeof(recvBuf));
+						if (!sSend(_sendBuf, *it,recvBuf))
 						{
-							printf("send room data false for %d\n", *it);
+							printf("send room data false\n");
 						}
 					}
 					rClients[rLabel].push_back(*it);
 					RoomLock.unlock();
 				}
 				rClient_names[rLabel].push_back(pName);
-				deleteds.push_back(it);
+				it->isDeleted = true;
+			}
+		}
+		for (auto it = wClients.begin(); it != wClients.end();)
+		{
+			if (it->isDeleted)
+			{
+				it = wClients.erase(it);
+			}
+			else
+			{
+				++it;
 			}
 		}
 
-		for (auto d : deleteds)
+		addroom = 0;
+		//cout << "in RoomNumsData waiting lock" << endl;
+		for (auto it = wClients.begin(); it != wClients.end(); ++it)
 		{
-			wClients.erase(it);
+
 		}
 
-		waitingLock.unlock();
+		waitingDataLock.lock();
+		room_nums += addroom;
+		waitingDataLock.unlock();
+		for (auto it = wClients.begin(); it != wClients.end(); ++it)
+		{
+			if (it->isDeleted)
+			{
+				wClients.erase(it--);
+			}
+		}
+		wVectorLock.unlock();
+		
+		Sleep(TIME_LAG);
+
 	}
 }
 
 void Server::GameData_Thread()
 {
+	char recvBuf[BUFLEN];
+	ZeroMemory(recvBuf, sizeof(recvBuf));
+	char recvBuf2[BUFLEN];
+	ZeroMemory(recvBuf2, sizeof(recvBuf2));
 	while (true)
 	{
 		GameLock.lock();
@@ -240,15 +336,18 @@ void Server::GameData_Thread()
 			string information;
 			for (auto c : cs)
 			{
-				char recvBuf[BUFLEN];
 				ZeroMemory(recvBuf, sizeof(recvBuf));
-				if (SOCKET_ERROR != recv(c, recvBuf, sizeof(recvBuf), 0))
+				if (SOCKET_ERROR != recv(c.client, recvBuf, sizeof(recvBuf), 0))
 				{
 					for (auto _c : cs)
 					{
-						if (_c != c)
+						if (_c.client != c.client)
 						{
-							send(_c, recvBuf, BUFLEN, 0);
+							if (SOCKET_ERROR == send(_c.client, recvBuf, BUFLEN, 0))
+							{
+								printf("GameData send false for %d\n", _c.client);
+								_c.isDeleted = true;
+							}
 						}
 					}
 				}
@@ -256,35 +355,13 @@ void Server::GameData_Thread()
 		}
 		GameLock.unlock();
 		//rmtx.unlock();
+		Sleep(TIME_LAG);
 	}
 
 }
 
 //发送数据,超出五秒则不再发送
-BOOL Server::send_Ser(SOCKET sClient, string message)
-{
-	clock_t start = clock();
 
-	while (true)
-	{
-		//char* sendBuf = const_cast<char*>(information.getSendBuf().c_str());
-		if (SOCKET_ERROR == send(sClient, message.c_str(), message.length(), 0))
-		{
-			//closesocket(sServer);
-			//closesocket(sClient);
-			//WSACleanup();
-			if (clock() - start > TIMEOUTERROR)
-			{
-				break;
-			}
-			Sleep(WAITTIME);
-			continue;
-		}
-		break;
-	}
-
-	return TRUE;
-}
 
 Server::~Server()
 {

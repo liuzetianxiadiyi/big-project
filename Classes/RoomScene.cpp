@@ -45,7 +45,7 @@ bool RoomScene::init()
 		"StartGameSelected.png",
 		CC_CALLBACK_1(RoomScene::menuStartGameCallback, this)
 	);
-	StartGameItem->setPosition();
+	StartGameItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2 + 60));
 	UserDefault* defaults = UserDefault::getInstance();
 	if (!defaults->getBoolForKey(OWNER))
 	{
@@ -57,15 +57,15 @@ bool RoomScene::init()
 		"DeleteRoomSelected.png",
 		CC_CALLBACK_1(RoomScene::menuDeleteRoomCallback, this)
 	);
-	DeleteRoomItem->setPosition();
-	auto CountryItem = MenuItemImage::create(
-		"CountryNormal.png",
-		"CountrySelected.png",
-		CC_CALLBACK_1(RoomScene::CountryButtonCallback, this)
-	);
-	CountryItem->setPosition();
-
-	auto menu = Menu::create(StartGameItem, DeleteRoomItem, CountryItem);
+	DeleteRoomItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2));
+	//auto CountryItem = MenuItemImage::create(
+	//	"CountryNormal.png",
+	//	"CountrySelected.png",
+	//	CC_CALLBACK_1(RoomScene::CountryButtonCallback, this)
+	//);
+	/*CountryItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2 - 60));
+*/
+	auto menu = Menu::create(StartGameItem, DeleteRoomItem);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
@@ -75,60 +75,60 @@ bool RoomScene::init()
 	this->addChild(Accont_back, 0);
 	
 	//选国家
-	auto china = Button::create("china.png", "china.png", "chinaForbid.png");
-	china->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f));
-	show.push_back(china);
-	china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
-	this->addChild(china, 10);
+	//auto china = Button::create("china.png", "china.png", "chinaForbid.png");
+	//china->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f));
+	//show.push_back(china);
+	//china->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
+	//this->addChild(china, 10);
 
-	//国家button的间隔
-	float country_interval = china->getContentSize().height/10;
-	
-	auto confirm = Button::create("confirm.png");
-	confirm->setPosition(Vec2(china->getPosition().x+10+china->getContentSize().width,china->getPosition().y));
-	confirm->addTouchEventListener(CC_CALLBACK_2(RoomScene::confirmCallBack, this));
-	this->addChild(confirm);
-	
-	auto us = Button::create("america.png","america.png","americaForbid.png");
-	us->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval - china->getContentSize().height));
-	us->setTag(2);
-	hides.push_back(us);
-	us->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
-	this->addChild(us, 10);
+	////国家button的间隔
+	//float country_interval = china->getContentSize().height/10;
+	//
+	//auto confirm = Button::create("confirm.png");
+	//confirm->setPosition(Vec2(china->getPosition().x+10+china->getContentSize().width,china->getPosition().y));
+	//confirm->addTouchEventListener(CC_CALLBACK_2(RoomScene::confirmCallBack, this));
+	//this->addChild(confirm);
+	//
+	//auto us = Button::create("america.png","america.png","americaForbid.png");
+	//us->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval - china->getContentSize().height));
+	//us->setTag(2);
+	//hides.push_back(us);
+	//us->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
+	//this->addChild(us, 10);
 
-	auto japan = Button::create("japan.png", "japan.png", "japanForbid.png");
-	japan->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f - country_interval * 2 - china->getContentSize().height * 2));
-	japan->setTag(3);
-	hides.push_back(japan);
-	japan->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
-	this->addChild(japan, 10);
+	//auto japan = Button::create("japan.png", "japan.png", "japanForbid.png");
+	//japan->setPosition(Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.0f - country_interval * 2 - china->getContentSize().height * 2));
+	//japan->setTag(3);
+	//hides.push_back(japan);
+	//japan->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
+	//this->addChild(japan, 10);
 
-	auto russia = Button::create("russia.png", "russia.png", "russiaForbid.png");
-	russia->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval * 3 - china->getContentSize().height * 3));
-	hides.push_back(russia);
-	russia->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
-	this->addChild(russia, 10);
+	//auto russia = Button::create("russia.png", "russia.png", "russiaForbid.png");
+	//russia->setPosition(Vec2(visibleSize.width / 2.0f , visibleSize.height / 2.0f - country_interval * 3 - china->getContentSize().height * 3));
+	//hides.push_back(russia);
+	//russia->addTouchEventListener(CC_CALLBACK_2(RoomScene::countryCallBack, this));
+	//this->addChild(russia, 10);
 
-	//初始隐藏
-	for (auto &country : hides)
-	{		
-		country->runAction(Hide::create());		
-	}
-	
-	
-	auto sendsprite = Sprite::create("send.png");
-	if (sendsprite == nullptr)
-	{
-		problemLoading("'send.png'");
-	}
-	else
-	{
-		// position the sprite on the center of the screen
-		sendsprite->setPosition(Vec2(visibleSize.width - 4 * (sendsprite->getContentSize().width), 2 * sendsprite->getContentSize().height-10));
+	////初始隐藏
+	//for (auto &country : hides)
+	//{		
+	//	country->runAction(Hide::create());		
+	//}
+	//
+	//
+	//auto sendsprite = Sprite::create("send.png");
+	//if (sendsprite == nullptr)
+	//{
+	//	problemLoading("'send.png'");
+	//}
+	//else
+	//{
+	//	// position the sprite on the center of the screen
+	//	sendsprite->setPosition(Vec2(visibleSize.width - 4 * (sendsprite->getContentSize().width), 2 * sendsprite->getContentSize().height-10));
 
-		// add the sprite as a child to this layer
-		this->addChild(sendsprite, 0);
-	}
+	//	// add the sprite as a child to this layer
+	//	this->addChild(sendsprite, 0);
+	//}
 
 	return true;
 }

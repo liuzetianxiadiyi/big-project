@@ -35,7 +35,6 @@ private:
 	vector<MyTile> openTile;
 	//string sendBuf;
 	string recvbuf;
-	static Client* client;
 	mutex mtx;
 
 	Vec2 BeginLocation;
@@ -65,12 +64,12 @@ public:
 	void onChangedSlider2(Ref* pSender, Slider::EventType type);
 
 	//friend class Tile;
-	vector<Position> FindWay(Position start, Position goal);
+	vector<Vec2> FindWay(Vec2 start,Vec2 goal);
 	bool ColsCheck(Vec2 pos);
 	bool ConstructionCheck(Vec2 pos);
 
-	void SendDataThread();
-	void RecvDataThread();
+	void SendDataThread(float td);
+	void RecvDataThread(float td);
 	void updateMilitary(ValueVector& valuevector,int type);
 	void updateConstruction(ValueVector& valuevector, int type);
 

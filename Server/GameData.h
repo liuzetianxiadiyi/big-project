@@ -19,6 +19,7 @@
 #define MEMBER "member"		//成员
 
 #define ROOMSCENEDATA "RoomSceneData"		//Room 界面发送数据标识
+#define SROOMNUMSDATA "sRoomNumsData"
 #define ISSTART "isStart" 
 
 #define SENTERROOMDATA "sEnterRoomData"		//进入游戏
@@ -85,6 +86,7 @@ public:
 
 	static pair<string, MyValue> toPair(const char* order, MyValue value);
 
+	static ValueVector RoomNumsData(int roomnums, ValueVector roomTag);
 	static ValueVector WaitingData(bool Add_Value, int Room_Value, string player_Value);
 
 	static ValueVector sWaitngData(int addroom, ValueVector rLable, bool deleted, ValueVector rdeleted);

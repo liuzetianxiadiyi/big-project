@@ -41,6 +41,17 @@ pair<string, MyValue> GameData::toPair(const char * order, MyValue value)
 	return make_pair(string(order), value);
 }
 
+ValueVector GameData::RoomNumsData(int roomnums, ValueVector roomTag)
+{
+	pair<string, MyValue> temp_pair0 = make_pair(ROOMNUMS, MyValue(roomnums));
+	pair<string, MyValue> temp_pair1 = make_pair(ROOMLABEL, MyValue(roomTag));
+	ValueMap temp_map = GameData::toValueMap({ temp_pair0,temp_pair1 });
+	pair<string, MyValue> temp_pair = make_pair(SROOMNUMSDATA, MyValue(temp_map));
+	ValueVector plistdata = GameData::toValueVector(MyValue(GameData::toValueMap(temp_pair)));
+
+	return plistdata;
+}
+
 ValueVector GameData::WaitingData(bool Add_Value, int Room_Value, string Player_Value)
 {
 	pair<string, MyValue> temp_pair0 = make_pair(ADDROOM, MyValue(Add_Value));
