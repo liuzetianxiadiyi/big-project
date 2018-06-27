@@ -3,10 +3,14 @@
 
 #include "SystemHeader.h"
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
+
 USING_NS_CC;
+
 class Setting : public cocos2d::Layer
 {
 public:
+	static bool isEffect;
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
@@ -22,4 +26,4 @@ public:
 	CREATE_FUNC(Setting);
 };
 
-#endif#pragma once
+#endif //_Setting_SCENE_H__

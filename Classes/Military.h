@@ -76,10 +76,7 @@ public:
 	{
 		return health_point;
 	}
-
-
-	static Military* create(const string filename);
-
+	//static Military* create(const string filename);
 	void init(int _health_point, bool _dead, bool _Selected, Vec2 _position,Vec2 _destination);
 	/*static Military* create(string & filename);
 	static Military* create(const std::string & filename, const Rect & rect);

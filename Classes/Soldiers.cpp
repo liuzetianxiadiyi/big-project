@@ -49,8 +49,6 @@ Dog* Dog::create(const string filename)
 	if (sprite->initWithFile(filename))
 	{
 		sprite->autorelease();
-
-		sprite->init( 100, false, false, Vec2(300, 300), Vec2(0, 0));
 		createBar(sprite);
 		return sprite;
 	}

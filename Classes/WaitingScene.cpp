@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "WaitingScene.h"
-#include "GameScene.h"
+#include "RoomScene.h"
 #include "GameData.h"
 #include "Client.h"
 #include "JsonParser.h"
@@ -16,7 +16,7 @@
 int WaitingScene::SelectedRoomTag = -1;
 bool WaitingScene::replace = false;
 mutex mtx;
-using std::string;
+
 Scene* WaitingScene::createScene()
 {
 	auto scene = Scene::create();
@@ -31,55 +31,25 @@ bool WaitingScene::init()
 	{
 		return false;
 	}
-	log("WaitingScene init");
+
 	replace = false;
-	room_nums = 0;
+	room_nums = 10;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	//enJsonParser* ejson = enJsonParser::createWithArray(GameData::WaitingData(true, 1, "lala"));
-	//string message = ejson->encode_WaitingRoomData();
-	//log("message %s", message.c_str());
-	Client* client = Client::getInstance();
-	string information = client->recv_Cli();
-	JsonParser* json = JsonParser::createWithC_str(information.c_str());
-	log("decode");
-	ValueMap nums = json->decode_RoomNums();
-	log("juggle");
-	log("hava nums data");
-	int roomNums = nums[ROOMNUMS].asInt();
-	log("roomNums=%d", roomNums);
-	ValueVector RoomTag = nums[ROOMLABEL].asValueVector();
-	log("roomSize = %d", RoomTag.size());
-	for (int i = 0; i < room_nums; ++i)
-	{
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		Vec2 origin = Director::getInstance()->getVisibleOrigin();
-		auto roomButton = Button::create("room.png", "roomHighlight.png");
-		//美工
-		roomButton->setScale9Enabled(true);
-		roomButton->setTitleText(to_string(RoomTag[i].asInt()));
-		roomButton->setTitleFontSize(20);
-		roomButton->setContentSize(Size(100, 20));
-		roomButton->setPosition(Vec2(visibleSize.width - 300, 50 + i * 25));
+	thread roomThread([&] {this->roomDataThread(); });
+	roomThread.detach();
 
-		roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
-
-		roomButton->setTag(i);
-		this->addChild(roomButton, 2);
-	}
-	
-	//图片需要改回来
 	auto EnterItem = MenuItemImage::create(
-		"ReturnNormal.png",
-		"ReturnSelected.png",
+		"EnterNormal.png",
+		"EnterSelected.png",
 		CC_CALLBACK_1(WaitingScene::menuEnterCallback, this)
 	);
 	EnterItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2 + 60));	//美工了解一下
 
 	auto createRoomItem = MenuItemImage::create(
-		"ReturnNormal.png",
-		"ReturnSelected.png",
+		"createRoomNormal.png",
+		"createRoomSelected.png",
 		CC_CALLBACK_1(WaitingScene::createRoomCallback, this)
 	);
 	createRoomItem->setPosition(Vec2(125 + visibleSize.width / 2, visibleSize.height / 2));
@@ -130,169 +100,177 @@ bool WaitingScene::init()
 	//	roomButton->setTag(i);
 	//	this->addChild(roomButton, 2);
 	//}
+	for (int i = 0; i < room_nums; ++i)
+	{
+		auto visibleSize = Director::getInstance()->getVisibleSize();
+		Vec2 origin = Director::getInstance()->getVisibleOrigin();
+		auto roomButton = Button::create("room.png", "roomHighlight.png");
+		//美工
+		roomButton->setScale9Enabled(true);
+		roomButton->setTitleText(to_string(i));
+		roomButton->setTitleFontSize(24);
+		roomButton->setContentSize(Size(100, 20));
+		roomButton->setPosition(Vec2(visibleSize.width - 300, 50 + i * 25));
+
+		roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
+
+		roomButton->setTag(i);
+		this->addChild(roomButton, 2);
+	}
 
 	return true;
 }
 
-void WaitingScene::onEnterTransitionDidFinish()
-{
-	log("WaitingScene::onEnterTransitionDidFinish");
-	thread roomThread([&] {this->roomDataThread(); });
-	roomThread.detach();
-}
 void WaitingScene::roomDataThread()
 {
-	mtx.lock();
-	log("in Thread");
-	while (!replace)
-	{
-		Client* client = Client::getInstance();
-		string information;
-		information = client->recv_Cli();
-		//log("information = %s", information);
-		if (information != "")
-		{
-			JsonParser* json = JsonParser::createWithC_str(information.c_str());
-			ValueMap DataMap = json->decode_WaitingData();
-			if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
-			{
-				ValueMap Data = DataMap[SWAITINGSCENEDATA].asValueMap();
+	//mtx.lock();
+	//while (!replace)
+	//{
+	//	Client* client = Client::getInstance();
+	//	string information;
+	//	if ((information = client->recv_Cli()) != "")
+	//	{
+	//		log("information=%s", information);
+	//		JsonParser* json = JsonParser::createWithC_str(information.c_str());
+	//		ValueMap DataMap = json->decode_WaitingData();
+	//		if (DataMap.find(SWAITINGSCENEDATA) != DataMap.end())
+	//		{
+	//			ValueMap Data = DataMap[SWAITINGSCENEDATA].asValueMap();
 
-				room_nums = Data[ADDROOM].asInt();
-				log("roomNums=%d", room_nums);
+	//			room_nums = Data[ADDROOM].asInt();
+	//			log("roomNums=%d", room_nums);
 
-				ValueVector room_tag = Data[ROOMLABEL].asValueVector();
+	//			ValueVector room_tag = Data[ROOMLABEL].asValueVector();
 
-				
-				for (int i = 0; i < room_nums; ++i)
-				{
-					auto visibleSize = Director::getInstance()->getVisibleSize();
-					Vec2 origin = Director::getInstance()->getVisibleOrigin();
-					auto roomButton = Button::create("room.png", "roomHighlight.png");
-					//美工
-					roomButton->setScale9Enabled(true);
-					roomButton->setTitleText(to_string(i));
-					roomButton->setTitleFontSize(20);
-					roomButton->setContentSize(Size(100, 20));
-					roomButton->setPosition(Vec2(visibleSize.width - 300, 50 + i * 25));
+	//			
+	//			for (int i = 0; i < room_nums; ++i)
+	//			{
+	//				auto visibleSize = Director::getInstance()->getVisibleSize();
+	//				Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	//				auto roomButton = Button::create("room.png", "roomHighlight.png");
+	//				//美工
+	//				roomButton->setScale9Enabled(true);
+	//				roomButton->setTitleText(to_string(i));
+	//				roomButton->setTitleFontSize(20);
+	//				roomButton->setContentSize(Size(100, 20));
+	//				roomButton->setPosition(Vec2(visibleSize.width - 300, 50 + i * 25));
 
-					roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
+	//				roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
 
-					roomButton->setTag(i);
-					this->addChild(roomButton, 2);
-				}
+	//				roomButton->setTag(i);
+	//				this->addChild(roomButton, 2);
+	//			}
 
-				bool isDeleted = Data[DELETED].asBool();
+	//			bool isDeleted = Data[DELETED].asBool();
 
-				if (isDeleted)
-				{
-					ValueVector DeletedRoom = Data[DELETEDROOM].asValueVector();
-					for (int i = 0; i < DeletedRoom.size(); ++i)
-					{
-						removeChildByTag(DeletedRoom[i].asInt());
-					}
-				}
+	//			if (isDeleted)
+	//			{
+	//				ValueVector DeletedRoom = Data[DELETEDROOM].asValueVector();
+	//				for (int i = 0; i < DeletedRoom.size(); ++i)
+	//				{
+	//					removeChildByTag(DeletedRoom[i].asInt());
+	//				}
+	//			}
 
-				for (int i = 0; i < room_nums; ++i)
-				{
-					auto visibleSize = Director::getInstance()->getVisibleSize();
-					Vec2 origin = Director::getInstance()->getVisibleOrigin();
-					auto roomButton = Button::create("room.png", "roomHighlight.png");
-					//美工
-					roomButton->setScale9Enabled(true);
-					roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
-					roomButton->setTitleFontSize(35);
-					roomButton->setContentSize(Size(100, 20));
-					roomButton->setPosition(Vec2(visibleSize.width - 100, 50));
+	//			for (int i = 0; i < room_nums; ++i)
+	//			{
+	//				auto visibleSize = Director::getInstance()->getVisibleSize();
+	//				Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	//				auto roomButton = Button::create("room.png", "roomHighlight.png");
+	//				//美工
+	//				roomButton->setScale9Enabled(true);
+	//				roomButton->setTitleText(to_string(room_tag.at(i).asInt()));
+	//				roomButton->setTitleFontSize(35);
+	//				roomButton->setContentSize(Size(100, 20));
+	//				roomButton->setPosition(Vec2(visibleSize.width - 100, 50));
 
-					roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
+	//				roomButton->addClickEventListener(CC_CALLBACK_1(WaitingScene::clickRoomcallback, this));
 
-					roomButton->setTag(room_tag.at(i).asInt());
-					this->addChild(roomButton, 2);
-				}
-			}
+	//				roomButton->setTag(i);
+	//				this->addChild(roomButton, 2);
+	//			}
+	//		}
 
-		}
-		log("sleep");
-		/*Sleep(2 * TIME_LAG);*/
-	}
-	mtx.unlock();
+	//	}
+	//	Sleep(2 * TIME_LAG);
+	//}
+	//mtx.unlock();
 }
 
 void WaitingScene::menuEnterCallback(Ref* pSender)
 {
-	if (WaitingScene::SelectedRoomTags != -1)
-	{
-		UserDefault* defaults = UserDefault::getInstance();
-		defaults->setBoolForKey(OWNER, false);
-		//send room_tag and player of this room message
-		ValueVector plistdata = GameData::WaitingData(false, WaitingScene::SelectedRoomTags, defaults->getStringForKey(PLAYERNAME));
+	//if (WaitingScene::SelectedRoomTags != -1)
+	//{
+	//	UserDefault* defaults = UserDefault::getInstance();
+	//	defaults->setBoolForKey(OWNER, false);
+	//	//send room_tag and player of this room message
+	//	ValueVector plistdata = GameData::WaitingData(false, WaitingScene::SelectedRoomTags, defaults->getStringForKey(PLAYERNAME));
 
-		mtx.lock();
-		replace = true;
+	//	mtx.lock();
+	//	replace = true;
 
-		enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-		string sendbuf = enJson->encode_WaitingRoomData();
-		Client* client = Client::getInstance();
-		client->send_Cli(sendbuf);
+	//	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
+	//	string sendbuf = enJson->encode_WaitingRoomData();
+	//	Client* client = Client::getInstance();
+	//	client->send_Cli(sendbuf);
 
-		mtx.unlock();
-		//Scene changes
-		auto scene = GameScene::createScene();
-		auto reScene = TransitionJumpZoom::create(1.0f, scene);
-		Director::getInstance()->replaceScene(reScene);
-		//if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
-		//{
-		//	SimpleAudioEngine::getInstance()->playEffect("filename");
-		//}
-	}
+	//	mtx.unlock();
+	//Scene changes
+	auto scene = RoomScene::createScene();
+	auto reScene = TransitionJumpZoom::create(1.0f, scene);
+	Director::getInstance()->replaceScene(reScene);
+	//if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
+	//{
+	//	SimpleAudioEngine::getInstance()->playEffect("filename");
+	//}
+	//}
 }
 
 void WaitingScene::createRoomCallback(Ref* pSender)
 {
-	mtx.lock();
+	//mtx.lock();
 
-	replace = true;
+	//replace = true;
 
-	mtx.unlock();
+	//mtx.unlock();
 
-	UserDefault* defaults = UserDefault::getInstance();
-	defaults->setBoolForKey(OWNER, true);
-	//send room_tag and player of this room message
+	//UserDefault* defaults = UserDefault::getInstance();
+	//defaults->setBoolForKey(OWNER, true);
+	////send room_tag and player of this room message
 
-	ValueVector plistdata = GameData::WaitingData(true, 2, defaults->getStringForKey(PLAYERNAME));
+	//ValueVector plistdata = GameData::WaitingData(true, WaitingScene::SelectedRoomTags, defaults->getStringForKey(PLAYERNAME));
 
-	enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
-	string sendbuf = enJson->encode_WaitingRoomData();
+	//enJsonParser* enJson = enJsonParser::createWithArray(plistdata);
+	//string sendbuf = enJson->encode_WaitingRoomData();
 
-	mtx.lock();
+	//mtx.lock();
 
-	Client* client = Client::getInstance();
-	client->send_Cli(sendbuf);
+	//Client* client = Client::getInstance();
+	//client->send_Cli(sendbuf);
 
-	mtx.unlock();
+	//mtx.unlock();
 
-	auto scene = GameScene::createScene();
+	auto scene = RoomScene::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->replaceScene(reScene);
 	/*if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
 	{
-		SimpleAudioEngine::getInstance()->playEffect("filename");
+	SimpleAudioEngine::getInstance()->playEffect("filename");
 	}*/
 }
 
 void WaitingScene::menuReturnCallback(Ref* pSender)
 {
-	mtx.lock();
+	/*mtx.lock();
 	replace = true;
-	mtx.unlock();
+	mtx.unlock();*/
 
 	auto scene = HelloWorld::createScene();
 	auto reScene = TransitionJumpZoom::create(1.0f, scene);
 	Director::getInstance()->replaceScene(reScene);
 	/*if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
 	{
-		SimpleAudioEngine::getInstance()->playEffect("filename");
+	SimpleAudioEngine::getInstance()->playEffect("filename");
 	}*/
 }
 

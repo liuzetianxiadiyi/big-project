@@ -1,20 +1,5 @@
 ﻿#include "Military.h"
 #include"soldiers.h"
-Military* Military::create(const string filename)
-{
-	Military* sprite = new Military();
-
-	if (sprite->initWithFile(filename))
-	{
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		Vec2 origin = Director::getInstance()->getVisibleOrigin();
-		sprite->autorelease();
-		return sprite;
-	}
-
-	CC_SAFE_DELETE(sprite);
-	return nullptr;
-}
 
 void Military::init(int _health_point, bool _dead, bool _Selected, Vec2 _position, Vec2 _destination)
 {
@@ -59,7 +44,7 @@ void Military::createBar(Military * a)
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
 	hp->setPosition(Vec2(32, 67));
-	hp->setPercentage((a->health_point / a->max_hp) * 100);
+	hp->setPercentage(100);
 }
 void Military::attack(Military* sprite)
 {

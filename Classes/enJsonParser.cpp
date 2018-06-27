@@ -1,4 +1,4 @@
-#include "enJsonParser.h"
+ï»¿#include "enJsonParser.h"
 #include "GameData.h"
 
 USING_NS_CC;
@@ -21,66 +21,66 @@ bool enJsonParser::initWithArray(ValueVector pListData)
 	listData = pListData;
 	return true;
 }
-
-/*void enJsonParser::encode(Information message,string order)		//ÕâÀï»»³Émessage·ÀÖ¹Ö±½ÓÊ¹ÓÃÈ«¾Ö±äÁ¿informationÔì³ÉÎ´ÖªµÄbug
-{
-	rapidjson::Document document;
-	document.SetObject();		//³õÊ¼»¯document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
-
-	rapidjson::Value array(rapidjson::kArrayType);
-
-	for (auto& v : listData)
-	{
-		ValueMap temp = v.asValueMap();				//ÕâÀïµÄv¾ÍÊÇmap£¬ValueÊÇÒ»ÖÖ°ü×°Àà£¬¿ÉÒÔ°ÑºÜ¶àÊı¾İÀàĞÍ°ü×°³ÉÀà
-
-		rapidjson::Value object(rapidjson::kObjectType);
-		if (order == ENTERROOMDATA)
-		{
-			ValueMap row = temp[ENTERROOMDATA].asValueMap();
-			rapidjson::Value v_map(rapidjson::kObjectType);
-
-			rapidjson::Value v_add;
-			v_add.SetBool(row[ADDROOM].asBool());
-			v_map.AddMember(ADDROOM, v_add, allocator);
-
-			rapidjson::Value v_rTag;
-			v_rTag.SetInt(row[ROOMLABEL].asInt());
-			v_map.AddMember(ROOMLABEL, v_rTag, allocator);
-
-			rapidjson::Value v_name;
-			v_name.SetString(row[PLAYERNAME].asString().c_str(), allocator);
-			v_map.AddMember(PLAYERNAME, v_name, allocator);
-
-			object.AddMember(SWAITINGSCENEDATA, v_map, allocator);
-		}
-
-		array.PushBack(object, allocator);
-	}
-
-	//document.AddMember("change", true, allocator);
-	document.AddMember("Record", array, allocator);
-
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson:: StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
-
-	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
-	
-	message.setSendBuf(buffer.GetString());
-	//log("out: %s", out);
-}*/
+//
+//void enJsonParser::encode(Information message,string order)		//è¿™é‡Œæ¢æˆmessageé˜²æ­¢ç›´æ¥ä½¿ç”¨å…¨å±€å˜é‡informationé€ æˆæœªçŸ¥çš„bug
+//{
+//	rapidjson::Document document;
+//	document.SetObject();		//åˆå§‹åŒ–document
+//	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//è·å¾—å†…å­˜åˆ†é…å™¨ï¼ŒåŒ…æ‹¬äº†åˆ†é…å’Œé”€æ¯å†…å­˜çš„æ–¹æ³•
+//
+//	rapidjson::Value array(rapidjson::kArrayType);
+//
+//	for (auto& v : listData)
+//	{
+//		ValueMap temp = v.asValueMap();				//è¿™é‡Œçš„vå°±æ˜¯mapï¼ŒValueæ˜¯ä¸€ç§åŒ…è£…ç±»ï¼Œå¯ä»¥æŠŠå¾ˆå¤šæ•°æ®ç±»å‹åŒ…è£…æˆç±»
+//
+//		rapidjson::Value object(rapidjson::kObjectType);
+//		if (order == ENTERROOMDATA)
+//		{
+//			ValueMap row = temp[ENTERROOMDATA].asValueMap();
+//			rapidjson::Value v_map(rapidjson::kObjectType);
+//
+//			rapidjson::Value v_add;
+//			v_add.SetBool(row[ADDROOM].asBool());
+//			v_map.AddMember(ADDROOM, v_add, allocator);
+//
+//			rapidjson::Value v_rTag;
+//			v_rTag.SetInt(row[ROOMLABEL].asInt());
+//			v_map.AddMember(ROOMLABEL, v_rTag, allocator);
+//
+//			rapidjson::Value v_name;
+//			v_name.SetString(row[PLAYERNAME].asString().c_str(), allocator);
+//			v_map.AddMember(PLAYERNAME, v_name, allocator);
+//
+//			object.AddMember(SWAITINGSCENEDATA, v_map, allocator);
+//		}
+//
+//		array.PushBack(object, allocator);
+//	}
+//
+//	//document.AddMember("change", true, allocator);
+//	document.AddMember("Record", array, allocator);
+//
+//	rapidjson::StringBuffer buffer;
+//	rapidjson::Writer < rapidjson:: StringBuffer > writer(buffer);	//å£°æ˜writerå¯¹è±¡ï¼Œå°†æ•°æ®ä¿å­˜åˆ°bufferé‡Œ
+//
+//	document.Accept(writer);	//é€šè¿‡writeå°†æ•°æ®å†™å…¥buffer
+//	
+//	message.setSendBuf(buffer.GetString());
+//	//log("out: %s", out);
+//}
 
 //or return string
 string enJsonParser::encode_WaitingRoomData()
 {
 	rapidjson::Document document;
-	document.SetObject();		//³õÊ¼»¯document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
+	document.SetObject();		//åˆå§‹åŒ–document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//è·å¾—å†…å­˜åˆ†é…å™¨ï¼ŒåŒ…æ‹¬äº†åˆ†é…å’Œé”€æ¯å†…å­˜çš„æ–¹æ³•
 
 	rapidjson::Value v_map(rapidjson::kObjectType);
 	for (auto& v : listData)
 	{
-		ValueMap temp = v.asValueMap();				//ÕâÀïµÄv¾ÍÊÇmap£¬ValueÊÇÒ»ÖÖ°ü×°Àà£¬¿ÉÒÔ°ÑºÜ¶àÊı¾İÀàĞÍ°ü×°³ÉÀà
+		ValueMap temp = v.asValueMap();				//è¿™é‡Œçš„vå°±æ˜¯mapï¼ŒValueæ˜¯ä¸€ç§åŒ…è£…ç±»ï¼Œå¯ä»¥æŠŠå¾ˆå¤šæ•°æ®ç±»å‹åŒ…è£…æˆç±»
 
 		ValueMap row = temp[WAITINGSCENEDATA].asValueMap();
 
@@ -101,9 +101,9 @@ string enJsonParser::encode_WaitingRoomData()
 	document.AddMember(WAITINGSCENEDATA, v_map, allocator);
 
 	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//å£°æ˜writerå¯¹è±¡ï¼Œå°†æ•°æ®ä¿å­˜åˆ°bufferé‡Œ
 
-	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+	document.Accept(writer);	//é€šè¿‡writeå°†æ•°æ®å†™å…¥buffer
 
 	return string(buffer.GetString());
 	//log("out: %s", out);
@@ -112,14 +112,14 @@ string enJsonParser::encode_WaitingRoomData()
 string enJsonParser::encode_EnterGameData()
 {
 	rapidjson::Document document;
-	document.SetObject();		//³õÊ¼»¯document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
+	document.SetObject();		//åˆå§‹åŒ–document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//è·å¾—å†…å­˜åˆ†é…å™¨ï¼ŒåŒ…æ‹¬äº†åˆ†é…å’Œé”€æ¯å†…å­˜çš„æ–¹æ³•
 
 	rapidjson::Value v_map(rapidjson::kObjectType);
 
 	for (auto& v : listData)
 	{
-		ValueMap temp = v.asValueMap();				//ÕâÀïµÄv¾ÍÊÇmap£¬ValueÊÇÒ»ÖÖ°ü×°Àà£¬¿ÉÒÔ°ÑºÜ¶àÊı¾İÀàĞÍ°ü×°³ÉÀà
+		ValueMap temp = v.asValueMap();				//è¿™é‡Œçš„vå°±æ˜¯mapï¼ŒValueæ˜¯ä¸€ç§åŒ…è£…ç±»ï¼Œå¯ä»¥æŠŠå¾ˆå¤šæ•°æ®ç±»å‹åŒ…è£…æˆç±»
 
 		ValueMap row = temp[ROOMSCENEDATA].asValueMap();
 
@@ -132,9 +132,9 @@ string enJsonParser::encode_EnterGameData()
 	document.AddMember(ROOMSCENEDATA, v_map, allocator);
 
 	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//å£°æ˜writerå¯¹è±¡ï¼Œå°†æ•°æ®ä¿å­˜åˆ°bufferé‡Œ
 
-	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+	document.Accept(writer);	//é€šè¿‡writeå°†æ•°æ®å†™å…¥buffer
 
 	return string(buffer.GetString());
 }
@@ -143,15 +143,15 @@ string enJsonParser::encode_MilitaryData()
 {
 	using namespace encode_MilitaryData;
 	rapidjson::Document document;
-	document.SetObject();		//³õÊ¼»¯document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
-	//·ÅÖÃobject
+	document.SetObject();		//åˆå§‹åŒ–document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//è·å¾—å†…å­˜åˆ†é…å™¨ï¼ŒåŒ…æ‹¬äº†åˆ†é…å’Œé”€æ¯å†…å­˜çš„æ–¹æ³•
+	//æ”¾ç½®object
 	rapidjson::Value object(rapidjson::kObjectType);
 
 	for (auto& v : listData)
 	{
 		ValueMap temp = v.asValueMap();
-		//·ÅÖÃÈıÖÖ±øÖÖµÄĞÅÏ¢
+		//æ”¾ç½®ä¸‰ç§å…µç§çš„ä¿¡æ¯
 		ValueMap row = temp[MILITARYDATA].asValueMap();
 
 		ValueVector DogData = row[DOGDATA].asValueVector();
@@ -181,7 +181,7 @@ string enJsonParser::encode_MilitaryData()
 				temp_array = engineer_array;
 				temp_data = EngineerData;
 			}
-			for (auto& dv : temp_data)	//dvÎªValueMap´ú±íÒ»¸ö±øµÄĞÅÏ¢
+			for (auto& dv : temp_data)	//dvä¸ºValueMapä»£è¡¨ä¸€ä¸ªå…µçš„ä¿¡æ¯
 			{
 				ValueMap temp_map = dv.asValueMap();
 				rapidjson::Value json_map(rapidjson::kObjectType);
@@ -237,9 +237,9 @@ string enJsonParser::encode_MilitaryData()
 	document.AddMember(MILITARYDATA, object, allocator);
 
 	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//å£°æ˜writerå¯¹è±¡ï¼Œå°†æ•°æ®ä¿å­˜åˆ°bufferé‡Œ
 
-	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+	document.Accept(writer);	//é€šè¿‡writeå°†æ•°æ®å†™å…¥buffer
 
 	return string(buffer.GetString());
 }
@@ -248,9 +248,9 @@ string enJsonParser::encode_ConstructionData()
 {
 	using namespace encode_ConstructionData;
 	rapidjson::Document document;
-	document.SetObject();		//³õÊ¼»¯document
-	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//»ñµÃÄÚ´æ·ÖÅäÆ÷£¬°üÀ¨ÁË·ÖÅäºÍÏú»ÙÄÚ´æµÄ·½·¨
-																					//·ÅÖÃobject																		//·ÅÖÃobject
+	document.SetObject();		//åˆå§‹åŒ–document
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();		//è·å¾—å†…å­˜åˆ†é…å™¨ï¼ŒåŒ…æ‹¬äº†åˆ†é…å’Œé”€æ¯å†…å­˜çš„æ–¹æ³•
+																					//æ”¾ç½®object																		//æ”¾ç½®object
 	rapidjson::Value object(rapidjson::kObjectType);
 
 	for (auto& v : listData)
@@ -293,7 +293,7 @@ string enJsonParser::encode_ConstructionData()
 				temp_array = bas_array;
 				temp_data = basData;
 			}
-			for (auto& dv : temp_data)	//dvÎªValueMap´ú±íÒ»¸ö±øµÄĞÅÏ¢
+			for (auto& dv : temp_data)	//dvä¸ºValueMapä»£è¡¨ä¸€ä¸ªå…µçš„ä¿¡æ¯
 			{
 				ValueMap temp_map = dv.asValueMap();
 				rapidjson::Value json_map(rapidjson::kObjectType);
@@ -341,9 +341,9 @@ string enJsonParser::encode_ConstructionData()
 	document.AddMember(CONSTRUCTIONDATA, object, allocator);
 
 	rapidjson::StringBuffer buffer;
-	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//ÉùÃ÷writer¶ÔÏó£¬½«Êı¾İ±£´æµ½bufferÀï
+	rapidjson::Writer < rapidjson::StringBuffer > writer(buffer);	//å£°æ˜writerå¯¹è±¡ï¼Œå°†æ•°æ®ä¿å­˜åˆ°bufferé‡Œ
 
-	document.Accept(writer);	//Í¨¹ıwrite½«Êı¾İĞ´Èëbuffer
+	document.Accept(writer);	//é€šè¿‡writeå°†æ•°æ®å†™å…¥buffer
 
 	return string(buffer.GetString());
 }

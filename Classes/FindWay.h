@@ -28,6 +28,12 @@ public:
 	{
 		return !(a.x == b.x&&a.y == b.y);
 	}
+	Position operator=(const Position b)
+	{
+		x = b.x;
+		y = b.y;
+		return *this;
+	}
 	Position()
 	{
 		x = -1;

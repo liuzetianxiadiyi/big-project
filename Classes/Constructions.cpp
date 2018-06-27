@@ -1,14 +1,16 @@
-#include "Constructions.h"
+﻿#include "Constructions.h"
 #include "Soldiers.h"
-#include"GameScene.h"
 #include<vector>
 
 using std::vector;
+
 bool GameflagNewConstructions = false;
+bool Gameflagsoldier = false;
 vector<Construction*>  GameNewConstruction;
 Vec2 Newpos;
 vector<Military*> unselectedMilitary;
 vector<Military*> selectedMilitary;
+Vec2 soldierBorn;
 
 int Mine::money = 1000;
 int Barracks::money = 2000;
@@ -35,6 +37,7 @@ Barracks* Barracks::create(const string filename)
 		sprite->createsoldier = Sprite::create("soldier.png");
 		sprite->createengineer = Sprite::create("engineer.png");
 		sprite->init("Barracks", 1000, 4, Vec2(300, 300), false, false, 1, 100);
+		sprite->createBar(sprite);
 		return sprite;
 	}
 	CC_SAFE_DELETE(sprite);
@@ -75,7 +78,7 @@ void Barracks::CreateDogCallback(Ref* pSender)
 	this->runAction(seq);*/
 	log("callback");
 	this->CreateDog();
-	GameflagNewConstructions = true;
+	Gameflagsoldier = true;
 }
 
 void Barracks::CreateSoldierCallback(Ref* pSender)
@@ -84,8 +87,7 @@ void Barracks::CreateSoldierCallback(Ref* pSender)
 	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
 	this->runAction(seq);*/
 	log("callback");
-	this->CreateSoldier();
-	GameflagNewConstructions = true;
+	this->CreateSoldier(); Gameflagsoldier = true;
 }
 
 void Barracks::CreateEngineerCallback(Ref* pSender)
@@ -94,20 +96,20 @@ void Barracks::CreateEngineerCallback(Ref* pSender)
 	auto seq = Sequence::create(delay, [&] {this->CreateDog(); }, nullptr);
 	this->runAction(seq);*/
 	log("callback");
-	this->CreateEngineer();
-	GameflagNewConstructions = true;
+	this->CreateEngineer(); Gameflagsoldier = true;
 }
 
 void Barracks::CreateDog()
 {
 	string filename = "dog.png";
 	Dog* dog = Dog::create(filename);
-	dog->init(100, false, false, Vec2(300, 300), Vec2(0, 0));
-	dog->setPosition(Newpos);
+	dog->init(100, false, false, Vec2(150,150), Vec2(0, 0));
+	dog->setPosition(Vec2(150,152));
 	auto target = Director::getInstance()->getRunningScene();
 	auto layer = target->getChildByTag(1);
-	layer->addChild(dog, 2);
+	layer->addChild(dog, 112);
 	unselectedMilitary.push_back(dog);
+	log("dog");
 }
 
 void Barracks::CreateSoldier()
@@ -118,7 +120,7 @@ void Barracks::CreateSoldier()
 	soldier->setPosition(Newpos);
 	auto target = Director::getInstance()->getRunningScene();
 	auto layer = target->getChildByTag(1);
-	layer->addChild(soldier, 2);
+	layer->addChild(soldier, 112);
 	unselectedMilitary.push_back(soldier);
 }
 
@@ -130,7 +132,7 @@ void Barracks::CreateEngineer()
 	engineer->setPosition(Newpos);
 	auto target = Director::getInstance()->getRunningScene();
 	auto layer = target->getChildByTag(1);
-	layer->addChild(engineer, 2);
+	layer->addChild(engineer, 1);
 	unselectedMilitary.push_back(engineer);
 }
 
@@ -142,6 +144,7 @@ Warfactory* Warfactory::create(const string filename)
 		sprite->autorelease();
 		sprite->createtank = Sprite::create("tank.png");
 		sprite->init("Warfactory", 1800, 4, Vec2(400, 400), false, false, 1, 100);
+		sprite->createBar(sprite);
 		return sprite;
 	}
 	CC_SAFE_DELETE(sprite);
@@ -161,6 +164,7 @@ Mine* Mine::create(const string filename)
 		sprite->autorelease();
 		sprite->createminingcar = Sprite::create("miningcar.png");
 		sprite->init("Mine", 1600, 4, Vec2(150, 150), false, false, 1, 100);
+		sprite->createBar(sprite);
 		return sprite;
 	}
 	CC_SAFE_DELETE(sprite);
@@ -224,7 +228,7 @@ void Base::CreateBarracksCallback(Ref* pSender)
 void Base::CreateMine()
 {
 	log("CreateWarfactory");
-	string filename = "Mine.png";
+	string filename = "soldier.png";
 	Mine* mine = Mine::create(filename);
 	mine->init("Mine", 1600, 4, Vec2(150, 150), false, false, 1, 100);
 	mine->setPosition(Newpos);
@@ -273,6 +277,7 @@ Base* Base::create(const string filename)
 		sprite->createwarfactory = Sprite::create("Warfactory.png");
 		sprite->createmine = Sprite::create("Mine.png");
 		sprite->init("Base", 5000, 8, Vec2(100, 100), false, false, 1, 100);
+		sprite->createBar(sprite);
 		return sprite;
 	}
 	CC_SAFE_DELETE(sprite);
@@ -313,8 +318,7 @@ void Warfactory::CreateTankCallback(Ref* pSender)
 	auto seq = Sequence::create(delay, [&] {this->CreateTank(); }, nullptr);
 	this->runAction(seq);*/
 	log("callback");
-	this->CreateTank();
-	GameflagNewConstructions = true;
+	this->CreateTank(); Gameflagsoldier = true;
 }
 
 void Mine::CreateMiningcar()
@@ -335,10 +339,9 @@ void Mine::CreateMiningcarCallback(Ref* pSender)
 	auto seq = Sequence::create(delay, [&] {this->CreateMiningcar(); }, nullptr);
 	this->runAction(seq);*/
 	log("callback");
-	this->CreateMiningcar();
-	GameflagNewConstructions = true;
+	this->CreateMiningcar(); Gameflagsoldier = true;
 }
-
+ProgressTimer* HP;
 void Barracks::createBar(Barracks * a)
 {
 	Sprite *hpSprite = Sprite::create("hp-con.png");
@@ -346,8 +349,10 @@ void Barracks::createBar(Barracks * a)
 	hp->setType(ProgressTimer::Type::BAR);
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
+	hp->setPosition(Vec2(100, 100));
 	hp->setPercentage((a->gethp() / Barracks::max_hp) * 100);
+	a->addChild(hp, 3);
+	HP = hp;
 }
 
 void Warfactory::createBar(Warfactory * a)
@@ -357,8 +362,9 @@ void Warfactory::createBar(Warfactory * a)
 	hp->setType(ProgressTimer::Type::BAR);
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
+	hp->setPosition(Vec2(100, 100));
 	hp->setPercentage((a->gethp() / Warfactory::max_hp) * 100);
+	a->addChild(hp, 3);
 }
 
 void Mine::createBar(Mine * a)
@@ -368,9 +374,12 @@ void Mine::createBar(Mine * a)
 	hp->setType(ProgressTimer::Type::BAR);
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
+	hp->setPosition(Vec2(30, 60));
 	hp->setPercentage((a->gethp() / Mine::max_hp) * 100);
+	a->addChild(hp, 3);
 }
+
+
 
 void Base::createBar(Base * a)
 {
@@ -379,6 +388,7 @@ void Base::createBar(Base * a)
 	hp->setType(ProgressTimer::Type::BAR);
 	hp->setMidpoint(Point(0, 0));
 	hp->setBarChangeRate(Point(1, 0));
-	hp->setPosition(Vec2(32, 100));
+	hp->setPosition(Vec2(100, 100));
 	hp->setPercentage((a->gethp() / Base::max_hp) * 100);
+	a->addChild(hp, 3);
 }

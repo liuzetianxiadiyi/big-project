@@ -1,4 +1,4 @@
-#include "GameScene.h"
+﻿#include "GameScene.h"
 #include "Constructions.h"
 #include "SystemHeader.h"
 #include "ui/CocosGUI.h"
@@ -18,17 +18,23 @@ USING_NS_CC;
 using std::string;
 using std::vector;
 
+extern ProgressTimer* HP;
+float hp1 = 100;
 extern bool GameflagNewConstructions;
 extern vector<Construction*>  GameNewConstruction;
 extern Vec2 Newpos;
 extern vector<Military*> unselectedMilitary;
 extern vector<Military*> selectedMilitary;
-
-string words;
-int i = 204;
-int flag = 1;
-int labelcount = 500;
-vector<string> news;
+vector<Mine*> selectmine;
+bool flag1 = false;
+extern Vec2 soldierBorn;
+extern bool Gameflagsoldier;
+Vec2 Newpos1;
+//string words;
+//int i = 204;
+//int flag = 1;
+//int labelcount = 500;
+//vector<string> news;
 
 //gamescene layer tag = 1
 //#include <mutex>
@@ -89,13 +95,19 @@ bool GameScene::init()
 	addChild(_tileMap, 0);
 
 	Base* sprite = Base::create("Base.png");
-	sprite->setPosition(Vec2(x, y));
+	sprite->setPosition(Vec2(250,250));
 	MyConstructions.push_back(sprite);
 	log("Base position x=%f.=%f", sprite->getPosition().x, sprite->getPosition().y);
 	Rect rec = sprite->getBoundingBox();
 	log("BaseBound maxx=%f,maxy=%f,minx=%f,miny=%f", rec.getMaxX(), rec.getMaxY(), rec.getMinX(), rec.getMinY());
-
+	this->createbar(sprite);
 	this->addChild(sprite, 2,1001);
+
+	Barracks* base = Barracks::create("Base.png");
+	base->setPosition(Vec2(1250, 250));
+	MyConstructions.push_back(base);
+	this->createbar(base);
+	this->addChild(base, 2, 1001);
 
 	_collidable = _tileMap->getLayer("collidable");
 	_collidable->setVisible(false);
@@ -195,207 +207,205 @@ bool GameScene::init()
 }
 
 
-void GameScene::messageCallback(Ref* pSender)
-{
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	auto sprite = Sprite::create("pastnews.png");
-	sprite->setTag(498);
-	if (sprite == nullptr)
-	{
-
-	}
-	else
-	{
-		// position the sprite on the center of the screen
-		sprite->setPosition(Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 40));
-
-		// add the sprite as a child to this layer
-		this->addChild(sprite, 0);
-	}
-	auto closeItem = MenuItemImage::create(
-		"CloseNormal.png",
-		"CloseSelected.png",
-		CC_CALLBACK_1(GameScene::messageCallback, this));
-
-	if (closeItem == nullptr ||
-		closeItem->getContentSize().width <= 0 ||
-		closeItem->getContentSize().height <= 0)
-	{
-
-	}
-	else
-	{
-		float x = origin.x + visibleSize.width / 2 + closeItem->getContentSize().width / 2;
-		float y = origin.y + visibleSize.height - closeItem->getContentSize().height / 2;
-		closeItem->setPosition(Vec2(x, y));
-	}
-
-	// create menu, it's an autorelease object
-	auto menu = Menu::create(closeItem, NULL);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 1, 497);
-
-
-	for (int j = i; j >= i - 12; j--)
-	{
-		this->removeChildByTag(j);
-	}
-	int count = 0;
-
-	labelcount = 500;
-	for (vector<string>::iterator iter1 = news.begin(); iter1 != news.end(); iter1++)
-	{
-		auto label = Label::createWithTTF(*iter1, "fonts/Marker Felt.ttf", 24);
-		if (label == nullptr)
-		{
-
-		}
-		else
-		{
-			// position the label on the center of the screen
-			label->setPosition(Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - count * 30));
-			// add the label as a child to this layer
-			this->addChild(label, 1, labelcount);
-		}
-		++count;
-		++labelcount;
-	}
-	++flag;
-
-	//创建滑块控件
-	Slider* slider = Slider::create();
-	//加载滑杆纹理
-	slider->loadBarTexture("sliderTrack.png");
-	//加载滑块按钮纹理
-	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
-	//加载滑块进度栏纹理
-	slider->loadProgressBarTexture("sliderProgress.png");
-	//The max percent of Slider.
-	slider->setMaxPercent(100);
-	slider->setRotation(90);
-
-	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
-	slider->addEventListener(CC_CALLBACK_2(GameScene::onChangedSlider2, this));
-	this->addChild(slider, 1, 499);
-
-}
-//聊天框发送信息
-void GameScene::editBoxReturn(EditBox *editBox)
-{
-	CCLOG("editbox return");
-	auto editbox = (EditBox*)editBox;
-
-	if (editBox->getTag() == 101)
-	{
-		// 获取系统时间
-		time_t now;
-		struct tm *time1;
-
-		now = time(NULL);
-
-		time1 = localtime(&now);      //microseconds: 微秒
-		int year = time1->tm_year + 1900;
-		log("year = %d", year);         //显示年份
-		asctime(time1);
-		char date1[32] = { 0 };
-		sprintf(date1, "%d %02d %02d", (int)time1->tm_year + 1900, (int)time1->tm_mon + 1, (int)time1->tm_mday);
-		log("%s", date1);        //显示年月日
-
-		char date2[50] = { 0 };
-		sprintf(date2, "%02d %02d %02d", (int)time1->tm_hour, (int)time1->tm_min, (int)time1->tm_sec);
-		log("%s", date2);       //显示时分秒
-
-								//auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
-
-		news.push_back(asctime(time1));
-
-		news.push_back(words);
-
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		Vec2 origin = Director::getInstance()->getVisibleOrigin();
-		auto label = Label::createWithTTF(words, "fonts/Marker Felt.ttf", 24);
-		if (label == nullptr)
-		{
-
-		}
-		else
-		{
-			// position the label on the center of the screen
-			label->setPosition(ccp(visibleSize.width * 1 / 5, visibleSize.height * 5 / 6 - (label->getContentSize().height*(i % 12))));
-			// add the label as a child to this layer
-			this->addChild(label, 1, i);
-			this->removeChildByTag(i - 12);
-			i = i + 1;
-		}
-		auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
-		if (label2 == nullptr)
-		{
-
-		}
-		else
-		{
-			// position the label on the center of the screen
-			label2->setPosition(ccp(visibleSize.width * 2 / 5, (visibleSize.height * 5 / 6 + 2 * (label->getContentSize().height) - (label->getContentSize().height*(i % 12))) - 6));
-			// add the label as a child to this layer
-			this->addChild(label2, 1, i);
-			this->removeChildByTag(i - 12);
-			i = i + 1;
-		}
-		editBox->setText("");
-
-	}
-	if (editBox->getTag() == 102)
-	{
-		editBox->setText("you recieved a letter");
-	}
-}
-void GameScene::editBoxEditingDidBegin(EditBox *editBox)
-{
-	CCLOG("start edit");
-}
-
-
-void GameScene::editBoxEditingDidEnd(EditBox *editBox)
-
-{
-	CCLOG("end edit");
-}
-
-void GameScene::editBoxTextChanged(EditBox *editBox, const std::string &text)
-{
-	CCLOG("EditBox_password changed");
-	auto editbox = (EditBox*)editBox;
-	if (editBox->getTag() == 101)
-	{
-		words = text;
-	}
-	if (editbox->getTag() == 102)
-	{
-		editBox->setText("");
-
-	}
-
-}
-void GameScene::onChangedSlider2(Ref* pSender, Slider::EventType type)
-{
-
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
-	{
-
-		Slider* slider = dynamic_cast<Slider*>(pSender);
-		float percent = slider->getPercent() * 5;
-		for (int m = 500; m < labelcount; m++)
-		{
-			auto label1 = getChildByTag(m);
-			label1->runAction(MoveTo::create(0.5, Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - 30 * (m - 500) + percent
-			)));
-
-		}
-	}
-}
+//void GameScene::messageCallback(Ref* pSender)
+//{
+//	auto visibleSize = Director::getInstance()->getVisibleSize();
+//	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+//	auto sprite = Sprite::create("pastnews.png");
+//	sprite->setTag(498);
+//	if (sprite == nullptr)
+//	{
+//
+//	}
+//	else
+//	{
+//		// position the sprite on the center of the screen
+//		sprite->setPosition(Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 40));
+//
+//		// add the sprite as a child to this layer
+//		this->addChild(sprite, 0);
+//	}
+//	auto closeItem = MenuItemImage::create(
+//		"CloseNormal.png",
+//		"CloseSelected.png",
+//		CC_CALLBACK_1(GameScene::messageCallback, this));
+//
+//	if (closeItem == nullptr ||
+//		closeItem->getContentSize().width <= 0 ||
+//		closeItem->getContentSize().height <= 0)
+//	{
+//
+//	}
+//	else
+//	{
+//		float x = origin.x + visibleSize.width / 2 + closeItem->getContentSize().width / 2;
+//		float y = origin.y + visibleSize.height - closeItem->getContentSize().height / 2;
+//		closeItem->setPosition(Vec2(x, y));
+//	}
+//
+//	// create menu, it's an autorelease object
+//	auto menu = Menu::create(closeItem, NULL);
+//	menu->setPosition(Vec2::ZERO);
+//	this->addChild(menu, 1, 497);
+//
+//
+//	for (int j = i; j >= i - 12; j--)
+//	{
+//		this->removeChildByTag(j);
+//	}
+//	int count = 0;
+//
+//	labelcount = 500;
+//	for (vector<string>::iterator iter1 = news.begin(); iter1 != news.end(); iter1++)
+//	{
+//		auto label = Label::createWithTTF(*iter1, "fonts/Marker Felt.ttf", 24);
+//		if (label == nullptr)
+//		{
+//
+//		}
+//		else
+//		{
+//			// position the label on the center of the screen
+//			label->setPosition(Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - count * 30));
+//			// add the label as a child to this layer
+//			this->addChild(label, 1, labelcount);
+//		}
+//		++count;
+//		++labelcount;
+//	}
+//	++flag;
+//
+//	//创建滑块控件
+//	Slider* slider = Slider::create();
+//	//加载滑杆纹理
+//	slider->loadBarTexture("sliderTrack.png");
+//	//加载滑块按钮纹理
+//	slider->loadSlidBallTextures("sliderThumb.png", "sliderThumb.png", "");
+//	//加载滑块进度栏纹理
+//	slider->loadProgressBarTexture("sliderProgress.png");
+//	//The max percent of Slider.
+//	slider->setMaxPercent(100);
+//	slider->setRotation(90);
+//
+//	slider->setPosition(Vec2(visibleSize.width / 2.0f + 60, visibleSize.height / 2.0f));
+//	slider->addEventListener(CC_CALLBACK_2(GameScene::onChangedSlider2, this));
+//	this->addChild(slider, 1, 499);
+//
+//}
+////聊天框发送信息
+//void GameScene::editBoxReturn(EditBox *editBox)
+//{
+//	CCLOG("editbox return");
+//	auto editbox = (EditBox*)editBox;
+//
+//	if (editBox->getTag() == 101)
+//	{
+//		// 获取系统时间
+//		time_t now;
+//		struct tm *time1;
+//
+//		now = time(NULL);
+//
+//		time1 = localtime(&now);      //microseconds: 微秒
+//		int year = time1->tm_year + 1900;
+//		log("year = %d", year);         //显示年份
+//		asctime(time1);
+//		char date1[32] = { 0 };
+//		sprintf(date1, "%d %02d %02d", (int)time1->tm_year + 1900, (int)time1->tm_mon + 1, (int)time1->tm_mday);
+//		log("%s", date1);        //显示年月日
+//
+//		char date2[50] = { 0 };
+//		sprintf(date2, "%02d %02d %02d", (int)time1->tm_hour, (int)time1->tm_min, (int)time1->tm_sec);
+//		log("%s", date2);       //显示时分秒
+//
+//								//auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
+//
+//		news.push_back(asctime(time1));
+//
+//		news.push_back(words);
+//
+//		auto visibleSize = Director::getInstance()->getVisibleSize();
+//		Vec2 origin = Director::getInstance()->getVisibleOrigin();
+//		auto label = Label::createWithTTF(words, "fonts/Marker Felt.ttf", 24);
+//		if (label == nullptr)
+//		{
+//
+//		}
+//		else
+//		{
+//			// position the label on the center of the screen
+//			label->setPosition(ccp(visibleSize.width * 1 / 5, visibleSize.height * 5 / 6 - (label->getContentSize().height*(i % 12))));
+//			// add the label as a child to this layer
+//			this->addChild(label, 1, i);
+//			this->removeChildByTag(i - 12);
+//			i = i + 1;
+//		}
+//		auto label2 = Label::createWithTTF(asctime(time1), "fonts/Marker Felt.ttf", 24);
+//		if (label2 == nullptr)
+//		{
+//
+//		}
+//		else
+//		{
+//			// position the label on the center of the screen
+//			label2->setPosition(ccp(visibleSize.width * 2 / 5, (visibleSize.height * 5 / 6 + 2 * (label->getContentSize().height) - (label->getContentSize().height*(i % 12))) - 6));
+//			// add the label as a child to this layer
+//			this->addChild(label2, 1, i);
+//			this->removeChildByTag(i - 12);
+//			i = i + 1;
+//		}
+//		editBox->setText("");
+//
+//	}
+//	if (editBox->getTag() == 102)
+//	{
+//		editBox->setText("you recieved a letter");
+//	}
+//}
+//void GameScene::editBoxEditingDidBegin(EditBox *editBox)
+//{
+//	CCLOG("start edit");
+//}
+//
+//
+//void GameScene::editBoxEditingDidEnd(EditBox *editBox)
+//
+//{
+//	CCLOG("end edit");
+//}
+//
+//void GameScene::editBoxTextChanged(EditBox *editBox, const std::string &text)
+//{
+//	CCLOG("EditBox_password changed");
+//	auto editbox = (EditBox*)editBox;
+//	if (editBox->getTag() == 101)
+//	{
+//		words = text;
+//	}
+//	if (editbox->getTag() == 102)
+//	{
+//		editBox->setText("");
+//	}
+//}
+//void GameScene::onChangedSlider2(Ref* pSender, Slider::EventType type)
+//{
+//
+//	auto visibleSize = Director::getInstance()->getVisibleSize();
+//	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+//	if (type == Slider::EventType::ON_PERCENTAGE_CHANGED)
+//	{
+//
+//		Slider* slider = dynamic_cast<Slider*>(pSender);
+//		float percent = slider->getPercent() * 5;
+//		for (int m = 500; m < labelcount; m++)
+//		{
+//			auto label1 = getChildByTag(m);
+//			label1->runAction(MoveTo::create(0.5, Vec2(visibleSize.width / 3 + origin.x, visibleSize.height / 2 + origin.y + 100 - 30 * (m - 500) + percent
+//			)));
+//
+//		}
+//	}
+//}
 
 void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
 {
@@ -415,6 +425,7 @@ void GameScene::onKeyPress(EventKeyboard::KeyCode keyCode, Event* event)
 	{
 		ViewPosition.y += ViewChangeSpeed;
 	}
+	Newpos1 = ViewPosition;
 	setViewpointCenter(ViewPosition);
 }
 
@@ -501,13 +512,16 @@ bool GameScene::onMouseDown(Event* event)
 {
 	EventMouse* em = dynamic_cast<EventMouse*> (event);
 	BeginLocation = em->getLocation();
+	/*log("inview%f,%f", em->getLocationInView().x, em->getLocationInView().y);
+	log("not in view%f,%f", em->getLocation().x, em->getLocation().y);
+	log("xxxx %f,%f", em->getCursorX(), em->getCursorY());*/
 	log("onMouseDown");
 	Newpos = em->getLocationInView();
-	if (GameflagNewConstructions == true)
+	Newpos.x -= Newpos1.x;
+	Newpos.y -= Newpos1.y;
+	if (flag1)
 	{
-		GameflagNewConstructions = false;
-		MyConstructions.push_back(GameNewConstruction.front());
-		GameNewConstruction.pop_back();
+		selectmine.front()->runAction(MoveTo::create(2, Newpos));
 	}
 	return true;
 }
@@ -522,9 +536,10 @@ void GameScene::onMouseMove(Event* event)
 	if (GameflagNewConstructions == true)
 	{
 		//log("NewComstruction");
-		GameNewConstruction.front()->setPosition(pos);	
-	}
-	
+		pos.x -= Newpos1.x;
+		pos.y -= Newpos1.y;
+		GameNewConstruction.front()->setPosition(pos);
+	}	
 }
 
 void GameScene::onMouseScroll(Event* event)
@@ -542,6 +557,12 @@ void GameScene::onMouseUp(Event* event)
 	//wait to add click can move area
 	if (ButtonTag == EventMouse::MouseButton::BUTTON_RIGHT)
 	{
+		if (GameflagNewConstructions == true)
+		{
+			GameflagNewConstructions = false;
+			MyConstructions.push_back(GameNewConstruction.front());
+			GameNewConstruction.pop_back();
+		}
 		int x = _tileMap->getTileSize().width, y = _tileMap->getTileSize().height;
 		for (auto& v : selectedMilitary)
 		{
@@ -606,31 +627,30 @@ void GameScene::onMouseUp(Event* event)
 						auto f = static_cast<Base*>(c);
 						f->createbarracks = Sprite::create("Barracks.png");
 						f->createwarfactory = Sprite::create("Warfactory.png");
-						f->createmine = Sprite::create("Mine.png");
+						f->createmine = Sprite::create("soldier.png");
 						Menu* menu = f->createMenu();
 						menu->setScale(0.5);
 						menu->setPosition(c->getPosition()+Vec2(0,-150));
 						this->addChild(menu, 3);
+						//Newpos = c->getPosition() + Vec2(0, -150);
 					}
 					else if(typeid(*c) == typeid(Barracks))
 					{
 						auto f = static_cast<Barracks*>(c);
-						f->createdog = Sprite::create("dog.png");
-						f->createsoldier = Sprite::create("soldier.png");
-						f->createengineer = Sprite::create("engineer.png");
-						Menu* menu = f->createMenu();
-						menu->setScale(0.5);
-						menu->setPosition(c->getPosition() + Vec2(0, -150));
-						this->addChild(menu, 3);
+						hp1 -= 25;
+						HP->setPercentage(hp1);
+						if (hp1 == 0)
+						{
+							auto scene = GameWin::createScene();
+							auto reScene = TransitionJumpZoom::create(1.0f, scene);
+							Director::getInstance()->pushScene(reScene);
+						}
 					}
 					else if (typeid(*c) == typeid(Mine))
 					{
 						auto f = static_cast<Mine*>(c);
-						f->createminingcar = Sprite::create("miningcar.png");
-						Menu* menu = f->createMenu();
-						menu->setScale(0.5);
-						menu->setPosition(c->getPosition() + Vec2(0, -150));
-						this->addChild(menu, 3);
+						selectmine.push_back(f);
+						flag1 = true;
 					}
 					else if (typeid(*c) == typeid(Warfactory))
 					{
@@ -912,22 +932,40 @@ void GameScene::updateConstruction(ValueVector& valuevector, int type)
 		{
 			if (type == Bar_Data)
 			{
+				//this->createbar(sprite);
 				sprite = Barracks::create("Barrscks.png");	//filename modify to staitc member variable
 			}
 			else if (type == War_Data)
 			{
+				//this->createbar(sprite);
 				sprite = Warfactory::create("Warfactory.png");
+				
 			}
 			else if (type == Min_Data)
 			{
+				//this->createbar(sprite);
 				sprite = Mine::create("Mine.png");
+				
 			}
 			else if (type == Bas_Data)
 			{
+				//this->createbar(sprite);
 				sprite = Base::create("Base.png");
+				
 			}
 			//sprite->init();
 			this->addChild(sprite, 3,tag);
 		}
 	}
+}
+
+void GameScene::createbar(Construction * a) {
+	Sprite *hpSprite = Sprite::create("hp-con.png");
+	auto hp = ProgressTimer::create(hpSprite);
+	hp->setType(ProgressTimer::Type::BAR);
+	hp->setMidpoint(Point(0, 0));
+	hp->setBarChangeRate(Point(1, 0));
+	hp->setPosition(Vec2(100, 100));
+	hp->setPercentage((a->gethp() / Base::max_hp) * 100);
+	a->addChild(hp, 3);
 }

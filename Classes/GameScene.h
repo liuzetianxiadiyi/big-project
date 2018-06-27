@@ -1,9 +1,11 @@
-#ifndef __GAMESCENE_H__
+﻿#ifndef __GAMESCENE_H__
 #define __GAMESCENE_H__
 
+#include "GameWin.h"
 #include "cocos2d.h"
 #include "Military.h"
 #include "Construction.h"
+#include "Constructions.h"
 #include "FindWay.h"
 
 #include"ui/CocosGUI.h"
@@ -22,7 +24,7 @@ USING_NS_CC;
 USING_NS_CC_EXT;
 
 
-class GameScene :public cocos2d::Layer, EditBoxDelegate
+class GameScene :public cocos2d::Layer
 {
 private:
 	cocos2d::TMXTiledMap* _tileMap;
@@ -49,6 +51,7 @@ public:
 
 	cocos2d::Vec2 tileCoordFromPosition(cocos2d::Vec2 position);
 	void setViewpointCenter(Vec2 position);
+	void createbar(Construction * a);
 
 	virtual bool onMouseDown(cocos2d::Event * event);
 	virtual void onMouseUp(cocos2d::Event* event);
@@ -57,13 +60,14 @@ public:
 	void ButtonSettingCallback(Ref* pSender);
 	virtual void onKeyPress(EventKeyboard::KeyCode keyCode, Event* event);
 
-	void messageCallback(cocos2d::Ref* pSender);
+	/*void messageCallback(cocos2d::Ref* pSender);
+	void messageCloseCallback(Ref* pSender);
 
 	virtual void editBoxEditingDidBegin(cocos2d::extension::EditBox* editBox);
 	virtual void editBoxEditingDidEnd(cocos2d::extension::EditBox* editBox);
 	virtual void editBoxTextChanged(cocos2d::extension::EditBox* editBox, const std::string &text);
 	virtual void editBoxReturn(cocos2d::extension::EditBox *editBox);
-	void onChangedSlider2(Ref* pSender, Slider::EventType type);
+	void onChangedSlider2(Ref* pSender, Slider::EventType type);*/
 
 	//friend class Tile;
 	vector<Position> FindWay(Position start, Position goal);

@@ -1,6 +1,10 @@
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
+
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
+#include "SettingScene.h"
+
 class HelloWorld : public cocos2d::Layer
 {
 public:
@@ -12,6 +16,7 @@ public:
 	virtual void onExit();
 	virtual void onExitTransitionDidStart();
 	virtual void cleanup();
+
 	// a selector callback
 	void menuExitCallback(cocos2d::Ref* pSender);
 	void menuStartCallback(cocos2d::Ref* pSender);

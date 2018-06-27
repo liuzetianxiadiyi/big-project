@@ -9,7 +9,6 @@ USING_NS_CC;
 using std::string;
 using namespace cocos2d::ui;
 
-
 class Soldier : public Military
 {
 public:
@@ -34,8 +33,6 @@ public:
 	//static Action* move;
 	static int money;
 	static int power;
-
-
 public:
 	static Dog* create(const string filename);
 	virtual void None() {};

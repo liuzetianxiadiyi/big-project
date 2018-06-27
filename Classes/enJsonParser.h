@@ -1,4 +1,4 @@
-#ifndef __ENJSON_PARSER_SCENE_H_
+﻿#ifndef __ENJSON_PARSER_SCENE_H_
 #define __ENJSON_PARSER_SCENE_H_
 
 #include "cocos2d.h"

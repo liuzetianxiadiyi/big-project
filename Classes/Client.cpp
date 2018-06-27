@@ -3,9 +3,6 @@
 #include <thread>
 #include <algorithm>
 #include "cocos2d.h"
-#include <string>
-
-using std::string;
 
 USING_NS_CC;
 
@@ -29,7 +26,7 @@ bool Client::init()
 	//3 准备通信地址  
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_port = htons(PORT);
-	addrServer.sin_addr.s_addr = inet_addr("192.168.0.4");
+	addrServer.sin_addr.s_addr = inet_addr("192.168.0.7");
 	
 	return true;
 }
@@ -45,16 +42,7 @@ BOOL Client::ConnectServer()
 		system("pause");
 		return FALSE;
 	}
-	//char recvBuf[BUFLEN];
-	//ZeroMemory(recvBuf, sizeof(recvBuf));
-	//if (SOCKET_ERROR == recv(sHost, recvBuf, BUFLEN, 0))
-	//{
-	//	//closesocket(sHost);
-	//	//WSACleanup();
-	//	log("recv message false");
-	//	return FALSE;
-	//}
-	/*log("%s", recvBuf);*/
+
 	return TRUE;
 }
 
@@ -66,12 +54,10 @@ string Client::recv_Cli()
 	{
 		//closesocket(sHost);
 		//WSACleanup();
-		log("recv message false");
 		return FALSE;
 	}
-	//log("message: %s", recvBuf);
-	log("string: %s", string(recvBuf).c_str());
-	return std::string(recvBuf);
+
+	return string(recvBuf);
 }
 
 BOOL Client::send_Cli(string sendBuf)
